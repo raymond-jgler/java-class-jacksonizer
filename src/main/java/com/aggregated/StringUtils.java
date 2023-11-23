@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import org.apache.commons.collections4.MapUtils;
@@ -399,7 +385,7 @@ public class StringUtils {
     }
     if (each.length() > 0 && !res.toString().contains(each)) {
       res.append(sep)
-          .append(each);
+              .append(each);
     }
     /**
      * Ok time to hack
@@ -474,7 +460,6 @@ public class StringUtils {
     if (!isRebounce || !Character.isLetter(c)) {
       return c;
     }
-
     if (Character.isLowerCase(c)) {
       asciiVal = c - 97;
     } else {
@@ -536,6 +521,17 @@ public class StringUtils {
     }
     return true;
   }
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
