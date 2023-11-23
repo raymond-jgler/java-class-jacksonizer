@@ -1,5 +1,8 @@
 # java-class-decorator
 
+** THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
+PLEASE DEBUG THE CODE IF MORE EXPLORATION IS WITHIN CURIOSITY
+
 Overview:
 
 _ This method will eventually annotate contructor (existing or write new) and its parameters(s) using client's annotation inputs.
