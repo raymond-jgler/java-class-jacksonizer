@@ -14,6 +14,8 @@ _ non-transient
 
 _ How to use:
 + package.txt is the entry point together with ScanPackage.java, supporting multi single files or package lines.
++ ScanPackage.java is the entry class that starts everything.
++ Driver.java is the class that starts the main logic.
 
 _ Basic flow:
 + When processing a class, the method will explore -process all fields declared in a class if they're domain-specific, this procedure is repeated.
