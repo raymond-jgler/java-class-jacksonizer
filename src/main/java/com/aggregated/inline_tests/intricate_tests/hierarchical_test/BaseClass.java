@@ -7,5 +7,5 @@ public abstract class BaseClass<T> {
     protected Integer x;
     protected String text;
     protected boolean y;
-    protected Map<String, Set> amIScary;
+    protected Map<String, Map<String, Set>> amIScary;
 }
