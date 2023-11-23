@@ -29,6 +29,16 @@ _ non-transient
 + ScanPackage.java is the entry class that starts everything.
 + Driver.java is the class that starts the main logic.
 
+# This contains 4 flags :
+ - processDomainFieldBFS(bool x)                 : to add annotations for fields explored in class ( if domain class )
+
+ - processDomainImportBFS(bool x)                : (not recommended) to add annotations for imported class ( if domain class)
+
+ - processTopDownHierarchicalClasses(bool x)       : (recommended for a complete list of fields) to process/add annotations from top-level #parent class down to the designated one, possibly transfer super 
+
+ - processDomainParamBFS(bool x)                 : to add annotations for parameters explored in constructor ( if domain class)
+ - addSuperConstructor(bool x)                    : (if processTopDownHierarchicalClasses is enabled, then it's recommended to enable this as well) to add a default
+
 _ Basic flow - phase-pattern-based algorithm :
 + When processing a class, the method will explore -process all fields declared in a class if they're domain-specific, this procedure is repeated.
 + Providing client-based import flag - processImportDomainsLayerWise, to process all dommain classes found in the import section or not.
