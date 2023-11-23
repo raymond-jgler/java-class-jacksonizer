@@ -1,6 +1,10 @@
-#java-class-decorator
+# java-class-decorator
+Languague: 
+ - Java 8.0
 
-#THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
+Dep Management tool:
+ - Maven
+# THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
 PLEASE DEBUG THE CODE IF MORE EXPLORATION IS WITHIN CURIOSITY
 
 ## Overview:
