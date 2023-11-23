@@ -68,7 +68,7 @@ public abstract class BaseClass<T> {
 before - Child03:
 ```
 public class Child03 extends Child02 {
-    private Object myField01;
+    private Integer myField01;
     private String myField02;
 }
 ```
@@ -100,26 +100,25 @@ public abstract class BaseClass<T> {
 ```
 after Child03:
 ```
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import java.util.SortedSet;
 
 public class Child03 extends Child02 {
-  private Object myField01;
-  private String myField02;
+ private Integer myField01;
+ private String myField02;
 
-  @JsonCreator
-  private Child03(@JsonProperty("x") Integer x,
+	@JsonCreator
+	private Child03(@JsonProperty("x") Integer x,
                   @JsonProperty("text") String text,
                   @JsonProperty("y") boolean y,
-                  @JsonProperty("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary,
+                  @JsonProperty("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>>    amIScary,
                   @JsonProperty("abc") int abc,
+                  @JsonProperty("myField01") Integer myField01,
                   @JsonProperty("myField02") String myField02) {
-
-    super(x, text, y, amIScary, abc);
-    this.myField02 = myField02;
-  }
+		super(x, text, y,    amIScary, abc);
+		this.myField01 = myField01;
+		this.myField02 = myField02;
+	}
 }
 
 ```
