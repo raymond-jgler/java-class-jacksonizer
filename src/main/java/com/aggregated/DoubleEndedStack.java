@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.ArrayList;
@@ -78,3 +64,17 @@ public class DoubleEndedStack<T> {
     return this.elements.contains(ele);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

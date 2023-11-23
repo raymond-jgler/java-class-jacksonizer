@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.List;
@@ -112,3 +98,17 @@ public class CustomSerializationIndexedField {
                 '}';
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

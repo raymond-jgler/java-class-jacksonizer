@@ -1,14 +1,14 @@
 
 #   in Driver.java, there are FOUR important modes/flags, defaulted to FALSE
 
-# processDomainFieldBFS(bool x)                 : to add annotations for fields explored in class ( if ER class )
+# processDomainFieldBFS(bool x)                 : to add annotations for fields explored in class ( if domain class )
 
-# processDomainImportBFS(bool x)                : (not recommended) to add annotations for imported class ( if ER class)
+# processDomainImportBFS(bool x)                : (not recommended) to add annotations for imported class ( if domain class)
 
 # processTopDownHierarchicalClasses(bool x)       : (recommended for a complete list of fields) to process/add annotations from top-level #parent class down to the
 # designated one, possibly transfer super 
 
-# processDomainParamBFS(bool x)                 : to add annotations for parameters explored in constructor ( if ER class)
+# processDomainParamBFS(bool x)                 : to add annotations for parameters explored in constructor ( if domain class)
 
 # addSuperConstructor(bool x)                    : (if processTopDownHierarchicalClasses is enabled, then it's recommended to enable this as well) to add a default #constructor along with the annnotated one, only if it's necessary.
 
