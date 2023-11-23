@@ -1,9 +1,14 @@
 # java-class-decorator
-Languague: 
- - Java 8.0
 
-Dep Management tool:
- - Maven
+# Algorithsm & D.Ss - not yet scary bit manipulation :
+ - DFS / BFS
+ - Various sophisticated string manipulation techniques
+ - Trie
+ - Stack
+ - Queue
+ - Linked List
+
+
 # THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
 PLEASE DEBUG THE CODE IF MORE EXPLORATION IS WITHIN CURIOSITY
 
