@@ -16,4 +16,4 @@
 
 # com.aggregated.inline_tests.basic_tests.
 
- com.aggregated.inline_tests.intricate_tests.hierarchical_test.Child01
+ com.aggregated.inline_tests.intricate_tests.hierarchical_test.Child03
