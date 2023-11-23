@@ -29,6 +29,16 @@ _ non-transient
 + ScanPackage.java is the entry class that starts everything.
 + Driver.java is the class that starts the main logic.
 
+# This contains 4 flags :
+ - processDomainFieldBFS(bool x)                 : to add annotations for fields explored in class ( if domain class )
+
+ - processDomainImportBFS(bool x)                : (not recommended) to add annotations for imported class ( if domain class)
+
+ - processTopDownHierarchicalClasses(bool x)       : (recommended for a complete list of fields) to process/add annotations from top-level #parent class down to the designated one, possibly transfer super 
+
+ - processDomainParamBFS(bool x)                 : to add annotations for parameters explored in constructor ( if domain class)
+ - addSuperConstructor(bool x)                    : (if processTopDownHierarchicalClasses is enabled, then it's recommended to enable this as well) to add a default
+
 _ Basic flow - phase-pattern-based algorithm :
 + When processing a class, the method will explore -process all fields declared in a class if they're domain-specific, this procedure is repeated.
 + Providing client-based import flag - processImportDomainsLayerWise, to process all dommain classes found in the import section or not.
@@ -58,7 +68,7 @@ public abstract class BaseClass<T> {
 before - Child03:
 ```
 public class Child03 extends Child02 {
-    private Object myField01;
+    private Integer myField01;
     private String myField02;
 }
 ```
@@ -90,26 +100,24 @@ public abstract class BaseClass<T> {
 ```
 after Child03:
 ```
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import java.util.SortedSet;
 
 public class Child03 extends Child02 {
-  private Object myField01;
-  private String myField02;
+    private Integer myField01;
+    private String myField02;
 
-  @JsonCreator
-  private Child03(@JsonProperty("x") Integer x,
-                  @JsonProperty("text") String text,
-                  @JsonProperty("y") boolean y,
-                  @JsonProperty("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary,
-                  @JsonProperty("abc") int abc,
-                  @JsonProperty("myField02") String myField02) {
-
-    super(x, text, y, amIScary, abc);
-    this.myField02 = myField02;
-  }
+    @JsonCreator
+    private Child03(@JsonProperty("x") Integer x,
+                    @JsonProperty("text") String text,
+                    @JsonProperty("y") boolean y,
+                    @JsonProperty("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary,
+                    @JsonProperty("abc") int abc,
+                    @JsonProperty("myField01") Integer myField01,
+                    @JsonProperty("myField02") String myField02) {
+        super(x, text, y, amIScary, abc);
+        this.myField01 = myField01;
+        this.myField02 = myField02;
+    }
 }
-
 ```
