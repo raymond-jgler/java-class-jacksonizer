@@ -113,9 +113,17 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       if (StringUtils.isEmpty(each)) {
         continue;
       }
-      String [] splitted = each.split(SPACE);
-      String fieldType = splitted[0];
-      String fieldName = splitted[1];
+      String fieldType;
+      String fieldName;
+      if (each.contains("<") || each.contains(">")) {
+        final int ending = StringUtils.lastIndexOf(each, '>', each.length() - 1, 1, Boolean.TRUE);
+        fieldType = each.substring(0, ending + 1);
+        fieldName = each.substring(ending + 1, each.length());
+      } else {
+        String[] splitted = each.split(SPACE);
+        fieldType = splitted[0];
+        fieldName = splitted[1];
+      }
       String evalFullPath = "";
       for (String eachRawType : StringUtils.makeNonAlphaStringsFrom(fieldType)) {
         if (!StringUtils.containsAny(fieldType,
