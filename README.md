@@ -1,13 +1,5 @@
 # java-class-decorator
 
-# Algorithsm & D.Ss - not yet scary bit manipulation :
- - DFS / BFS
- - Trie
- - Stack
- - Queue
- - Linked List
-
-
 # THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
 PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
 
@@ -120,3 +112,10 @@ public class Child03 extends Child02 {
     }
 }
 ```
+
+# Algorithsm & D.Ss - not yet scary bit manipulation :
+ - DFS / BFS
+ - Trie
+ - Stack
+ - Queue
+ - Linked List
