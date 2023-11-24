@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class ScanPackage {
   private static final Logger      LOG             = LoggerFactory.getLogger(ScanPackage.class);
-  private final static String      INPUT_FILE_NAME        = "package.txt";
+  private final static String      INPUT_FILE_NAME        = "input.txt";
   private final static String      SKIP_INDICATOR  = "#";
   private static final String      BASE_PATH       = "src//main//java//";
   private static       boolean     isSinglePackage = false;

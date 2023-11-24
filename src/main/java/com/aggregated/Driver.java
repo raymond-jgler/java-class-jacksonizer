@@ -63,8 +63,8 @@ public class Driver {
                         RuntimeException.class)
                 .withBaseClass(Serializable.class)
                 .withAccessModifier("private") //if write new, which access mod ?
-                .annotateConstructorWith("JsonCreator")
-                .annotateParamsWith("JsonProperty")
+                .annotateConstructorWith("ClassLevelAnnotation")
+                .annotateParamsWith("PropertyLevelAnnotation")
                 .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package ctor's anntation
                 .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package field
                 .stripFinalClass(false)
@@ -117,10 +117,12 @@ public class Driver {
                         RuntimeException.class)
                 .withBaseClass(Serializable.class)
                 .withAccessModifier("private") //if write new, which access mod ?
-                .annotateConstructorWith("JsonCreator")
-                .annotateParamsWith("JsonProperty")
-                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package ctor's anntation
-                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package field
+                .annotateConstructorWith("ClassLevelAnnotation")
+                .annotateParamsWith("ParamLevelAnnotation")
+//                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package ctor's anntation
+//                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package field
+                .addAnnotationPackage("com.module.to.custom.class.annotation") //-> package ctor's anntation
+                .addAnnotationPackage("com.module.to.custom.param.annotation") //-> package field
                 .stripFinalClass(false)
                 /**
                  * Besides, constructor-based annotations,
