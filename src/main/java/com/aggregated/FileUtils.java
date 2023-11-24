@@ -2,12 +2,7 @@
 
 package com.aggregated;
 
-import com.aggregated.entry_point.ScanPackage;
-
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class FileUtils {

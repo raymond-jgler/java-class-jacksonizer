@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.Objects;
 
-public class ScanPackage {
-  private static final Logger      LOG             = LoggerFactory.getLogger(ScanPackage.class);
+public class InputScanner {
+  private static final Logger      LOG             = LoggerFactory.getLogger(InputScanner.class);
   private final static String      INPUT_FILE_NAME        = "input.txt";
   private final static String      SKIP_INDICATOR  = "#";
   private static final String      BASE_PATH       = "src//main//java//";
@@ -40,7 +40,7 @@ public class ScanPackage {
      * Build defined values
      */
     isSinglePackage = false;
-    ClassLoader classLoader = ScanPackage.class.getClassLoader();
+    ClassLoader classLoader = InputScanner.class.getClassLoader();
     InputStream inputStream = classLoader.getResourceAsStream(INPUT_FILE_NAME);
     if (Objects.isNull(inputStream)) {
       return;
