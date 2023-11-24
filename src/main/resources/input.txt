@@ -14,6 +14,15 @@
 
 # if you need to enable which flag, refer to JacksonModeSingleJavaExecution or JacksonModePackageExecution to invoke ( just uncomment ) the method(s) above
 
-# com.aggregated.inline_tests.basic_tests.
+
+# EXAMPLES:
+    # Process all classes under package A:
+     # com.company.A.*
+    # Process all classes from package A and its subpackages
+     # com.company.A.**
+    # Process designated Java files
+     # com.company.MyClass01
+     # com.company.MyClass02
+
 
  com.aggregated.inline_tests.intricate_tests.hierarchical_test.Child03
