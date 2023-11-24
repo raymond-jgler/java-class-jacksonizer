@@ -2,7 +2,6 @@
 
 # Algorithsm & D.Ss - not yet scary bit manipulation :
  - DFS / BFS
- - Various sophisticated string manipulation techniques
  - Trie
  - Stack
  - Queue
@@ -10,7 +9,7 @@
 
 
 # THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
-PLEASE DEBUG THE CODE IF MORE EXPLORATION IS WITHIN CURIOSITY
+PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
 
 ## Overview:
 
@@ -21,8 +20,8 @@ _ its body contains all declared serialiazable fields (assigning )
 _ its param list covers all declared serialiazable fields
 
 ## Field's qualification :
-_ non-static
-_ non-transient
+-  non-static
+-  non-transient
 
 ## How to use:
 + package.txt is the entry point together with ScanPackage.java, supporting multi single files or package lines.
