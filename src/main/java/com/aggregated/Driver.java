@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -75,8 +63,8 @@ public class Driver {
                         RuntimeException.class)
                 .withBaseClass(Serializable.class)
                 .withAccessModifier("private") //if write new, which access mod ?
-                .annotateConstructorWith("ClassLevelAnnotation")
-                .annotateParamsWith("PropertyLevelAnnotation")
+                .annotateConstructorWith("YourClassLevelAnnotation")
+                .annotateParamsWith("YourPropertyLevelAnnotation")
                 .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package ctor's anntation
                 .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package field
                 .stripFinalClass(false)
@@ -129,8 +117,8 @@ public class Driver {
                         RuntimeException.class)
                 .withBaseClass(Serializable.class)
                 .withAccessModifier("private") //if write new, which access mod ?
-                .annotateConstructorWith("ClassLevelAnnotation")
-                .annotateParamsWith("ParamLevelAnnotation")
+                .annotateConstructorWith("YourClassLevelAnnotation")
+                .annotateParamsWith("YourPropertyLevelAnnotation")
 //                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package ctor's anntation
 //                .addAnnotationPackage("com.fasterxml.jackson.annotation") //-> package field
                 .addAnnotationPackage("com.module.to.custom.class.annotation") //-> package ctor's anntation
@@ -145,3 +133,15 @@ public class Driver {
                 .execute();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
