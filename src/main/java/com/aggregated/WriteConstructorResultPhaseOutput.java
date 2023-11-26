@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.Objects;
@@ -58,3 +44,17 @@ public class WriteConstructorResultPhaseOutput extends ChainedOutput {
     return Objects.hash(toReturn);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

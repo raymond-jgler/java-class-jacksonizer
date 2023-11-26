@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.Objects;
@@ -43,3 +29,17 @@ public class StringBasedInputReceiver extends InputReceiver {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

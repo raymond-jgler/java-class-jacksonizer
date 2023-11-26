@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.*;
@@ -129,7 +115,7 @@ public class RawClientRuleInput {
     }
     Map<String, String> result = new HashMap<>();
     for (SerializationMap.FilterRules filterRule : serMap.getFilterRules()) {
-       result.put(filterRule.getScope().getStringForm(), filterRule.generateRule(true));
+      result.put(filterRule.getScope().getStringForm(), filterRule.generateRule(true));
     }
     return result;
   }
@@ -453,13 +439,13 @@ public class RawClientRuleInput {
         return containsStrings;
       }
       public String generateRule(boolean isPartial) {
-          StringBuilder generated = new StringBuilder();
-          generated
-                  .append(isPartial ? "" :  this.scope.getStringForm() + ",")
-                  .append(CONTAIN_CONNECTIVE)
-                  .append(",")
-                  .append(containsStrings);
-          return generated.toString();
+        StringBuilder generated = new StringBuilder();
+        generated
+                .append(isPartial ? "" :  this.scope.getStringForm() + ",")
+                .append(CONTAIN_CONNECTIVE)
+                .append(",")
+                .append(containsStrings);
+        return generated.toString();
       }
 
       @Override
@@ -488,3 +474,17 @@ public class RawClientRuleInput {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

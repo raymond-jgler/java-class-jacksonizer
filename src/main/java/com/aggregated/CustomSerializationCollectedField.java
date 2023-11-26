@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.ArrayList;
@@ -74,3 +60,17 @@ class CustomSerializationCollectedField implements Cloneable {
         return Objects.hash(getSerializableFields(), getCustomRequiredFields());
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

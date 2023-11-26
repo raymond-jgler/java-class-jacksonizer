@@ -1,5 +1,3 @@
-
-
 package com.aggregated;
 
 import java.util.Objects;
@@ -13,3 +11,5 @@ public class FileBasedInputReceiver extends InputReceiver {
         return null; //TODO
     }
 }
+
+

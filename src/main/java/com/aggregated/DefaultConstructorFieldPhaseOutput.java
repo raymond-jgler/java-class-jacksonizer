@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -25,9 +11,9 @@ import java.util.Objects;
 public class DefaultConstructorFieldPhaseOutput extends ChainedOutput {
     private Map<Field, String>                 fieldToDefaultValue;
     private DefaultConstructorFieldPhaseOutput toReturn;
-    
-	@JsonCreator
-	public DefaultConstructorFieldPhaseOutput(@JsonProperty("fieldToDefaultValue") Map<Field, String> fieldToDefaultValue) {
+
+    @JsonCreator
+    public DefaultConstructorFieldPhaseOutput(@JsonProperty("fieldToDefaultValue") Map<Field, String> fieldToDefaultValue) {
 
         this.fieldToDefaultValue = fieldToDefaultValue;
         toReturn = this;
@@ -71,18 +57,32 @@ public class DefaultConstructorFieldPhaseOutput extends ChainedOutput {
                 '}';
     }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof DefaultConstructorFieldPhaseOutput)) return false;
-    DefaultConstructorFieldPhaseOutput that = (DefaultConstructorFieldPhaseOutput) o;
-    return Objects.equals(getFieldToDefaultValue(), that.getFieldToDefaultValue()) && Objects.equals(
-        toReturn,
-        that.toReturn);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultConstructorFieldPhaseOutput)) return false;
+        DefaultConstructorFieldPhaseOutput that = (DefaultConstructorFieldPhaseOutput) o;
+        return Objects.equals(getFieldToDefaultValue(), that.getFieldToDefaultValue()) && Objects.equals(
+                toReturn,
+                that.toReturn);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getFieldToDefaultValue(), toReturn);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFieldToDefaultValue(), toReturn);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

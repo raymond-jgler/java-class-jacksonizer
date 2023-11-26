@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 
@@ -58,8 +44,8 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
   @Override
   public String toString() {
     return "BuildConstructorPhaseOutput{" +
-           "completeModifiedContent='" + completeModifiedContent + '\'' +
-           '}';
+            "completeModifiedContent='" + completeModifiedContent + '\'' +
+            '}';
   }
 
   @Override
@@ -68,8 +54,8 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
     if (!(o instanceof BuildConstructorPhaseOutput)) return false;
     BuildConstructorPhaseOutput that = (BuildConstructorPhaseOutput) o;
     return Objects.equals(completeModifiedContent, that.completeModifiedContent) && Objects.equals(
-        toReturn,
-        that.toReturn);
+            toReturn,
+            that.toReturn);
   }
 
   @Override
@@ -82,3 +68,17 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
     return super.clone();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

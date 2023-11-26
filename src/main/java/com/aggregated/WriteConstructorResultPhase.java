@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.io.IOException;
@@ -43,3 +29,17 @@ public class WriteConstructorResultPhase extends BaseConstructorPhaseAlgorithm {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

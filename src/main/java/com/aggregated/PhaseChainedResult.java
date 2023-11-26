@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 public interface PhaseChainedResult extends Cloneable {
@@ -19,3 +5,17 @@ public interface PhaseChainedResult extends Cloneable {
     ChainedOutput getValues();
     Object getRawValues();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
