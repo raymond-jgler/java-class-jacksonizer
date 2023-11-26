@@ -1,8 +1,5 @@
 # Welcome to Java Class Annotatable Constructor Templater !
 
-# THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
-PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
-
 ## Overview:
 
 _ This method will eventually annotate contructor (existing or write new) and its parameters(s) using client's annotation inputs.
