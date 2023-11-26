@@ -1,6 +1,9 @@
 package com.aggregated.inline_tests.intricate_tests.new_ctor_test.hierarchical_test;
 
-import com.aggregated.inline_tests.intricate_tests.new_ctor_test.fuzzy_class.*;
+import com.aggregated.inline_tests.intricate_tests.new_ctor_test.fuzzy_class.DummyObject01;
+import com.aggregated.inline_tests.intricate_tests.new_ctor_test.fuzzy_class.DummyObject02;
+import com.aggregated.inline_tests.intricate_tests.new_ctor_test.fuzzy_class.DummyObject;
+import com.aggregated.inline_tests.intricate_tests.new_ctor_test.fuzzy_class.HelloIImAnotherDummy;
 
 import java.util.Collection;
 import java.util.Map;

@@ -117,10 +117,17 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       String fieldType;
       String fieldName;
-      if (each.contains("<") || each.contains(">")) {
-        final int ending = StringUtils.lastIndexOf(each, '>', each.length() - 1, 1, Boolean.TRUE);
-        fieldType = each.substring(0, ending + 1);
-        fieldName = each.substring(ending + 1, each.length());
+      if (StringUtils.containsAny(each, "<", ">", ".")) {
+        int closeBrctEnding = StringUtils.lastIndexOf(each, '>', each.length() - 1, 1, Boolean.TRUE);
+        int dotEnding = StringUtils.lastIndexOf(each, '.', each.length() - 1, 1, Boolean.TRUE);
+        int finalEnding = -1;
+        if (Math.min(dotEnding, closeBrctEnding) == -1) {
+          finalEnding = Math.max(dotEnding, closeBrctEnding);
+        } else {
+          finalEnding = Math.min(dotEnding, closeBrctEnding);
+        }
+        fieldType = each.substring(0, finalEnding + 1);
+        fieldName = each.substring(finalEnding + 1, each.length());
       } else {
         String[] splitted = each.split(SPACE);
         fieldType = splitted[0];

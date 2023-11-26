@@ -157,6 +157,9 @@ public class StringUtils {
   }
 
   public static int lastIndexOf(String inp, char x, Integer backwardFrom, Integer ordinalIndex, Boolean skipBreaker) {
+    if (!inp.contains(String.valueOf(x))) {
+      return -1;
+    }
     if (Objects.isNull(skipBreaker)) {
       skipBreaker = true;
     }

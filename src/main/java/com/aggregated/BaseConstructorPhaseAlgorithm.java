@@ -247,12 +247,24 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   protected static int getEndingImportRegionIndex() {
-    return StringUtils.lastIndexOf(
+    int commentIdx = StringUtils.lastIndexOf(
+            CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+            '/',
+            CLASS_KEYWORD_N_NAME_IDX - 1,
+            1,
+            Boolean.FALSE);
+
+    int seeminglyLastImport = StringUtils.lastIndexOf(
             CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
             SEMICOLON,
             CLASS_KEYWORD_N_NAME_IDX - 1,
             1,
             Boolean.FALSE);
+
+    if (Math.min(commentIdx, seeminglyLastImport) == -1) {
+      return Math.max(commentIdx, seeminglyLastImport);
+    }
+    return Math.min(commentIdx, seeminglyLastImport);
   }
   /**
    * Stateful
