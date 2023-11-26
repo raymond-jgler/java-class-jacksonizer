@@ -779,7 +779,21 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       if (fieldType.contains(DOT)) {
         fieldType = StringUtils.bulkCascadeRemoveSuffixedString(fieldType, DOT.charAt(0), '<', ',', '>');
-        fieldType = StringUtils.resolveReplaces(fieldType, "$", ".");
+        fieldType = StringUtils.resolveReplaces(fieldType, "$", DOT);
+      }
+      /**
+       * Hotfix for:
+       * https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/issues/8
+       * Verify If Need To Add / Ignore Java Static Import #8
+       */
+      if (fieldType.contains(DOT)) {
+        final String importRegion = getImportRegion();
+        if (StringUtils.isEmpty(importRegion)) {
+          return fieldType;
+        }
+        if (importRegion.contains(fieldType)) {
+          fieldType = fieldType.substring(fieldType.indexOf(DOT) + 1, fieldType.length());
+        }
       }
     }
     return fieldType;
