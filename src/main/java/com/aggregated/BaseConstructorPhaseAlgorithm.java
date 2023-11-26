@@ -266,6 +266,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
     return Math.min(commentIdx, seeminglyLastImport);
   }
+ 
   /**
    * Stateful
    * @return

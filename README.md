@@ -1,4 +1,4 @@
-# java-class-decorator
+# Welcome to Java Class Annotatable Constructor Templater !
 
 # THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
 PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
@@ -77,11 +77,11 @@ public abstract class BaseClass<T> {
     protected boolean y;
     protected Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary;
 
-    @YourClassLevelAnnotation
-    protected BaseClass(@YourPropertyLevelAnnotation("x") Integer x,
-                        @YourPropertyLevelAnnotation("text") String text,
-                        @YourPropertyLevelAnnotation("y") boolean y,
-                        @YourPropertyLevelAnnotation("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary) {
+    @YourConstructorLevelAnnotation
+    protected BaseClass(@YourParamLevelAnnotation("x") Integer x,
+                        @YourParamLevelAnnotation("text") String text,
+                        @YourParamLevelAnnotation("y") boolean y,
+                        @YourParamLevelAnnotation("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary) {
         this.x = x;
         this.text = text;
         this.y = y;
@@ -98,14 +98,14 @@ public class Child03 extends Child02 {
     private Integer myField01;
     private String myField02;
 
-    @YourClassLevelAnnotation
-    private Child03(@YourPropertyLevelAnnotation("x") Integer x,
-                    @YourPropertyLevelAnnotation("text") String text,
-                    @YourPropertyLevelAnnotation("y") boolean y,
-                    @YourPropertyLevelAnnotation("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary,
-                    @YourPropertyLevelAnnotation("abc") int abc,
-                    @YourPropertyLevelAnnotation("myField01") Integer myField01,
-                    @YourPropertyLevelAnnotation("myField02") String myField02) {
+    @YourConstructorLevelAnnotation
+    private Child03(@YourParamLevelAnnotation("x") Integer x,
+                    @YourParamLevelAnnotation("text") String text,
+                    @YourParamLevelAnnotation("y") boolean y,
+                    @YourParamLevelAnnotation("amIScary") Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary,
+                    @YourParamLevelAnnotation("abc") int abc,
+                    @YourParamLevelAnnotation("myField01") Integer myField01,
+                    @YourParamLevelAnnotation("myField02") String myField02) {
         super(x, text, y, amIScary, abc);
         this.myField01 = myField01;
         this.myField02 = myField02;
