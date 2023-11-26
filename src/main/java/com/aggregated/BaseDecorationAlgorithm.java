@@ -22,14 +22,7 @@ public abstract class BaseDecorationAlgorithm implements DecorationAlgorithm {
   protected            int                                 filesProcessed;
   protected            int                                 fileCount;
   @JsonCreator
-  protected BaseDecorationAlgorithm(@JsonProperty("rawInput") RawClientRuleInput rawInput,
-                                    @JsonProperty("fileCount") int fileCount,
-                                    @JsonProperty("algorithmPhases") List algorithmPhases,
-                                    @JsonProperty("inputReceiver") InputReceiver inputReceiver,
-                                    @JsonProperty("filesProcessed") int filesProcessed,
-                                    @JsonProperty("rule") ExecutionRule rule,
-                                    @JsonProperty("mode") DecorationStrategyMode mode) {
-
+  protected BaseDecorationAlgorithm(RawClientRuleInput rawInput, int fileCount, List algorithmPhases, InputReceiver inputReceiver, int filesProcessed, ExecutionRule rule,DecorationStrategyMode mode) {
 
     this.rawInput = rawInput;
     this.fileCount = fileCount;

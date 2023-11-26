@@ -198,6 +198,9 @@ public class StringUtils {
   }
 
   public static List<String> makeNonAlphaStringsFrom(String inp) {
+    if (StringUtils.isEmpty(inp)) {
+      return new ArrayList<>();
+    }
     StringBuilder sb  = new StringBuilder();
     List<String>  res = new ArrayList<>();
     for (Character c : inp.toCharArray()) {

@@ -1,17 +1,21 @@
 package com.aggregated;
 
+import com.ibm.nws.ejs.ras.Tr;
+
 import java.util.List;
 import java.util.Objects;
 /**
  * A Trie's implementation
- * works only on lower-cased letters
+ * works only on lower-cased letters and digits.
  */
 public class Trie {
     private static final Trie INSTANCE = new Trie();
     /**
-     * 26 letters
+     * 26 letters : a - z
+     * 10 digits : 0 - 9
      */
-    private static final int SIZE = 26;
+    private static final int SIZE = 36;
+    private static final int DIGIT_REBOUNCE = 22;
     private TrieNode root;
     private Trie() {
         root = new TrieNode();
@@ -19,32 +23,44 @@ public class Trie {
     public static Trie current() {
         return INSTANCE;
     }
-
+    public void reset() {
+        root = new TrieNode();
+    }
     public void addWord(List<String> stringList) {
         for (String each : stringList) {
             addWord(each.toLowerCase());
         }
     }
     public void addWord(String inp) {
-        inp = inp.toLowerCase();
-        if (inp.contains(" ")) {
-            addWord(StringUtils.makeNonAlphaStringsFrom(inp));
-            return;
-        }
-        TrieNode current = root;
-        for (Character each : inp.toCharArray()) {
-            final int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
-            if (Objects.isNull(current.trieNodes[idx])) {
-                current.trieNodes[idx] = new TrieNode();
+        try {
+            inp = inp.toLowerCase();
+            if (inp.contains(" ")) {
+                addWord(StringUtils.makeNonAlphaStringsFrom(inp));
+                return;
             }
-            current = current.trieNodes[idx];
+            TrieNode current = root;
+            for (Character each : inp.toCharArray()) {
+                int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
+                if (idx >= 26) {
+                    idx -= DIGIT_REBOUNCE;
+                }
+                if (Objects.isNull(current.trieNodes[idx])) {
+                    current.trieNodes[idx] = new TrieNode();
+                }
+                current = current.trieNodes[idx];
+            }
+            current.count++;
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
-        current.count++;
     }
     public int searchWord(String inp) {
         TrieNode current = root;
         for (Character each : inp.toCharArray()) {
-            final int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
+            int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
+            if (idx >= 26) {
+                idx -= DIGIT_REBOUNCE;
+            }
             if (Objects.isNull(current.trieNodes[idx])) {
                 break;
             }
