@@ -13,8 +13,8 @@ public abstract class BaseClass<T> {
     protected String text;
     protected boolean y;
     protected Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary;
+    protected Map<String, Map<String, Map<SortedSet<Integer>, DummyObject02>>> amIScary02;
     private DummyObject01 dummyObject01;
-    private DummyObject02 dummyObject02;
     private DummyObject dummyObject;
     private Collection<DummyObject> listDummy;
 }
