@@ -1,4 +1,4 @@
-# java-class-decorator
+# Welcome to Java Class Annotatable Constructor Templater !
 
 # THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
 PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
