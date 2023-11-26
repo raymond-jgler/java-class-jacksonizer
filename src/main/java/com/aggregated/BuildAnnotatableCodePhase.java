@@ -2,8 +2,10 @@ package com.aggregated;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+
 import java.lang.reflect.Modifier;
 import java.util.*;
+
 public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   private final String CONSTRUCTOR_ANNOTATION;
   private final String FIELD_ANNOTATION;
@@ -126,8 +128,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       String evalFullPath = "";
       for (String eachRawType : new HashSet<>(StringUtils.makeNonAlphaStringsFrom(fieldType))) {
-        if (!shouldSkipImport(fieldType)) {
-//          evalFullPath = getFullPathFor(eachRawType);
+        if (!StringUtils.isEmpty(fieldType) && !StringUtils.isAllLowerCase(fieldType) && !shouldSkipImport(fieldType)) {
           evalFullPath = getExactFullPathFor(eachRawType);
         }
         if (StringUtils.isEmpty(eachRawType)) {
@@ -146,7 +147,6 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
             if (shouldSkipImport(eachType)) {
               continue;
             }
-//            final String fullImportString = getFullPathFor(eachType));
             final String fullImportString = getExactFullPathFor(eachType);
             if (StringUtils.isEmpty(fullImportString)) {
               continue;
@@ -1092,6 +1092,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       final String zone = getImportRegion();
       for (String line : zone.split(String.valueOf(SEMICOLON))) {
+        if (!line.contains(className)) {
+          continue;
+        }
         final int res = TrieRepository.go()
                 .resetTrie()
                 .with(line)
