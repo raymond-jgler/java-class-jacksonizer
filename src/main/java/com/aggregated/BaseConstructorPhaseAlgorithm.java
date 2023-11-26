@@ -52,7 +52,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   /**
    * If continuously fail to find.
    */
-  protected static final int MAX_FAILED_ATTEMPTS = 6;
+  protected static final int MAX_FAILED_ATTEMPTS = 100;
   protected static boolean IS_DEFAULT_CONSTRUCTOR;
   protected static final String ENDING_JAVA_EXT = ".java";
   protected static final String CLASS_KEYWORD = "class";
