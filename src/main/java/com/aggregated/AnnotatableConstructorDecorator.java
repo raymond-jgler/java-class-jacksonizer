@@ -47,7 +47,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
   public static void enqueueWith(Class clz) {
     if (Objects.isNull(clz) || lineUps.contains(clz) || visited.contains(cleanseClassPath(clz.getName()))
-            || StringUtils.containsAny(clz.getName(), "org", "java")) {
+            || StringUtils.containsAny(clz.getName(), "org", "java", "java.util")) {
       return;
     }
     lineUps.offer(clz);

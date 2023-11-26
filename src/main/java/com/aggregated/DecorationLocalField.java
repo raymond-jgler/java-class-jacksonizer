@@ -1,19 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,6 +13,7 @@ public class DecorationLocalField {
   private final String typeFullName;
   private final String typeShortName;
   private final Boolean isFinal;
+  private List<String> fullImportStringList;
   private DecorationLocalField(String fieldName, String genericTypeName, String typeFullName, String typeShortName, Boolean isFinal) {
     this.fieldName       = fieldName;
     this.genericTypeName = genericTypeName;
@@ -39,10 +28,27 @@ public class DecorationLocalField {
   }
 
   private static String fishyStripFirstDot(String fieldName) {
+    if (StringUtils.isEmpty(fieldName)) {
+      return fieldName;
+    }
     if (fieldName.charAt(0) == '.') {
       fieldName = fieldName.substring(1, fieldName.length());
     }
     return fieldName;
+  }
+
+  public void addImportString(String importString) {
+    if (Objects.isNull(this.fullImportStringList)) {
+      this.fullImportStringList = new ArrayList<>();
+    }
+    if (StringUtils.isEmpty(importString) || this.fullImportStringList.contains(importString)) {
+      return;
+    }
+    this.fullImportStringList.add(importString);
+  }
+
+  public List<String> getFullImportStringList() {
+    return fullImportStringList;
   }
 
   public Boolean getFinal() {
@@ -89,4 +95,18 @@ public class DecorationLocalField {
     return super.toString();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -125,22 +125,10 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         fieldName = splitted[1];
       }
       String evalFullPath = "";
-      for (String eachRawType : StringUtils.makeNonAlphaStringsFrom(fieldType)) {
-        if (!StringUtils.containsAny(fieldType,
-                "java.lang",
-                "boolean",
-                "int",
-                "char",
-                "double",
-                "float",
-                "long",
-                "short",
-                "byte",
-                "String",
-                "Boolean",
-                "Integer",
-                "Character")) {
-          evalFullPath = getFullPathFor(eachRawType);
+      for (String eachRawType : new HashSet<>(StringUtils.makeNonAlphaStringsFrom(fieldType))) {
+        if (!shouldSkipImport(fieldType)) {
+//          evalFullPath = getFullPathFor(eachRawType);
+          evalFullPath = getExactFullPathFor(eachRawType);
         }
         if (StringUtils.isEmpty(eachRawType)) {
           evalFullPath = fieldType;
@@ -148,25 +136,38 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
           if (!evalFullPath.contains(fieldType)) {
             evalFullPath += DOT + fieldType;
           }
-          /**
-           * if bfs param is true
-           * Enqueue this class,
-           * for the full bfs flow
-           */
-          if (rawInput.getBfsParams() && StringUtils.isNotEmpty(evalFullPath)) {
-            try {
-              if (!evalFullPath.contains(DOT)) {
-                evalFullPath = getFullPathFor(evalFullPath);
-              }
-              if (Objects.nonNull(evalFullPath) && Objects.nonNull(ReflectionUtils.getClass(evalFullPath))) {
-                AnnotatableConstructorDecorator.enqueueWith(ReflectionUtils.getClass(evalFullPath));
-              }
-            } catch (Throwable t) {
-              //chill
-            }
-          }
         }
         DecorationLocalField candidate = DecorationLocalField.createFrom(findExactSerializableFieldString(fieldName), evalFullPath, evalFullPath, eachRawType, Boolean.valueOf("null"));
+        /**
+         * Eval each field type to search for import.
+         */
+        if (Objects.nonNull(candidate) && Objects.nonNull(candidate.getGenericTypeName())) {
+          for (String eachType : new HashSet<>(StringUtils.makeNonAlphaStringsFrom(candidate.getGenericTypeName()))) {
+            if (shouldSkipImport(eachType)) {
+              continue;
+            }
+//            final String fullImportString = getFullPathFor(eachType));
+            final String fullImportString = getExactFullPathFor(eachType);
+            if (StringUtils.isEmpty(fullImportString)) {
+              continue;
+            }
+            /**
+             * if bfs param is true
+             * Enqueue this class,
+             * for the full bfs flow
+             */
+            if (rawInput.getBfsParams() && StringUtils.isNotEmpty(fullImportString)) {
+              try {
+                if (Objects.nonNull(fullImportString)) {
+                  AnnotatableConstructorDecorator.enqueueWith(ReflectionUtils.getClass(fullImportString));
+                }
+              } catch (Throwable t) {
+                //chill
+              }
+            }
+            candidate.addImportString(fullImportString);
+          }
+        }
         if (res.contains(candidate)) {
           continue;
         }
@@ -249,43 +250,59 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
        * to add as imports at the end of this phase.
        */
       if (CollectionUtils.isNotEmpty(parentFields)) {
-        final String               importRegionSoFar = getImportRegion();
-        List<DecorationLocalField> merged            = ReflectionUtils.merge(serializableFields, parentFields);
-        for (DecorationLocalField field : merged) {
-          List<String> splittedGeneric = buildImportLineListFromGenericInfo(field.getGenericTypeName(), '<', '>');
-          for (String each : splittedGeneric) {
-            if (StringUtils.isEmpty(each) || missingImportClassString.contains(each) || importRegionSoFar.contains(each) || StringUtils.containsAny(
-                    each,
-                    "java.lang",
-                    "boolean",
-                    "int",
-                    "char",
-                    "double",
-                    "float",
-                    "long",
-                    "short",
-                    "byte",
-                    "String",
-                    "Integer",
-                    "Boolean",
-                    "Character")) {
+//        final String               importRegionSoFar = getImportRegion();
+//        List<DecorationLocalField> merged            = ReflectionUtils.merge(serializableFields, parentFields);
+//        for (DecorationLocalField field : merged) {
+//          List<String> splittedGeneric = buildImportLineListFromGenericInfo(field.getGenericTypeName(), '<', '>');
+//          for (String each : splittedGeneric) {
+//            if (StringUtils.isEmpty(each) || missingImportClassString.contains(each) || importRegionSoFar.contains(each) || StringUtils.containsAny(
+//                    each,
+//                    "java.lang",
+//                    "boolean",
+//                    "int",
+//                    "char",
+//                    "double",
+//                    "float",
+//                    "long",
+//                    "short",
+//                    "byte",
+//                    "String",
+//                    "Integer",
+//                    "Boolean",
+//                    "Character")) {
+//              continue;
+//            }
+//            String importString = each;
+//            if (!each.contains(DOT)) {
+//              importString = StringUtils.stripDoubleEndedNonAlphaNumeric(getFullPathForClass(each, Boolean.TRUE));
+//            }
+//            if (StringUtils.isAllLowerCase(importString)) {
+//              importString += DOT + each;
+//            }
+//            if (StringUtils.isEmpty(importString) || StringUtils.isAllLowerCase(importString) || importString.contains(
+//                    CLAZZ.getPackage().getName()) || missingImportClassString.contains(importString)) {
+//              continue;
+//            }
+//            missingImportClassString.add(StringUtils.correctifyImportString(importString, '.'));
+//          }
+//        }
+        for (DecorationLocalField each : parentFields) {
+          if (Objects.nonNull(each.getFullImportStringList())) {
+            for (String eachImport : each.getFullImportStringList()) {
+              if (missingImportClassString.contains(eachImport)) {
+                continue;
+              }
+              missingImportClassString.add(eachImport);
+            }
+          } else {
+            if (missingImportClassString.contains(each.getGenericTypeName())) {
               continue;
             }
-            String importString = each;
-            if (!each.contains(DOT)) {
-              importString = StringUtils.stripDoubleEndedNonAlphaNumeric(getFullPathForClass(each, Boolean.TRUE));
-            }
-            if (StringUtils.isAllLowerCase(importString)) {
-              importString += DOT + each;
-            }
-            if (StringUtils.isEmpty(importString) || StringUtils.isAllLowerCase(importString) || importString.contains(
-                    CLAZZ.getPackage().getName()) || missingImportClassString.contains(importString)) {
-              continue;
-            }
-            missingImportClassString.add(StringUtils.correctifyImportString(importString, '.'));
+            missingImportClassString.add(each.getGenericTypeName());
           }
         }
       }
+
       Collections.sort(missingImportClassString);
     }
     /**
@@ -892,8 +909,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         try {
           String className = curr.split(SPACE)[0];
           for (String possibleClassName : StringUtils.makeNonAlphaStringsFrom(className)) {
-            Class clazz =
-                    ReflectionUtils.getClass(StringUtils.stripDoubleEndedNonAlphaNumeric(getFullPathFor(possibleClassName)));
+//            Class clazz = ReflectionUtils.getClass(StringUtils.stripDoubleEndedNonAlphaNumeric(getFullPathFor(possibleClassName)));
+            Class clazz = ReflectionUtils.getClass(StringUtils.stripDoubleEndedNonAlphaNumeric(getExactFullPathFor(possibleClassName)));
             if (ReflectionUtils.isForbidden(clazz, rawInput)) {
               continue;
             }
@@ -1048,21 +1065,46 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
    * @return
    */
   private String getFullPathFor(String className) {
-    if (StringUtils.isNotEmpty(getFullPathForClass(className))) {
+    try {
+      if (StringUtils.isNotEmpty(getFullPathForClass(className))) {
+        return getFullPathForClass(className);
+      }
+      final String zone = getImportRegion();
+      int endIdx = zone.indexOf(SEMICOLON, zone.indexOf(className));
+      if (endIdx == -1) {
+        return getFullPathForClass(className);
+      }
+      int startIdx = StringUtils.lastIndexOf(zone, SPACE.charAt(0), endIdx, 1, null);
+      if (startIdx == -1) {
+        return getFullPathForClass(className);
+      }
+      final String path = zone.substring(startIdx, endIdx);
+      addPathToClass(className, path);
       return getFullPathForClass(className);
+    } catch (Throwable t) {
+      return "";
     }
-    final String zone = getImportRegion();
-    int endIdx = zone.indexOf(SEMICOLON, zone.indexOf(className));
-    if (endIdx == -1) {
+  }
+  private String getExactFullPathFor(String className) {
+    try {
+      if (StringUtils.isNotEmpty(getFullPathForClass(className))) {
+        return getFullPathForClass(className);
+      }
+      final String zone = getImportRegion();
+      for (String line : zone.split(String.valueOf(SEMICOLON))) {
+        final int res = TrieRepository.go()
+                .resetTrie()
+                .with(line)
+                .search(className);
+        if (res >= 1) {
+          addPathToClass(className, StringUtils.stripDoubleEndedNonAlphaNumeric(line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length() + 1)));
+          break;
+        }
+      }
       return getFullPathForClass(className);
+    } catch (Throwable t) {
+      return "";
     }
-    int startIdx = StringUtils.lastIndexOf(zone, SPACE.charAt(0), endIdx, 1, null);
-    if (startIdx == -1) {
-      return getFullPathForClass(className);
-    }
-    final String path = zone.substring(startIdx, endIdx);
-    addPathToClass(className, path);
-    return getFullPathForClass(className);
   }
 
   /**
