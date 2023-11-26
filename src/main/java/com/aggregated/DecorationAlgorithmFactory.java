@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.*;
@@ -23,7 +9,7 @@ public class DecorationAlgorithmFactory {
             DecorationStrategyMode mode = entry.getKey();
             ExecutionRule rule = entry.getValue();
             if (Objects.nonNull(mode) && Objects.nonNull(rule)) {
-               algorithms.add(fromStrategyMode(inputReceiver, mode, rule, rawInput));
+                algorithms.add(fromStrategyMode(inputReceiver, mode, rule, rawInput));
             }
         }
         return Collections.unmodifiableList(algorithms);
@@ -37,3 +23,17 @@ public class DecorationAlgorithmFactory {
         return null;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

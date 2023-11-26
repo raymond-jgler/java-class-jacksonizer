@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 public enum DecorationStrategyMode {
@@ -44,4 +30,18 @@ public enum DecorationStrategyMode {
     return super.toString();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

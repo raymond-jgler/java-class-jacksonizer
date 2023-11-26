@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -243,7 +229,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   protected static void reprocessVitals() {
     try {
       CLASS_KEYWORD_N_NAME_IDX =
-          forceFindExactPrefixedString(0, CLASS_CONTENT, CLAZZ.getSimpleName(), CLASS_KEYWORD, 1, OPEN_BRACKET);
+              forceFindExactPrefixedString(0, CLASS_CONTENT, CLAZZ.getSimpleName(), CLASS_KEYWORD, 1, OPEN_BRACKET);
       WRITABLE_CTOR_IDX = findStartForNewCtor(CLASS_KEYWORD_N_NAME_IDX, CLASS_CONTENT);
       makeFieldRegion();
       internCtorIdxes = buildExistingCtorList();
@@ -262,17 +248,17 @@ public abstract class BaseConstructorPhaseAlgorithm {
 
   protected static int getEndingImportRegionIndex() {
     return Math.max(
-        forceFindPrefixedString(Optional.of(0),
-                                IMPORT_KEYWORD,
-                                COM_KEYWORD,
-                                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                                Optional.of(-1)),
+            forceFindPrefixedString(Optional.of(0),
+                    IMPORT_KEYWORD,
+                    COM_KEYWORD,
+                    CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+                    Optional.of(-1)),
 
-        forceFindPrefixedString(Optional.of(0),
-                                IMPORT_KEYWORD,
-                                "",
-                                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                                Optional.of(-1)));
+            forceFindPrefixedString(Optional.of(0),
+                    IMPORT_KEYWORD,
+                    "",
+                    CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+                    Optional.of(-1)));
   }
   /**
    * Stateful
@@ -292,7 +278,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
       TOP_LEVEL_CLAZZ = given;
     }
     slashedFullName =
-        InputReceiver.BASE_SOURCE + TOP_LEVEL_CLAZZ.getPackage().getName() + "." + TOP_LEVEL_CLAZZ.getSimpleName();
+            InputReceiver.BASE_SOURCE + TOP_LEVEL_CLAZZ.getPackage().getName() + "." + TOP_LEVEL_CLAZZ.getSimpleName();
     slashedFullName = StringUtils.resolveReplaces(slashedFullName, ".", "\\\\");
     if (!slashedFullName.endsWith(ENDING_JAVA_EXT)) {
       slashedFullName += ENDING_JAVA_EXT;
@@ -310,7 +296,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
 
   protected static boolean isValidCtor(int idx) {
     String checkScope = CLASS_CONTENT.substring(CLASS_CONTENT.indexOf(CLAZZ.getSimpleName(), idx),
-                                                CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
+            CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
     checkScope = StringUtils.stripDoubleEndedNonAlphaNumeric(checkScope).substring(CLAZZ.getSimpleName().length());
     for (int i = 0, n = checkScope.length(); i < n; i++) {
       Character c = checkScope.charAt(i);
@@ -342,23 +328,23 @@ public abstract class BaseConstructorPhaseAlgorithm {
         for (int j = 0, m = declaredCtors; j < m; j++) {
           int internIdx = -1;
           internIdx = forceFindExactPrefixedString(start,
-                                                   CLASS_CONTENT,
-                                                   CLAZZ.getSimpleName(),
-                                                   PREFIXES[i],
-                                                   1,
-                                                   OPEN_PAREN);
+                  CLASS_CONTENT,
+                  CLAZZ.getSimpleName(),
+                  PREFIXES[i],
+                  1,
+                  OPEN_PAREN);
 
           if (internIdx == -1) {
             continue;
           }
           String seeminglyAccessMod =  StringUtils.findPrependablePieceFrom(
-              CLASS_CONTENT,
-              internIdx,
-              '\r',
-              false);
+                  CLASS_CONTENT,
+                  internIdx,
+                  '\r',
+                  false);
 
           if (existingCtors.contains(internIdx) || !isValidCtor(internIdx)
-              || seeminglyAccessMod.contains(NEW_KEYWORD) || (PREFIXES[i].isEmpty() && isAnyAnagramFoundIn(PREFIXES, seeminglyAccessMod))) {
+                  || seeminglyAccessMod.contains(NEW_KEYWORD) || (PREFIXES[i].isEmpty() && isAnyAnagramFoundIn(PREFIXES, seeminglyAccessMod))) {
             start = internIdx + 1;
             continue;
           }
@@ -369,7 +355,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
             int openParenIdx  = CLASS_CONTENT.indexOf(OPEN_PAREN, internIdx);
             int closeParenIdx = CLASS_CONTENT.indexOf(CLOSE_PAREN, openParenIdx);
             String declaredParm = CLASS_CONTENT
-                .substring(openParenIdx + 1, closeParenIdx);
+                    .substring(openParenIdx + 1, closeParenIdx);
             if (StringUtils.isEmpty(declaredParm)) {
               hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
             }
@@ -514,8 +500,8 @@ public abstract class BaseConstructorPhaseAlgorithm {
         break;
       }
       extractedRange =
-          StringUtils.stripDoubleEndedNonAlphaNumeric(
-              extractedRange.substring(extractedRange.indexOf(prefix) + prefix.length() + 1, extractedRange.length()));
+              StringUtils.stripDoubleEndedNonAlphaNumeric(
+                      extractedRange.substring(extractedRange.indexOf(prefix) + prefix.length() + 1, extractedRange.length()));
 
       if (extractedRange.contains(SPACE) || extractedRange.contains("<")) {
         extractedRange = extractedRange.split(SPACE)[0];
@@ -552,7 +538,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     final List<String> skippedClasses = rawInput.getSkipClasses();
     for (String eachSkipped : skippedClasses) {
       if (StringUtils.containsAny(className, eachSkipped) || StringUtils.endsWithAny(className,
-                                                                                     eachSkipped)) {
+              eachSkipped)) {
         return true;
       }
     }
@@ -670,3 +656,17 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

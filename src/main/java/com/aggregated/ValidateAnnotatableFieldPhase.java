@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import org.slf4j.Logger;
@@ -35,7 +21,7 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
 
     String type = "";
     if (rawInput.isCustomSerialization()) {
-        type = rawInput.getCustomSerRequiredFieldType();
+      type = rawInput.getCustomSerRequiredFieldType();
     }
     buildList(type);
     AnnotatableConstructorFieldPhaseOutput result = new AnnotatableConstructorFieldPhaseOutput(collectedField);
@@ -137,3 +123,17 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
     return false;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
