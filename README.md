@@ -1,5 +1,10 @@
 # Welcome to Java Class Annotatable Constructor Templater !
 
+# To use/test right away :
+1. please clone the code and check out at **main**
+2. refer to [input.txt](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/resources/input.txt#L4)
+3. execute [InputEntry.java](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/java/com/aggregated/entry_point/InputEntry.java#L11)
+
 ## Overview:
 
 _ This method will eventually annotate contructor (existing or write new) and its parameters(s) using client's annotation inputs.
