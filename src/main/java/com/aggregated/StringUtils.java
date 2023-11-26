@@ -170,18 +170,22 @@ public class StringUtils {
     int matches    = 0;
     int shrinkingI = n;
     for (int i = n; i >= 0; i--) {
-      if (inp.charAt(i) == x) {
-        matches++;
-        if (ordinalIndex == -1) {
-          shrinkingI = i;
-          continue;
+      try {
+        if (inp.charAt(i) == x) {
+          matches++;
+          if (ordinalIndex == -1) {
+            shrinkingI = i;
+            continue;
+          }
+          if (matches == ordinalIndex) {
+            return i;
+          }
         }
-        if (matches == ordinalIndex) {
-          return i;
+        if ((skipBreaker) && (inp.charAt(i) == '\r' || inp.charAt(i) == '\n')) {
+          break;
         }
-      }
-      if ((skipBreaker) && (inp.charAt(i) == '\r' || inp.charAt(i) == '\n')) {
-        break;
+      } catch (Throwable t) {
+        i--;
       }
     }
     return shrinkingI;

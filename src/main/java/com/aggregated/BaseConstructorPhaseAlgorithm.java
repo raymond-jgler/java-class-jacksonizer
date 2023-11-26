@@ -52,7 +52,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   /**
    * If continuously fail to find.
    */
-  protected static final int MAX_FAILED_ATTEMPTS = 100;
+  protected static final int MAX_FAILED_ATTEMPTS = 3;
   protected static boolean IS_DEFAULT_CONSTRUCTOR;
   protected static final String ENDING_JAVA_EXT = ".java";
   protected static final String CLASS_KEYWORD = "class";
@@ -261,18 +261,12 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   protected static int getEndingImportRegionIndex() {
-    return Math.max(
-        forceFindPrefixedString(Optional.of(0),
-                                IMPORT_KEYWORD,
-                                COM_KEYWORD,
-                                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                                Optional.of(-1)),
-
-        forceFindPrefixedString(Optional.of(0),
-                                IMPORT_KEYWORD,
-                                "",
-                                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                                Optional.of(-1)));
+    return StringUtils.lastIndexOf(
+            CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+            SEMICOLON,
+            CLASS_KEYWORD_N_NAME_IDX - 1,
+            1,
+            Boolean.FALSE);
   }
   /**
    * Stateful
@@ -397,7 +391,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   public static boolean shouldSkipImport(String field) {
-    if (StringUtils.isEmpty(field)) {
+    if (StringUtils.isEmpty(field) || StringUtils.isAllLowerCase(field)) {
       return true;
     }
     return StringUtils.containsAny(field, "java.lang",
