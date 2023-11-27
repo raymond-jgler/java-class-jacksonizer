@@ -1,7 +1,9 @@
 # Welcome to Java Class Annotatable Constructor Templater !
 
-# THIS IS JUST AN EXTREMELY SIMPLE OVERVIEW OF THE TOOL.
-PLEASE DEBUG THE CODE IF YOU FEEL MORE CURIOUS
+# To use/test right away :
+1. please clone the code and check out at **main**
+2. refer to [input.txt](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/resources/input.txt#L4)
+3. execute [InputEntry.java](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/java/com/aggregated/entry_point/InputEntry.java#L11)
 
 ## Overview:
 
