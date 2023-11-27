@@ -34,12 +34,11 @@ public class Trie {
     public void addWord(String inp) {
         try {
             inp = inp.toLowerCase();
-            if (inp.contains(" ")) {
-                addWord(StringUtils.makeNonAlphaStringsFrom(inp));
-                return;
-            }
             TrieNode current = root;
             for (Character each : inp.toCharArray()) {
+                if (!Character.isLetterOrDigit(each)) {
+                    continue;
+                }
                 int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
                 if (idx >= 26) {
                     idx -= DIGIT_REBOUNCE;
@@ -57,6 +56,9 @@ public class Trie {
     public int searchWord(String inp) {
         TrieNode current = root;
         for (Character each : inp.toCharArray()) {
+            if (!Character.isLetterOrDigit(each)) {
+                continue;
+            }
             int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
             if (idx >= 26) {
                 idx -= DIGIT_REBOUNCE;

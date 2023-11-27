@@ -74,14 +74,14 @@ public class DecorationLocalField {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof DecorationLocalField)) return false;
-    DecorationLocalField field = (DecorationLocalField) o;
-    return Objects.equals(getFieldName(), field.getFieldName());
+    if (o == null || getClass() != o.getClass()) return false;
+    DecorationLocalField that = (DecorationLocalField) o;
+    return Objects.equals(fieldName, that.fieldName) && Objects.equals(genericTypeName, that.genericTypeName) && Objects.equals(typeFullName, that.typeFullName) && Objects.equals(typeShortName, that.typeShortName) && Objects.equals(isFinal, that.isFinal) && Objects.equals(fullImportStringList, that.fullImportStringList);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getFieldName());
+    return Objects.hash(fieldName, genericTypeName, typeFullName, typeShortName, isFinal, fullImportStringList);
   }
 
   /**

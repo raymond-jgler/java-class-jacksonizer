@@ -216,11 +216,17 @@ public class StringUtils {
         continue;
       }
       if (sb.length() > 0) {
+//        if (!res.contains(sb.toString())) {
+//          res.add(sb.toString());
+//        }
         res.add(sb.toString());
         sb.setLength(0);
       }
     }
     if (sb.length() > 0) {
+//      if (!res.contains(sb.toString())) {
+//        res.add(sb.toString());
+//      }
       res.add(sb.toString());
     }
     return res;

@@ -145,7 +145,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
             evalFullPath += DOT + fieldType;
           }
         }
-        DecorationLocalField candidate = DecorationLocalField.createFrom(findExactSerializableFieldString(fieldName), evalFullPath, evalFullPath, eachRawType, Boolean.valueOf("null"));
+//        DecorationLocalField candidate = DecorationLocalField.createFrom(findExactSerializableFieldString(fieldName), evalFullPath, evalFullPath, eachRawType, Boolean.valueOf("null"));
+        //TODO verify if need to use field's name instead of param's here when param list is preserved.
+        DecorationLocalField candidate = DecorationLocalField.createFrom(fieldName, evalFullPath, evalFullPath, eachRawType, Boolean.valueOf("null"));
         /**
          * Eval each field type to search for import.
          */
