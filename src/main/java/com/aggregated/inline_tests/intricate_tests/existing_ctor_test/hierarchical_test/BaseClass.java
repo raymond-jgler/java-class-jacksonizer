@@ -1,5 +1,6 @@
 package com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test;
 
+import com.aggregated.StringUtils;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject01;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject02;
@@ -19,11 +20,13 @@ public abstract class BaseClass<T> {
     private DummyObject dummyObject;
     private Collection<DummyObject> listDummy;
     private Map<String, HelloIImAnotherDummy> ok;
-
     protected BaseClass(){}
-    public BaseClass(Integer x, String text, boolean y, Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary, Map<String, Map<String, Map<SortedSet<Integer>, DummyObject02>>> amIScary02, DummyObject01 dummyObject01, DummyObject dummyObject, Collection<DummyObject> listDummy, Map<String, HelloIImAnotherDummy> ok) {
+    BaseClass(Integer x, String paramText, boolean y, Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary, Map<String, Map<String, Map<SortedSet<Integer>, DummyObject02>>> amIScary02, DummyObject01 dummyObject01, DummyObject dummyObject, Collection<DummyObject> listDummy, Map<String, HelloIImAnotherDummy> ok) {
         this.x = x;
-        this.text = text;
+        if (StringUtils.isEmpty(paramText)) {
+            paramText = "";
+        }
+        this.text = paramText;
         this.y = y;
         this.amIScary = amIScary;
         this.amIScary02 = amIScary02;

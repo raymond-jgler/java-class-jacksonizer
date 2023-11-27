@@ -16,15 +16,22 @@
 
 
 # EXAMPLES:
+    # Case 1 :
     # Process all classes under package A:
      # com.company.A.*
+
+    # Case 2:
     # Process all classes from package A and its subpackages
      # com.company.A.**
-    # Process designated Java files
+
+    # Case 3:
+    #  Process designated Java files
      # com.company.MyClass01
      # com.company.MyClass02
 
 
- #com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.*
+ # com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.*
 
- com.aggregated.inline_tests.intricate_tests.new_ctor_test.hierarchical_test.*
+ # com.aggregated.inline_tests.intricate_tests.new_ctor_test.hierarchical_test.*
+
+ com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.Child03
