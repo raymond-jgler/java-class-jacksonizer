@@ -12,7 +12,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testIsNonBlankWittNullString(){
+    public void testIsNonBlankWittNullString() {
         assertFalse(StringUtils.isNoneBlank(null));
     }
 
