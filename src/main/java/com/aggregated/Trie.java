@@ -1,7 +1,5 @@
 package com.aggregated;
 
-import com.ibm.nws.ejs.ras.Tr;
-
 import java.util.List;
 import java.util.Objects;
 /**
