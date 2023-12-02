@@ -1026,7 +1026,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
                 true);
       }
     } catch (Throwable t) {
-      return intern;
+      throw new RuntimeException("rip");
+//      return intern;
     }
     return StringUtils.isEmpty(exactFieldName) ? intern : exactFieldName;
   }
@@ -1129,7 +1130,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       return getFullPathForClass(className);
     } catch (Throwable t) {
-      return "";
+      throw new RuntimeException("rip");
     }
   }
 

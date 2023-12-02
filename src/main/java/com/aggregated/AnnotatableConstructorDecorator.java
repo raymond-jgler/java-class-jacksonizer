@@ -152,7 +152,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
             String extractedContent = BaseConstructorPhaseAlgorithm.extractClassContent(popped);
             enqueueWithImportedDomainClasses(extractedContent);
           } catch (Throwable t) {
-            //ok no problem
+            throw new RuntimeException("rip");
           }
         }
         /**
@@ -221,7 +221,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
         executeNode(popped);
         visited.add(cleanseClassPath(popped.getName()));
       } catch (Throwable t) {
-        t.printStackTrace();
+        throw new RuntimeException("rip");
       }
     }
     lineUps = new LinkedList<>();
