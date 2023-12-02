@@ -281,7 +281,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   protected static String getImportRegion() {
     final int firstIdxofImportKeyWord = CLASS_CONTENT.indexOf(IMPORT_KEYWORD);
     final int lastIdxOfImportLine = getEndingImportRegionIndex();
-    if (lastIdxOfImportLine == -1) {
+    if (Math.min(firstIdxofImportKeyWord, lastIdxOfImportLine) == -1) {
       return "";
     }
     return CLASS_CONTENT.substring(firstIdxofImportKeyWord, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
@@ -384,7 +384,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
       }
     } catch (Throwable t) {
-      throw new RuntimeException("rip");
+      return Collections.emptyList();
     }
     if (CollectionUtils.isEmpty(existingCtors)) {
       existingCtors.add(-1);
