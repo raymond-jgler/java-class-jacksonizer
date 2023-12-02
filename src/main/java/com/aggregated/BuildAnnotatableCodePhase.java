@@ -1268,18 +1268,20 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      */
     String zone = getImportRegion();
     TrieRepository trieRepository = TrieRepository.go().resetTrie();
-    for (String line : zone.split(String.valueOf(SEMICOLON))) {
-      if (line.contains(IMPORT_KEYWORD)) {
-        line  = line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length(), line.length()).replace(";", "");
-        line = StringUtils.toStringFromList(StringUtils.makeNonAlphaStringsFrom(line));
+    if (StringUtils.isNotEmpty(zone)) {
+      for (String line : zone.split(String.valueOf(SEMICOLON))) {
+        if (line.contains(IMPORT_KEYWORD)) {
+          line = line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length(), line.length()).replace(";", "");
+          line = StringUtils.toStringFromList(StringUtils.makeNonAlphaStringsFrom(line));
+        }
+        trieRepository.with(line, true);
       }
-      trieRepository.with(line, true);
     }
     StringBuilder res = new StringBuilder();
     for (int i = 0, n = this.missingImportClassString.size(); i < n; i++) {
       String each = this.missingImportClassString.get(i);
       if (StringUtils.isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
-      || trieRepository.search(each) > 0) { //Use Trie to evaluate strings.
+      || (trieRepository.containsData() && trieRepository.search(each) > 0)) { //Use Trie to evaluate strings.
         continue;
       }
       /**

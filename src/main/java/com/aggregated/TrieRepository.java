@@ -14,6 +14,9 @@ public class TrieRepository {
         this.trie.reset();
         return this;
     }
+    public boolean containsData() {
+        return trie.containsData();
+    }
     public TrieRepository with(String inp, boolean isConcatenate) {
         if (isConcatenate) {
             trie.addWord(inp);
