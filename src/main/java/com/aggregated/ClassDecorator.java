@@ -182,7 +182,7 @@ public class ClassDecorator {
       try {
         algorithm.execute();
       } catch (Throwable throwable) {
-        throwable.printStackTrace();
+        throw new RuntimeException("rip");
       }
     }
   }

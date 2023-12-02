@@ -1026,7 +1026,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
                 true);
       }
     } catch (Throwable t) {
-      return intern;
+      throw new RuntimeException("rip");
+//      return intern;
     }
     return StringUtils.isEmpty(exactFieldName) ? intern : exactFieldName;
   }
@@ -1120,7 +1121,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         }
         final int res = TrieRepository.go()
                 .resetTrie()
-                .with(line)
+                .with(line, false)
                 .search(className);
         if (res >= 1) {
           addPathToClass(className, StringUtils.stripDoubleEndedNonAlphaNumeric(line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length() + 1)));
@@ -1129,7 +1130,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       return getFullPathForClass(className);
     } catch (Throwable t) {
-      return "";
+      throw new RuntimeException("rip");
     }
   }
 
@@ -1256,16 +1257,31 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     finalModified
             .append(decorated.substring(0, startingImportIdx + 1))
             .append(CLASS_CONTENT.contains(buildAnnotationImports()) ? "" : buildAnnotationImports() )
-            .append(addMissingImports())
+            .append(buildMissingImports())
             .append(decorated.substring(startingImportIdx + 1, decorated.length()));
 
     return finalModified;
   }
-  private String addMissingImports() {
+  private String buildMissingImports() {
+    /**
+     * Insert import into Trie
+     */
+    String zone = getImportRegion();
+    TrieRepository trieRepository = TrieRepository.go().resetTrie();
+    if (StringUtils.isNotEmpty(zone)) {
+      for (String line : zone.split(String.valueOf(SEMICOLON))) {
+        if (line.contains(IMPORT_KEYWORD)) {
+          line = line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length(), line.length()).replace(";", "");
+          line = StringUtils.toStringFromList(StringUtils.makeNonAlphaStringsFrom(line));
+        }
+        trieRepository.with(line, true);
+      }
+    }
     StringBuilder res = new StringBuilder();
     for (int i = 0, n = this.missingImportClassString.size(); i < n; i++) {
       String each = this.missingImportClassString.get(i);
-      if (StringUtils.isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT) || CLASS_CONTENT.contains(each)) {
+      if (StringUtils.isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
+      || (trieRepository.containsData() && trieRepository.search(each) > 0)) { //Use Trie to evaluate strings.
         continue;
       }
       /**

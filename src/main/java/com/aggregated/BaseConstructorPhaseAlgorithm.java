@@ -183,10 +183,17 @@ public abstract class BaseConstructorPhaseAlgorithm {
     reprocessVitals();
   }
   public static void makeFieldRegion() {
-    int newFrom = CLASS_CONTENT.indexOf("{", CLASS_KEYWORD_N_NAME_IDX);
-    int newTo = CLASS_CONTENT.indexOf(";", WRITABLE_CTOR_IDX);
-    RAW_FIELD_REGION = CLASS_CONTENT.substring(newFrom, newTo);
-    FIELD_REGION = RAW_FIELD_REGION.split(" ");
+    try {
+      int newFrom = CLASS_CONTENT.indexOf("{", CLASS_KEYWORD_N_NAME_IDX);
+      int newTo = CLASS_CONTENT.indexOf(";", WRITABLE_CTOR_IDX);
+      if (Math.min(newFrom, newTo) == -1) {
+        return;
+      }
+      RAW_FIELD_REGION = CLASS_CONTENT.substring(newFrom, newTo);
+      FIELD_REGION = RAW_FIELD_REGION.split(" ");
+    } catch (Throwable t) {
+      throw new RuntimeException("rip");
+    }
   }
 
   /**
@@ -234,7 +241,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
       makeFieldRegion();
       internCtorIdxes = buildExistingCtorList();
     } catch (Throwable t) {
-      return; //chill out
+      throw new RuntimeException("rip");
     }
   }
 
@@ -272,11 +279,12 @@ public abstract class BaseConstructorPhaseAlgorithm {
    * @return
    */
   protected static String getImportRegion() {
+    final int firstIdxofImportKeyWord = CLASS_CONTENT.indexOf(IMPORT_KEYWORD);
     final int lastIdxOfImportLine = getEndingImportRegionIndex();
-    if (lastIdxOfImportLine == -1) {
+    if (Math.min(firstIdxofImportKeyWord, lastIdxOfImportLine) == -1) {
       return "";
     }
-    return CLASS_CONTENT.substring(0, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
+    return CLASS_CONTENT.substring(firstIdxofImportKeyWord, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
   }
 
   public static String extractClassContent(Class given) {
@@ -358,13 +366,17 @@ public abstract class BaseConstructorPhaseAlgorithm {
           /**
            * Eval if any string-level ctor found
            */
-          if (!hasStringLevelDefaultCtor.isPresent()) {
-            int openParenIdx  = CLASS_CONTENT.indexOf(OPEN_PAREN, internIdx);
-            int closeParenIdx = CLASS_CONTENT.indexOf(CLOSE_PAREN, openParenIdx);
-            String declaredParm = CLASS_CONTENT
-                    .substring(openParenIdx + 1, closeParenIdx);
-            if (StringUtils.isEmpty(declaredParm)) {
-              hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
+          if (!hasStringLevelDefaultCtor.isPresent() && internIdx != -1) {
+            int openParenIdx = CLASS_CONTENT.indexOf(OPEN_PAREN, internIdx);
+            if (openParenIdx != -1) {
+              int closeParenIdx = CLASS_CONTENT.indexOf(CLOSE_PAREN, openParenIdx);
+              if (closeParenIdx != -1) {
+                String declaredParm = CLASS_CONTENT
+                        .substring(openParenIdx + 1, closeParenIdx);
+                if (StringUtils.isEmpty(declaredParm)) {
+                  hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
+                }
+              }
             }
           }
           existingCtors.add(internIdx);
@@ -372,7 +384,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
       }
     } catch (Throwable t) {
-      //do nothing
+      return Collections.emptyList();
     }
     if (CollectionUtils.isEmpty(existingCtors)) {
       existingCtors.add(-1);
@@ -422,6 +434,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
    * @return
    */
   private static boolean isAnyAnagramFoundIn(String[] list, String inp) {
+    if (NullabilityUtils.isAnyNullIn(list, inp)) {
+      return false;
+    }
     for (String each : list) {
       if (!StringUtils.isNoneBlank(inp) || !StringUtils.isNoneBlank(inp)) {
         continue;
