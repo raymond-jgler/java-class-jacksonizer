@@ -14,8 +14,12 @@ public class TrieRepository {
         this.trie.reset();
         return this;
     }
-    public TrieRepository with(String inp) {
-        trie.addWord(StringUtils.makeNonAlphaStringsFrom(inp));
+    public TrieRepository with(String inp, boolean isConcatenate) {
+        if (isConcatenate) {
+            trie.addWord(inp);
+        } else {
+            trie.addWord(StringUtils.makeNonAlphaStringsFrom(inp));
+        }
         return this;
     }
     public TrieRepository with(List<String> inp) {
@@ -30,7 +34,7 @@ public class TrieRepository {
     }
     public static void main(String[] args) {
         int result = TrieRepository.go()
-                .with("hello hi there hello i am here")
+                .with("hello hi there hello i am here", false)
                 .search("hello");
 
         System.out.println(result);

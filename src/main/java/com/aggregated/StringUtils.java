@@ -1,5 +1,6 @@
 package com.aggregated;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,20 +217,35 @@ public class StringUtils {
         continue;
       }
       if (sb.length() > 0) {
-//        if (!res.contains(sb.toString())) {
-//          res.add(sb.toString());
-//        }
         res.add(sb.toString());
         sb.setLength(0);
       }
     }
     if (sb.length() > 0) {
-//      if (!res.contains(sb.toString())) {
-//        res.add(sb.toString());
-//      }
       res.add(sb.toString());
     }
     return res;
+  }
+
+  /**
+   *
+   * @param inp
+   * @return A spaced-string from list
+   */
+  public static String toStringFromList(List<String> inp) {
+    StringBuilder stringBuilder = new StringBuilder();
+    if (CollectionUtils.isEmpty(inp)) {
+      return "";
+    }
+    boolean isFirst = true;
+    for (String each : inp) {
+      if (!isFirst) {
+        stringBuilder.append(SPACE);
+      }
+      stringBuilder.append(each);
+      isFirst = false;
+    }
+    return stringBuilder.toString();
   }
 
   public static String bulkCascadeRemoveSuffixedString(String inp, char suffix, Character... patternSplitterTeller) {

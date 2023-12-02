@@ -272,11 +272,12 @@ public abstract class BaseConstructorPhaseAlgorithm {
    * @return
    */
   protected static String getImportRegion() {
+    final int firstIdxofImportKeyWord = CLASS_CONTENT.indexOf(IMPORT_KEYWORD);
     final int lastIdxOfImportLine = getEndingImportRegionIndex();
     if (lastIdxOfImportLine == -1) {
       return "";
     }
-    return CLASS_CONTENT.substring(0, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
+    return CLASS_CONTENT.substring(firstIdxofImportKeyWord, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
   }
 
   public static String extractClassContent(Class given) {
