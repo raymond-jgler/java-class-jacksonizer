@@ -52,7 +52,7 @@ public abstract class BaseDecorationAlgorithm implements DecorationAlgorithm {
 
   //TODO shuda let file utils do this.
   private void beginTakeFiles() {
-    if (StringArsenal.current().isNotEmpty(this.rawInput.getSingleJavaFileName())) {
+    if (StringArsenal.current().with(this.rawInput.getSingleJavaFileName()).isNotEmpty()) {
       this.processibleFileList.add(FileUtils.makeFolderOrFile(this.rawInput.getSingleJavaFileName()));
       return;
     }

@@ -1,8 +1,6 @@
 package com.aggregated;
 
-
 import java.util.Objects;
-
 
 public class BuildConstructorPhaseOutput extends ChainedOutput {
   private StringBuilder               completeModifiedContent;
@@ -21,7 +19,7 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
 
   @Override
   public void reset() {
-    if (StringArsenal.current().isNotEmpty(this.completeModifiedContent.toString())) {
+    if (StringArsenal.current().with(this.completeModifiedContent.toString()).isNotEmpty()) {
       this.completeModifiedContent.setLength(0);
     } else {
       this.completeModifiedContent = new StringBuilder();

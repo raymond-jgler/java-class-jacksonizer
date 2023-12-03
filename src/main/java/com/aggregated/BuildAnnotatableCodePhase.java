@@ -1050,10 +1050,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       String declaredParm = CLASS_CONTENT
               .substring(openParenIdx + 1, closeParenIdx);
 
-      if (StringArsenal.current().isEmpty(declaredParm)) {
+      StringArsenal runningDeclaredParam = StringArsenal.current().with(declaredParm);
+      if (runningDeclaredParam.isEmpty()) {
         continue;
       }
-      List<String> declardParmList = normalizeParams(StringArsenal.current().stripComments(declaredParm), Boolean.TRUE);
+      List<String> declardParmList = normalizeParams(runningDeclaredParam.stripComments().getInternal(), Boolean.TRUE);
       /**
        * Gradually record the ctor with
        * number of max params in string.

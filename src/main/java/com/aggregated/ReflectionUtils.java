@@ -21,7 +21,8 @@ public class ReflectionUtils {
    * @return
    */
   public static Class getClass(String unresolvedName) {
-    if (StringArsenal.current().isAllLowerCase(unresolvedName)) {
+    StringArsenal stringArsenal = StringArsenal.current();
+    if (stringArsenal.isAllLowerCase()) {
       return null;
     }
     String toPrint = unresolvedName;
@@ -29,22 +30,11 @@ public class ReflectionUtils {
     int dotIdx = -1;
     do {
       try {
-        clazz = Class.forName(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(unresolvedName));
+        clazz = Class.forName(stringArsenal.with(unresolvedName).stripDoubleEndedNonAlphaNumeric().getInternal());
       } catch (ClassNotFoundException e) {
         try {
-          unresolvedName = StringArsenal.current().resolveReplaces(unresolvedName,
-                  "//",
-                  ".",
-                  "\\",
-                  ".",
-                  "src.main.java",
-                  "",
-                  "**",
-                  "",
-                  "\\.+",
-                  ".",
-                  ".java",
-                  "");
+          unresolvedName = stringArsenal.with(unresolvedName).resolveReplaces("//",".", "\\", ".", "src.main.java", "", "**", "", "\\.+", ".", ".java", "")
+                  .getInternal();
           clazz = Class.forName(unresolvedName);
         } catch (ClassNotFoundException ex) {
           dotIdx = unresolvedName.indexOf(".");

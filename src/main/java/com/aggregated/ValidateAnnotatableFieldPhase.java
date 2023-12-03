@@ -62,12 +62,12 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
       if (running.contains("/**") || running.contains("//") || running.contains("/***")) {
         //skip cmt block
 //        for (i += 1; i < n && (!searchRange[i].contains("//") && !searchRange[i].contains("*/")); i++) {}
-        for (i += 1; i < n && !StringArsenal.current().containsAny(FIELD_REGION[i], "*/", "**/", "***/", "//", "\n", "\r"); i++) {}
+        for (i += 1; i < n && !StringArsenal.current().with(running).containsAny(FIELD_REGION[i], "*/", "**/", "***/", "//", "\n", "\r"); i++) {}
         i++;
         continue;
       }
       if (running.contains(fieldName)) {
-        if (false == StringArsenal.current().stripDoubleEndedNonAlphaNumeric(running).equalsIgnoreCase(fieldName)) {
+        if (false == StringArsenal.current().with(running).stripDoubleEndedNonAlphaNumeric().getInternal().equalsIgnoreCase(fieldName)) {
           continue;
         }
         if (running.contains(";")) {
@@ -79,10 +79,10 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
 //            if (running.contains("null") || running.contains("false") || running.contains("true")) {
 //              return true;
 //            }
-            if (!StringArsenal.current().isEmpty(running) && running.contains(";")) {
+            if (!StringArsenal.current().with(running).isEmpty() && running.contains(";")) {
               return true;
             }
-            if (StringArsenal.current().containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
+            if (StringArsenal.current().with(FIELD_REGION[i]).containsAny("\r", "\n", ";")) {
               break;
             }
           }
@@ -93,10 +93,10 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
           if (running.contains("=")) {
             for (; i < n; i++) {
               running = FIELD_REGION[i];
-              if (!StringArsenal.current().isEmpty(running) && running.contains(";")) {
+              if (!StringArsenal.current().with(running).isEmpty() && running.contains(";")) {
                 return true;
               }
-              if (StringArsenal.current().containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
+              if (StringArsenal.current().with(FIELD_REGION[i]).containsAny( "\r", "\n", ";")) {
                 break;
               }
             }

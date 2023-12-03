@@ -145,7 +145,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     if (className.charAt(0) == '.') {
       return;
     }
-    classToPath.put(StringArsenal.current().correctifyImportString(className, '.'), path);
+    classToPath.put(StringArsenal.current().with(className).correctifyImportString('.').getInternal(), path);
   }
 
   public static String getFullPathForClass(String className, boolean isCloseMatch) {

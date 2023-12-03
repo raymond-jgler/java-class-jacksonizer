@@ -172,7 +172,8 @@ public class RawClientRuleInput {
   }
 
   public RawClientRuleInput addAnnotationPackage(String packageName) {
-    if (StringArsenal.current().isNotEmpty(this.ctorAnnotationPackage) && StringArsenal.current().isNotEmpty(this.fieldAnnotationPackage)) {
+    StringArsenal stringArsenal = StringArsenal.current();
+    if (stringArsenal.with(this.ctorAnnotationPackage).isNotEmpty() && stringArsenal.with(this.fieldAnnotationPackage).isNotEmpty()) {
       return this;
     }
     /**
