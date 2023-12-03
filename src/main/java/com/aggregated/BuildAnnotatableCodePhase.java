@@ -1010,9 +1010,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       String prefixReportMsg = "";
       int equalSignIdx = StringArsenal.current().with(existingCtorBody)
               .lastIndexOf(StringArsenal.current().with(EQUAL).resolveReplaces(SPACE, "").getInternal().charAt(0),
-                      idxOfParam,
-              -1,
-                      null);
+                      idxOfParam,-1,null);
       if (equalSignIdx != -1 && idxOfParam != -1 && equalSignIdx != idxOfParam) {
         /**
          * loop backward, reverse-build a string.
@@ -1383,11 +1381,10 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     }
 
     public String getComplete() {
-      return StringArsenal.current().with(ctorPrototype).appendIndentableBracketTo(String.valueOf(OPEN_BRACKET), "")
-              .getInternal()
-              + StringArsenal.current().with(methodBody).appendIndentableBracketTo(
-              String.valueOf(CLOSE_BRACKET),
-              IndentationUtils.get(IndentationUtils.OUTER_BLOCK_TAB));
+      StringArsenal runningContent = StringArsenal.current();
+      return runningContent.with(ctorPrototype).appendIndentableBracketTo(String.valueOf(OPEN_BRACKET), "").getInternal()
+              +
+              runningContent.with(methodBody).appendIndentableBracketTo(String.valueOf(CLOSE_BRACKET), IndentationUtils.get(IndentationUtils.OUTER_BLOCK_TAB)).getInternal();
     }
 
     @Override
