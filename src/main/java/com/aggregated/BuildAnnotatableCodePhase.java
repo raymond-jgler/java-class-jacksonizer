@@ -694,6 +694,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      */
     body.append(superLine);
 
+    /**
+     * This current class's serializable fields
+     */
     List<String> builtFields = buildFields(Boolean.FALSE);
 
     if (CollectionUtils.isEmpty(builtFields)) {
@@ -782,14 +785,14 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       fieldType = "java.sql.Date";
     } else {
       fieldType = field.getGenericTypeName();
-      StringArsenal runningFieldType = StringArsenal.current().with(fieldType);
+      StringArsenal runningFieldType = StringArsenal.current();
       for (String each : COMMON_PACKAGE_LIST) {
-        fieldType = runningFieldType.resolveReplaces(each + DOT, "").getInternal();
+        fieldType = runningFieldType.with(fieldType).resolveReplaces(each + DOT, "").getInternal();
       }
       if (fieldType.contains(DOT)) {
-        runningFieldType.with(fieldType);
-        fieldType = runningFieldType.bulkCascadeRemoveSuffixedString(DOT.charAt(0), '<', ',', '>').getInternal();
-        fieldType = runningFieldType.resolveReplaces("$", DOT).getInternal();
+        fieldType = runningFieldType.with(fieldType)
+                .bulkCascadeRemoveSuffixedString(DOT.charAt(0), '<', ',', '>')
+                .resolveReplaces("$", DOT).getInternal();
       }
       /**
        * Hotfix for:

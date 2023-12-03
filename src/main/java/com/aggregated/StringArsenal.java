@@ -312,31 +312,36 @@ public class StringArsenal {
         final List<Character> teller = Arrays.asList(patternSplitterTeller);
         StringBuilder partitionCollector = new StringBuilder();
         StringBuilder removed = new StringBuilder();
-        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
-            Character cur = this.statefulData.charAt(i);
-            if (!teller.contains(cur)) {
-                partitionCollector.append(cur);
-                continue;
-            }
-            Character connective = cur;
-            if (i == n - 1) {
-                if (partitionCollector.length() > 0) {
-                    removed.append(cascadeRemoveSuffixedString(partitionCollector.toString(), suffix));
+        String finalSwitcher = "";
+        try {
+            for (int i = 0, n = this.statefulData.length(); i < n; i++) {
+                Character cur = this.statefulData.charAt(i);
+                if (!teller.contains(cur)) {
+                    partitionCollector.append(cur);
+                    continue;
                 }
-                removed.append(connective);
-                break;
+                Character connective = cur;
+                if (i == n - 1) {
+                    if (partitionCollector.length() > 0) {
+                        removed.append(cascadeRemoveSuffixedString(partitionCollector.toString(), suffix));
+                    }
+                    removed.append(connective);
+                    break;
+                }
+                removed.append(cascadeRemoveSuffixedString(partitionCollector.toString(), suffix));
+                if (Objects.nonNull(connective)) {
+                    removed.append(connective);
+                }
+                partitionCollector.setLength(0);
             }
-            removed.append(cascadeRemoveSuffixedString(partitionCollector.toString(), suffix));
-            if (Objects.nonNull(connective)) {
-                removed.append(connective);
+            finalSwitcher = removed.length() == 0 ? partitionCollector.toString() : removed.toString();
+            if (finalSwitcher.contains(String.valueOf(suffix))) {
+                finalSwitcher = cascadeRemoveSuffixedString(finalSwitcher, suffix);
             }
-            partitionCollector.setLength(0);
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
-        String finalSwticher = removed.length() == 0 ? partitionCollector.toString() : removed.toString();
-        if (finalSwticher.contains(String.valueOf(suffix))) {
-            finalSwticher = cascadeRemoveSuffixedString(finalSwticher, suffix);
-        }
-        this.statefulData = finalSwticher;
+        this.statefulData = finalSwitcher;
         return this;
     }
 
@@ -357,14 +362,15 @@ public class StringArsenal {
      * this.data : java.util.List
      * output : List
      */
-    private String cascadeRemoveSuffixedString(String inp, char suffix) {
-        if (!this.statefulData.contains(String.valueOf(suffix))) {
-            return this.statefulData;
+    public String cascadeRemoveSuffixedString(String inp, char suffix) {
+        if (!inp.contains(String.valueOf(suffix))) {
+            return inp;
         }
-        int n = this.statefulData.length();
-        int i = n - 1;
-        int rightBound = StringArsenal.current().with(inp).lastIndexOf(suffix, i, 1, null);
-        int leftBound = StringArsenal.current().with(inp).lastIndexOf(suffix, i, -1, null);
+        int n          = inp.length();
+        int i          = n - 1;
+        final String preservable = this.statefulData;
+        int rightBound = with(inp).lastIndexOf(suffix, i, 1, null);
+        int leftBound  = with(inp).lastIndexOf(suffix, i, -1, null);
         /**
          * 2 cases for words preceding leftBound
          * _ a whole removable string
@@ -374,13 +380,16 @@ public class StringArsenal {
         for (; i >= 0 && Character.isLetterOrDigit(inp.charAt(i)); i--) {
         }
         leftBound = i;
-
-        return StringArsenal.current().with(inp).ripRangeFromString(leftBound, rightBound);
+        /**
+         * restore
+         */
+        with(preservable);
+        return ripRangeFromString(inp, leftBound, rightBound);
     }
 
-    public String ripRangeFromString(int exceptFrom, int exceptTo) {
+    public String ripRangeFromString(String inp, int exceptFrom, int exceptTo) {
         StringBuilder ripped = new StringBuilder();
-        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
+        for (int i = 0, n = inp.length(); i < n; i++) {
             /**
              * Exclusive left bound
              * Inclusive right bound.
@@ -388,7 +397,7 @@ public class StringArsenal {
             if (i > exceptFrom && i <= exceptTo) {
                 continue;
             }
-            ripped.append(this.statefulData.charAt(i));
+            ripped.append(inp.charAt(i));
         }
         return ripped.toString();
     }
