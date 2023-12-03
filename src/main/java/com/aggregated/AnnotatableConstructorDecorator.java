@@ -185,7 +185,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
                   /**
                    * Add to this list, it will process this.
                    */
-                  concurrentModifiable.offer(StringArsenal.current().stripUntilDollarSign(eachRaw));
+                  concurrentModifiable.offer(StringArsenal.current().with(eachRaw).stripUntilDollarSign().getInternal());
                 }
                 currentNode = Class.forName(eachRaw);
                 if (Objects.isNull(currentNode) || lineUps.contains(currentNode)) {
@@ -246,11 +246,11 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
       if (each.contains(String.valueOf(by))) {
         return divideAndConquerBy(each.split(","), running, by);
       }
-      if (StringArsenal.current().containsAny(each, "java.util", "java.lang") || running.contains(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(each))) {
+      if (StringArsenal.current().containsAny(each, "java.util", "java.lang") || running.contains(StringArsenal.current().with(each). stripDoubleEndedNonAlphaNumeric())) {
         continue;
       }
       for (String inner : splitted) {
-        if (!inner.contains(".") || StringArsenal.current().containsAny(inner, "java.util", "java.lang") || running.contains(inner)) {
+        if (!inner.contains(".") || StringArsenal.current().with(inner).containsAny("java.util", "java.lang") || running.contains(inner)) {
           continue;
         }
         running.offer(cleanseClassPath(inner));
@@ -260,24 +260,23 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
 
   public static String cleanseClassPath(String raw) {
-    String resolved = StringArsenal
-            .stripUntilClassPath(StringArsenal
-                            .stripDoubleEndedNonAlphaNumeric(StringArsenal
-                                    .resolveReplaces(raw,
-                                            "class ",
-                                            "",
-                                            ">",
-                                            "",
-                                            "<",
-                                            "", "[", "", "]", "", "[]","")),
-                    '.', '$', '_');
+    String resolved = StringArsenal.current().with(raw)
+            .resolveReplaces("class ",
+                    "",
+                    ">",
+                    "",
+                    "<",
+                    "", "[", "", "]", "", "[]","")
+            .stripDoubleEndedNonAlphaNumeric()
+            .stripUntilClassPath('.', '$', '_')
+            .getInternal();
     /**
      * Ok by far the fishiest logic for weird class strings here
      */
     if (resolved.contains("L") && resolved.indexOf(".") < resolved.indexOf("L")) {
       return resolved;
     }
-    return StringArsenal.current().resolveReplaces(resolved, "L", "");
+    return StringArsenal.current().with(resolved).resolveReplaces("L", "").getInternal();
   }
 
   private void enqueueWithImportedDomainClasses(String content) {
@@ -307,7 +306,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
       if (ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
         continue;
       }
-      if (visited.contains(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(clazz.getName()))) {
+      if (visited.contains(StringArsenal.current().with(clazz.getName()).stripDoubleEndedNonAlphaNumeric())) {
         continue;
       }
       enqueueWith(clazz);

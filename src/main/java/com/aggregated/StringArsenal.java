@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 public class StringArsenal {
     private final Logger LOG = LoggerFactory.getLogger(StringArsenal.class);
     private static final StringArsenal INSTANCE = new StringArsenal();
+    private static final String EMPTY = "";
     private static final String OPEN_PAREN = "(";
     private static final String CLOSE_PAREN = ")";
     private static final String AT = "@";
@@ -22,27 +23,51 @@ public class StringArsenal {
     private static final char SEMICOLON = ';';
     private static final String SINGLE_BREAK = "\n";
     private final Map<String, String> rawImportToResovled = new HashMap<>();
+    private String statefulData;
+    /**
+     * Output of a method returning a string.
+     */
+    private String resultantString;
 
     private StringArsenal() {
+      this.statefulData = "";
+        /**
+         * If null, return the real internal stateful data,
+         * otherwise return this one.
+         */
+      this.resultantString = null;
     }
 
+    /**
+     * By default, this overrides existing internal stateful string data.
+     * @param data
+     * @return
+     */
+    public StringArsenal with(String data) {
+      this.statefulData = data;
+      return this;
+    }
     public static StringArsenal current() {
         return INSTANCE;
     }
 
-    public boolean isNotEmpty(String input) {
-        return !isEmpty(input);
+    public boolean isNotEmpty() {
+        return !isEmpty();
     }
 
-    public boolean isEmpty(String input) {
-        return Objects.isNull(input) || input.isEmpty();
+    public static boolean isEmpty(String inp) {
+        return Objects.isNull(inp) || current().with(inp).isEmpty();
     }
 
-    public boolean isNoneBlank(String input) {
-        if (isEmpty(input)) {
+    public boolean isEmpty() {
+        return Objects.isNull(this.statefulData) || this.statefulData.isEmpty();
+    }
+
+    public boolean isNoneBlank() {
+        if (isEmpty()) {
             return false;
         }
-        for (Character each : input.toCharArray()) {
+        for (Character each : this.statefulData.toCharArray()) {
             if (Character.isLetterOrDigit(each)) {
                 return true;
             }
@@ -50,105 +75,114 @@ public class StringArsenal {
         return false;
     }
 
-    public boolean containsAny(String toCheck, String... args) {
+    public boolean containsAny(String... args) {
         for (String each : args) {
-            if (toCheck.contains(each) || toCheck.contains(each) || each.contains(toCheck) || each.contains(toCheck)) {
+            if (this.statefulData.contains(each) || this.statefulData.contains(each) || each.contains(this.statefulData) || each.contains(this.statefulData)) {
                 return true;
             }
         }
         return false;
     }
 
-    public String resolveReplaces(String orig, String... fromToPairs) {
+    public StringArsenal resolveReplaces(String... fromToPairs) {
         final int PAIR_JUMP = 2;
         if (fromToPairs.length % 2 != 0) {
             LOG.error("Not enough data to perform action");
         }
         for (int i = 0, n = fromToPairs.length; i < n; i += PAIR_JUMP) {
-            orig = orig.replace(fromToPairs[i], fromToPairs[i + 1]);
+            this.statefulData = this.statefulData.replace(fromToPairs[i], fromToPairs[i + 1]);
         }
         //fishy, ensure single-dotted only.
-        return orig.replaceAll("\\.+", ".");
+        this.statefulData.replaceAll("\\.+", ".");
+        return this;
     }
 
-    public boolean endsWithAny(String toCheck, String... args) {
+    public boolean endsWithAny(String... args) {
         for (String each : args) {
-            if (toCheck.endsWith(each) || toCheck.endsWith(each + ".java")) {
+            if (this.statefulData.endsWith(each) || this.statefulData.endsWith(each + ".java")) {
                 return true;
             }
         }
         return false;
     }
 
-    public String stripComments(String inp) {
-        inp = inp.replaceAll("//.*", "");
+    public StringArsenal stripComments() {
+        this.statefulData = this.statefulData.replaceAll("//.*", "");
         Pattern pattern = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(inp);
-        inp = matcher.replaceAll("");
+        Matcher matcher = pattern.matcher(this.statefulData);
+        this.statefulData = matcher.replaceAll("");
 
-        return inp;
+        return this;
     }
 
-    public String appendIndentableBracketTo(String inp, String bracket, String indentVal) {
-        if (inp.isEmpty() || inp.contains(String.valueOf(bracket))) {
-            return inp;
+    public StringArsenal appendIndentableBracketTo(String bracket, String indentVal) {
+        if (this.statefulData.isEmpty() || this.statefulData.contains(String.valueOf(bracket))) {
+            return this;
         }
-        String res = inp;
+        String res = this.statefulData;
         if (!bracket.equalsIgnoreCase(String.valueOf(res.charAt(res.length() - 1)))) {
             res += indentVal + bracket;
         }
-        return res;
+        this.statefulData = res;
+        return this;
     }
 
-    public String stripUntilDollarSign(String inp) {
-        for (int i = 0, n = inp.length(); i < n; i++) {
-            if (inp.charAt(i) == '$') {
-                return inp.substring(0, i);
+    public StringArsenal stripUntilDollarSign() {
+        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
+            if (this.statefulData.charAt(i) == '$') {
+                this.statefulData = this.statefulData.substring(0, i);
+                return this;
             }
         }
-        return inp;
+        return this;
     }
-
-    public String stripUntilClassPath(String inp, Character... toKeep) {
+    public StringArsenal stripUntilClassPath(Character... toKeep) {
         Set<Character> toKeeps = new HashSet<>(Arrays.asList(toKeep));
         StringBuilder sb = new StringBuilder();
-        for (Character c : inp.toCharArray()) {
+        for (Character c : this.statefulData.toCharArray()) {
             if (Character.isLetterOrDigit(c) || toKeeps.contains(c)) {
                 sb.append(c);
             }
         }
-        return resolveReplaces(sb.toString(), "/", "");
+        this.statefulData = resolveReplaces(sb.toString(), "/", "").getInternal();
+        return this;
     }
 
-    public boolean isAllLowerCase(String inp) {
-        for (Character c : inp.toCharArray()) {
+    public boolean isAllLowerCase() {
+        for (Character c : this.statefulData.toCharArray()) {
             if (Character.isUpperCase(c)) {
                 return false;
             }
         }
         return true;
     }
+    public String getInternal() {
+        if (Objects.isNull(this.statefulData)) {
+            return "";
+        }
+        return this.statefulData;
+    }
 
     /**
      * Pincer-strip double-ended non alphanumeric chars from string,
      * until meets character / digit from both ends.
      *
-     * @param inp
+     * 
      * @return
      */
-    public String stripDoubleEndedNonAlphaNumeric(String inp) {
+    public StringArsenal stripDoubleEndedNonAlphaNumeric() {
         final int THRESHOLD = 200;
         final long start = System.currentTimeMillis();
-        int left = 0, n = inp.length() - 1, right = n;
-        while (left < right && left < inp.length() && !Character.isLetterOrDigit(inp.charAt(left))) {
+        int left = 0, n = this.statefulData.length() - 1, right = n;
+        while (left < right && left < this.statefulData.length() && !Character.isLetterOrDigit(this.statefulData.charAt(left))) {
             left++;
         }
-        while (left < right && right > 0 && !Character.isLetterOrDigit(inp.charAt(right))) {
+        while (left < right && right > 0 && !Character.isLetterOrDigit(this.statefulData.charAt(right))) {
             right--;
         }
         //if unchanged.
         if (left >= right || (left == 0 && right == n)) {
-            return inp;
+            return this;
         }
 
         while (true) {
@@ -156,16 +190,16 @@ public class StringArsenal {
                 break;
             }
             try {
-                return inp.substring(left, right + 1);
+                this.statefulData = this.statefulData.substring(left, right + 1);
+                return this;
             } catch (Throwable t) {
                 right -= 1;
             }
         }
-        return inp;
+        return this;
     }
-
-    public int lastIndexOf(String inp, char x, Integer backwardFrom, Integer ordinalIndex, Boolean skipBreaker) {
-        if (!inp.contains(String.valueOf(x))) {
+    public int lastIndexOf(char x, Integer backwardFrom, Integer ordinalIndex, Boolean skipBreaker) {
+        if (!this.statefulData.contains(String.valueOf(x))) {
             return -1;
         }
         if (Objects.isNull(skipBreaker)) {
@@ -174,7 +208,7 @@ public class StringArsenal {
         if (Objects.isNull(ordinalIndex)) {
             ordinalIndex = 1;
         }
-        int n = inp.length() - 1;
+        int n = this.statefulData.length() - 1;
         if (Objects.nonNull(backwardFrom)) {
             n = backwardFrom;
         }
@@ -182,7 +216,7 @@ public class StringArsenal {
         int shrinkingI = n;
         for (int i = n; i >= 0; i--) {
             try {
-                if (inp.charAt(i) == x) {
+                if (this.statefulData.charAt(i) == x) {
                     matches++;
                     if (ordinalIndex == -1) {
                         shrinkingI = i;
@@ -192,7 +226,7 @@ public class StringArsenal {
                         return i;
                     }
                 }
-                if ((skipBreaker) && (inp.charAt(i) == '\r' || inp.charAt(i) == '\n')) {
+                if ((skipBreaker) && (this.statefulData.charAt(i) == '\r' || this.statefulData.charAt(i) == '\n')) {
                     break;
                 }
             } catch (Throwable t) {
@@ -202,23 +236,44 @@ public class StringArsenal {
         return shrinkingI;
     }
 
-    public int countCharsFromEnd(String inp, char x) {
-        int i = lastIndexOf(inp, x, null, null, null);
+    public int countCharsFromEnd( char x) {
+        int i = lastIndexOf(x, null, null, null);
         int count = 0;
-        while (i >= 0 && inp.charAt(i) == x) {
+        while (i >= 0 && this.statefulData.charAt(i) == x) {
             i--;
             count++;
         }
         return count;
     }
+    public StringArsenal toNonAlphanumeric() {
+        if (isEmpty()) {
+            return this;
+        }
+        StringBuilder sb = new StringBuilder();
+        StringBuilder res = new StringBuilder();
+        for (Character c : this.statefulData.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                sb.append(c);
+                continue;
+            }
+            if (sb.length() > 0) {
+                res.append(sb.toString());
+                sb.setLength(0);
+            }
+        }
+        if (sb.length() > 0) {
+            res.append(sb.toString());
+        }
+        return this;
+    }
 
-    public List<String> makeNonAlphaStringsFrom(String inp) {
-        if (StringArsenal.current().isEmpty(inp)) {
+    public List<String> toNonAlphaNumList() {
+        if (isEmpty()) {
             return new ArrayList<>();
         }
         StringBuilder sb = new StringBuilder();
         List<String> res = new ArrayList<>();
-        for (Character c : inp.toCharArray()) {
+        for (Character c : this.statefulData.toCharArray()) {
             if (Character.isLetterOrDigit(c)) {
                 sb.append(c);
                 continue;
@@ -235,16 +290,15 @@ public class StringArsenal {
     }
 
     /**
-     * @param inp
      * @return A spaced-string from list
      */
-    public String toStringFromList(List<String> inp) {
+    public static String toStringFromList(List<String> inpList) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (CollectionUtils.isEmpty(inp)) {
+        if (CollectionUtils.isEmpty(inpList)) {
             return "";
         }
         boolean isFirst = true;
-        for (String each : inp) {
+        for (String each : inpList) {
             if (!isFirst) {
                 stringBuilder.append(SPACE);
             }
@@ -254,12 +308,12 @@ public class StringArsenal {
         return stringBuilder.toString();
     }
 
-    public String bulkCascadeRemoveSuffixedString(String inp, char suffix, Character... patternSplitterTeller) {
+    public StringArsenal bulkCascadeRemoveSuffixedString(char suffix, Character... patternSplitterTeller) {
         final List<Character> teller = Arrays.asList(patternSplitterTeller);
         StringBuilder partitionCollector = new StringBuilder();
         StringBuilder removed = new StringBuilder();
-        for (int i = 0, n = inp.length(); i < n; i++) {
-            Character cur = inp.charAt(i);
+        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
+            Character cur = this.statefulData.charAt(i);
             if (!teller.contains(cur)) {
                 partitionCollector.append(cur);
                 continue;
@@ -282,7 +336,8 @@ public class StringArsenal {
         if (finalSwticher.contains(String.valueOf(suffix))) {
             finalSwticher = cascadeRemoveSuffixedString(finalSwticher, suffix);
         }
-        return finalSwticher;
+        this.statefulData = finalSwticher;
+        return this;
     }
 
     /**
@@ -297,20 +352,19 @@ public class StringArsenal {
      * suffixed strings : java., util.
      * non-suffixed : List
      *
-     * @param inp
      * @return a string having its suffixed ones removed.
      * <p>
-     * input : java.util.List
+     * this.data : java.util.List
      * output : List
      */
-    public String cascadeRemoveSuffixedString(String inp, char suffix) {
-        if (!inp.contains(String.valueOf(suffix))) {
-            return inp;
+    private String cascadeRemoveSuffixedString(String inp, char suffix) {
+        if (!this.statefulData.contains(String.valueOf(suffix))) {
+            return this.statefulData;
         }
-        int n = inp.length();
+        int n = this.statefulData.length();
         int i = n - 1;
-        int rightBound = StringArsenal.current().lastIndexOf(inp, suffix, i, 1, null);
-        int leftBound = StringArsenal.current().lastIndexOf(inp, suffix, i, -1, null);
+        int rightBound = StringArsenal.current().with(inp).lastIndexOf(suffix, i, 1, null);
+        int leftBound = StringArsenal.current().with(inp).lastIndexOf(suffix, i, -1, null);
         /**
          * 2 cases for words preceding leftBound
          * _ a whole removable string
@@ -321,12 +375,12 @@ public class StringArsenal {
         }
         leftBound = i;
 
-        return StringArsenal.current().ripRangeFromString(inp, leftBound, rightBound);
+        return StringArsenal.current().with(inp).ripRangeFromString(leftBound, rightBound);
     }
 
-    public String ripRangeFromString(String inp, int exceptFrom, int exceptTo) {
+    public String ripRangeFromString(int exceptFrom, int exceptTo) {
         StringBuilder ripped = new StringBuilder();
-        for (int i = 0, n = inp.length(); i < n; i++) {
+        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
             /**
              * Exclusive left bound
              * Inclusive right bound.
@@ -334,7 +388,7 @@ public class StringArsenal {
             if (i > exceptFrom && i <= exceptTo) {
                 continue;
             }
-            ripped.append(inp.charAt(i));
+            ripped.append(this.statefulData.charAt(i));
         }
         return ripped.toString();
     }
@@ -354,9 +408,9 @@ public class StringArsenal {
         return false;
     }
 
-    public int firstIdxOfNonAlphanumeric(String x) {
-        for (int i = 0, n = x.length(); i < n; i++) {
-            if (Character.isLetterOrDigit(x.charAt(i))) {
+    public int firstIdxOfNonAlphanumeric() {
+        for (int i = 0, n = this.statefulData.length(); i < n; i++) {
+            if (Character.isLetterOrDigit(this.statefulData.charAt(i))) {
                 continue;
             }
             return i;
@@ -370,43 +424,43 @@ public class StringArsenal {
 
     /**
      * Will stop when reaching the last separator.
-     *
-     * @param inp
      * @param separator
      * @return
      */
-    public String getLastWord(String inp, String separator) {
-        NullabilityUtils.isAllNonEmpty(true, inp, separator);
+    public StringArsenal getLastWord(String separator) {
+        NullabilityUtils.isAllNonEmpty(true, this.statefulData, separator);
         StringBuilder rev = new StringBuilder();
-        for (int n = inp.length(), i = n - 1; i >= 0; i--) {
-            Character cur = inp.charAt(i);
+        for (int n = this.statefulData.length(), i = n - 1; i >= 0; i--) {
+            Character cur = this.statefulData.charAt(i);
             if (separator.equalsIgnoreCase(String.valueOf(cur))) {
                 break;
             }
             rev.append(cur);
         }
-        return rev.reverse().toString();
+        this.statefulData = rev.reverse().toString();
+        return this;
     }
 
     /**
      * Separated by each dot,
      * ensure no more than 1 word contains >= 1 upper-case characters.
      *
-     * @param inp
+     * 
      * @return
      */
-    public String correctifyImportString(String inp, Character sep) {
-        if (StringArsenal.current().isEmpty(inp) || !inp.contains(String.valueOf(sep))) {
-            return inp;
+    public StringArsenal correctifyImportString(Character sep) {
+        if (isEmpty() || !this.statefulData.contains(String.valueOf(sep))) {
+            return this;
         }
-        if (!MapUtils.isEmpty(rawImportToResovled) && rawImportToResovled.containsKey(inp)) {
-            return rawImportToResovled.get(inp);
+        if (!MapUtils.isEmpty(rawImportToResovled) && rawImportToResovled.containsKey(this.statefulData)) {
+            this.statefulData = rawImportToResovled.get(this.statefulData);
+            return this;
         }
         StringBuilder res = new StringBuilder();
         StringBuilder each = new StringBuilder();
         boolean isMetUppercase = false;
-        for (int i = 0, n = inp.length(); i < n && !isMetUppercase; i++) {
-            Character curr = inp.charAt(i);
+        for (int i = 0, n = this.statefulData.length(); i < n && !isMetUppercase; i++) {
+            Character curr = this.statefulData.charAt(i);
             if (curr != sep) {
                 each.append(curr);
                 continue;
@@ -416,7 +470,7 @@ public class StringArsenal {
                     res.append(sep);
                 }
                 res.append(each);
-                if (!isAllLowerCase(each.toString())) {
+                if (!isAllLowerCase()) {
                     isMetUppercase = true;
                 }
             }
@@ -430,28 +484,29 @@ public class StringArsenal {
          * Ok time to hack
          */
         String toPut = "";
-        if (inp.charAt(0) == '.' || inp.charAt(inp.length() - 1) == '.') {
-            final String rawText = stripDoubleEndedNonAlphaNumeric(inp);
+        if (this.statefulData.charAt(0) == '.' || this.statefulData.charAt(this.statefulData.length() - 1) == '.') {
+            final String rawText = stripDoubleEndedNonAlphaNumeric().getInternal();
             toPut = "java.util." + rawText;
         }
-        rawImportToResovled.put(inp, toPut);
-        return rawImportToResovled.get(inp);
+        rawImportToResovled.put(this.statefulData, toPut);
+        this.statefulData = rawImportToResovled.get(this.statefulData);
+        return this;
     }
 
     public boolean bidirectionalContains(String x, String y) {
         return x.contains(y) || y.contains(x);
     }
 
-    public int firstIndexOf(String inp, char x, int start, boolean isBackward) {
+    public int firstIndexOf( char x, int start, boolean isBackward) {
         if (isBackward) {
             for (int i = start; i >= 0; i--) {
-                if (x == inp.charAt(i)) {
+                if (x == this.statefulData.charAt(i)) {
                     return i;
                 }
             }
         } else {
-            for (int i = start, n = inp.length(); i < n; i++) {
-                if (x == inp.charAt(i)) {
+            for (int i = start, n = this.statefulData.length(); i < n; i++) {
+                if (x == this.statefulData.charAt(i)) {
                     return i;
                 }
             }
@@ -472,14 +527,20 @@ public class StringArsenal {
         return key + operator + value;
     }
 
-    public String findPrependablePieceFrom(String content, int backwardFrom, Character breakingChar, boolean isSkipSpace) {
+    public StringArsenal concatenateWith(String ...inp) {
+        for (String each : inp) {
+            this.statefulData += each;
+        }
+        return this;
+    }
+    public StringArsenal findPrependablePieceFrom(int backwardFrom, Character breakingChar, boolean isSkipSpace) {
         if (Objects.isNull(breakingChar)) {
             breakingChar = '\r';
         }
         StringBuilder rev = new StringBuilder();
         for (int i = backwardFrom; i >= 0; i--) {
-            Character c = content.charAt(i);
-            if (String.valueOf(content.charAt(i)).equalsIgnoreCase(SINGLE_BREAK) || content.charAt(i) == breakingChar) {
+            Character c = this.statefulData.charAt(i);
+            if (String.valueOf(this.statefulData.charAt(i)).equalsIgnoreCase(SINGLE_BREAK) || this.statefulData.charAt(i) == breakingChar) {
                 break;
             }
             if (isSkipSpace && !Character.isLetterOrDigit(c)) {
@@ -487,7 +548,8 @@ public class StringArsenal {
             }
             rev.append(c);
         }
-        return rev.reverse().toString();
+        this.statefulData = rev.reverse().toString();
+        return this;
     }
 
     /**
@@ -510,12 +572,9 @@ public class StringArsenal {
 
     /**
      * Supports upper/lower-cased alphanumeric letters.
-     *
-     * @param x
-     * @param y
      * @return
      */
-    public boolean isAnagram(String x, String y) {
+    public boolean isAnagram(String that) {
         /**
          * Set A = {Aa-Zz + 0 -> 9} -> nO of chars =  62
          */
@@ -524,11 +583,11 @@ public class StringArsenal {
         Arrays.fill(map1, 0);
         Arrays.fill(map2, 0);
         int i = 0;
-        int n = x.length();
-        int m = y.length();
+        int n = this.statefulData.length();
+        int m = that.length();
         for (; i < n && i < m; i++) {
-            Character c1 = x.charAt(i);
-            Character c2 = y.charAt(i);
+            Character c1 = this.statefulData.charAt(i);
+            Character c2 = that.charAt(i);
             if (Character.isLetterOrDigit(c1)) {
                 map1[asciiValueOf(c1, Boolean.TRUE)]++;
             }
@@ -538,14 +597,14 @@ public class StringArsenal {
         }
 
         for (; i < n; i++) {
-            Character c1 = x.charAt(i);
+            Character c1 = this.statefulData.charAt(i);
             if (Character.isLetterOrDigit(c1)) {
                 map1[asciiValueOf(c1, Boolean.TRUE)]++;
             }
         }
 
         for (; i < m; i++) {
-            Character c2 = y.charAt(i);
+            Character c2 = that.charAt(i);
             if (Character.isLetterOrDigit(c2)) {
                 map2[asciiValueOf(c2, Boolean.TRUE)]++;
             }

@@ -51,9 +51,10 @@ public class CustomSerializationIndexedField {
             sb.append(processAnnotation(eachAnnotLine));
             idx++;
         }
-        this.transformed = StringArsenal
-                .resolveReplaces(sb.append("\n" ).toString(), ";", "")
-                + stringForm;
+        this.transformed = StringArsenal.current().with(sb.append("\n" ).toString())
+                .resolveReplaces(";", "")
+                .concatenateWith(stringForm)
+                .getInternal();
 
         return this.transformed;
     }
