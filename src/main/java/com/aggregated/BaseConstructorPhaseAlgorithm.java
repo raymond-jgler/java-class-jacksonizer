@@ -370,7 +370,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
               if (closeParenIdx != -1) {
                 String declaredParm = CLASS_CONTENT
                         .substring(openParenIdx + 1, closeParenIdx);
-                if (StringArsenal.current().isEmpty(declaredParm)) {
+                if (StringArsenal.current().with(declaredParm).isEmpty()) {
                   hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
                 }
               }
@@ -399,10 +399,11 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   public static boolean shouldSkipImport(String field) {
-    if (StringArsenal.current().isEmpty(field) || StringArsenal.current().isAllLowerCase()) {
+    StringArsenal stringArsenal = StringArsenal.current().with(field);
+    if (stringArsenal.isEmpty() || stringArsenal.isAllLowerCase()) {
       return true;
     }
-    return StringArsenal.current().containsAny(field, "java.lang",
+    return stringArsenal.containsAny("java.lang",
             "boolean",
             "int",
             "char",
@@ -495,7 +496,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
         int goodValCounter = 0;
         for (int i = 0, n = mayContainNoises.length; i < n; i++) {
           String each = mayContainNoises[i];
-          if (StringArsenal.current().isEmpty(each)) {
+          if (StringArsenal.current().with(each).isEmpty()) {
             continue;
           }
           if (Character.isLetterOrDigit(each.charAt(0)) || each.charAt(0) == '=') {
@@ -555,9 +556,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
   public final boolean shouldSkipCurrentClass() {
     final String className = CLAZZ.getSimpleName();
     final List<String> skippedClasses = rawInput.getSkipClasses();
+    StringArsenal stringArsenal = StringArsenal.current();
     for (String eachSkipped : skippedClasses) {
-      if (StringArsenal.current().containsAny(className, eachSkipped) || StringArsenal.current().endsWithAny(className,
-              eachSkipped)) {
+      if (stringArsenal.containsAny(eachSkipped) || stringArsenal.endsWithAny(eachSkipped)) {
         return true;
       }
     }

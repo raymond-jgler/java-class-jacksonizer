@@ -47,7 +47,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
   public static void enqueueWith(Class clz) {
     if (Objects.isNull(clz) || lineUps.contains(clz) || visited.contains(cleanseClassPath(clz.getName()))
-            || StringArsenal.current().current().containsAny(clz.getName(), "org", "java", "java.util")) {
+            || StringArsenal.current().with(clz.getName()).containsAny("org", "java", "java.util")) {
       return;
     }
     lineUps.offer(clz);
@@ -246,7 +246,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
       if (each.contains(String.valueOf(by))) {
         return divideAndConquerBy(each.split(","), running, by);
       }
-      if (StringArsenal.current().containsAny(each, "java.util", "java.lang") || running.contains(StringArsenal.current().with(each). stripDoubleEndedNonAlphaNumeric())) {
+      if (StringArsenal.current().with(each).containsAny("java.util", "java.lang") || running.contains(StringArsenal.current().with(each). stripDoubleEndedNonAlphaNumeric())) {
         continue;
       }
       for (String inner : splitted) {
@@ -292,7 +292,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
           importLine = importLine.substring(0, importLine.indexOf(";"));
         }
         Class clazz = Class.forName(importLine);
-        if (StringArsenal.current().containsAny(importLine, "Builder", "Util") || ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
+        if (StringArsenal.current().with(importLine).containsAny("Builder", "Util") || ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
           continue;
         }
         lineUps.offer(clazz);

@@ -67,9 +67,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     CONSTRUCTOR_ANNOTATION = AT + rawInput.getCtorAnnotation();
     FIELD_ANNOTATION = AT + rawInput.getFieldAnnotation();
     CONSTRUCTOR_ANNOTATION_PACKAGE =
-            StringArsenal.current().buildAnnotationPackage(rawInput.getCtorAnnotationPackage(), rawInput.getCtorAnnotation());
+            StringArsenal.buildAnnotationPackage(rawInput.getCtorAnnotationPackage(), rawInput.getCtorAnnotation());
     PARAM_ANNOTATION_PACKAGE =
-            StringArsenal.current().buildAnnotationPackage(rawInput.getFieldAnnotationPackage(), rawInput.getFieldAnnotation());
+            StringArsenal.buildAnnotationPackage(rawInput.getFieldAnnotationPackage(), rawInput.getFieldAnnotation());
 
     this.rawCustomSerImportStrings = rawInput.getImportStrings();
     if (!Objects.isNull(this.rawCustomSerImportStrings)) {
@@ -160,7 +160,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
               continue;
             }
             final String fullImportString = getExactFullPathFor(eachType);
-            if (StringArsenal.current().isEmpty(fullImportString)) {
+            if (StringArsenal.isEmpty(fullImportString)) {
               continue;
             }
             /**
@@ -325,7 +325,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * if the universe
      * doesn't want to process this class.
      */
-    if (StringArsenal.current().isEmpty(annotatedConstructorCode) || SKIP_MARKER.equalsIgnoreCase(annotatedConstructorCode)) {
+    if (StringArsenal.isEmpty(annotatedConstructorCode) || SKIP_MARKER.equalsIgnoreCase(annotatedConstructorCode)) {
       return new BuildConstructorPhaseOutput(SKIP_MARKER);
     }
 
@@ -712,7 +712,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     //TODO build new with if check er local date
     for (int i = 0, n = builtFields.size(); i < n; i++) {
       String field = builtFields.get(i);
-      if (StringArsenal.current().isEmpty(field) || StringArsenal.current().isEmpty(extractVarName(field)) || field.contains(WEIRD_FIELD)) {
+      if (StringArsenal.isEmpty(field) || StringArsenal.isEmpty(extractVarName(field)) || field.contains(WEIRD_FIELD)) {
         continue;
       }
       if (i > 0) {
@@ -798,7 +798,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
        */
       if (fieldType.contains(DOT)) {
         final String importRegion = getImportRegion();
-        if (StringArsenal.current().isEmpty(importRegion)) {
+        if (StringArsenal.isEmpty(importRegion)) {
           return fieldType;
         }
         if (importRegion.contains(fieldType)) {
@@ -816,7 +816,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     StringBuilder sb = new StringBuilder();
     for (Character c : genericTypeInfo.toCharArray()) {
       if (splitTellerSet.contains(c)) {
-        if (StringArsenal.current().isEmpty(sb.toString()) || StringArsenal.current().containsAny(sb.toString(), "java.lang", "boolean", "int", "char", "double", "float", "long", "short", "byte", "String", "Integer", "Boolean", "Character")) {
+        if (StringArsenal.isEmpty(sb.toString()) || StringArsenal.current().containsAny(sb.toString(), "java.lang", "boolean", "int", "char", "double", "float", "long", "short", "byte", "String", "Integer", "Boolean", "Character")) {
           continue;
         }
         importLines.add(StringArsenal.current().with(sb.toString()).correctifyImportString(DOT.charAt(0)).getInternal());
@@ -906,7 +906,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * If exception occurs,
      * go to next class (maybe inner).
      */
-    if (!isDefaultCtor && (StringArsenal.current().isEmpty(ctorBody) || SKIP_MARKER.equalsIgnoreCase(ctorBody))) {
+    if (!isDefaultCtor && (StringArsenal.isEmpty(ctorBody) || SKIP_MARKER.equalsIgnoreCase(ctorBody))) {
       return SKIP_MARKER;
     }
     /**
@@ -968,7 +968,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         FileUtils.writeContentToFile("class_report.txt", "class is built with new ctor, please double check" + "\nat " + CLAZZ.getName() + "\n", true);
       }
       for (String rawArgString : fieldStrings) {
-        if (StringArsenal.current().isEmpty(rawArgString) || rawArgString.contains(WEIRD_FIELD)) {
+        if (StringArsenal.isEmpty(rawArgString) || rawArgString.contains(WEIRD_FIELD)) {
           continue;
         }
         if (annotatedArgs.length() > 0) {
@@ -1022,8 +1022,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
                 .getInternal();
 
       }
-      if (!StringArsenal.current().isEmpty(exactFieldName) && !exactFieldName.equalsIgnoreCase(intern)) {
-        if (StringArsenal.current().isEmpty(exactFieldName)) {
+      if (!StringArsenal.isEmpty(exactFieldName) && !exactFieldName.equalsIgnoreCase(intern)) {
+        if (StringArsenal.isEmpty(exactFieldName)) {
           prefixReportMsg = "!!ALERT, param is not assigned to any declared field !\n";
         } else {
           prefixReportMsg = "already added mismatched fields = \n";
@@ -1168,7 +1168,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
    * @return
    */
   public static List<String> normalizeParams(String inp, boolean isPreserveOrder) {
-    if (StringArsenal.current().isEmpty(inp)) {
+    if (StringArsenal.isEmpty(inp)) {
       return Collections.emptyList();
     }
     DoubleEndedStack<String> stack = new DoubleEndedStack<>();
@@ -1288,7 +1288,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     StringBuilder res = new StringBuilder();
     for (int i = 0, n = this.missingImportClassString.size(); i < n; i++) {
       String each = this.missingImportClassString.get(i);
-      if (StringArsenal.current().isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
+      if (StringArsenal.isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
       || (trieRepository.containsData() && trieRepository.search(each) > 0)) { //Use Trie to evaluate strings.
         continue;
       }
@@ -1335,7 +1335,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   }
 
   private String extractVarName(String raw) {
-    if (StringArsenal.current().isEmpty(raw)) {
+    if (StringArsenal.isEmpty(raw)) {
       return "";
     }
     String[] spaceSplitted = raw.split(SPACE);

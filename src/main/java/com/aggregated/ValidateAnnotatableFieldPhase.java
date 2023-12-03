@@ -43,7 +43,7 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
       if (isSerializableField(field)) {
         this.collectedField.addSerializableField(ReflectionUtils.createDecoLocalFieldFrom(field));
       }
-      if (StringArsenal.current().isEmpty(withType)) {
+      if (StringArsenal.current().with(withType).isEmpty()) {
         continue;
       }
       String toEvalBy = field.getType().getSimpleName();

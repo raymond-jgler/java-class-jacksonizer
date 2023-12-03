@@ -418,7 +418,7 @@ public class StringArsenal {
         return -1;
     }
 
-    public String buildAnnotationPackage(String unresolvedPackage, String annotation) {
+    public static String buildAnnotationPackage(String unresolvedPackage, String annotation) {
         return (SPACE + unresolvedPackage + DOT + annotation + SEMICOLON).replace(AT, "");
     }
 

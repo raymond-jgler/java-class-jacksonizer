@@ -30,7 +30,7 @@ public class TrieRepository {
         return this;
     }
     public int search(String inp) {
-        if (StringArsenal.current().isEmpty(inp)) {
+        if (StringArsenal.isEmpty(inp)) {
             return -1;
         }
         return trie.searchWord(inp.toLowerCase());

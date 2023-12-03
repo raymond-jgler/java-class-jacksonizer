@@ -14,7 +14,7 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
 
   @Override
   public boolean failVerify() {
-    return StringArsenal.current().isEmpty(this.completeModifiedContent.toString());
+    return StringArsenal.isEmpty(this.completeModifiedContent.toString());
   }
 
   @Override

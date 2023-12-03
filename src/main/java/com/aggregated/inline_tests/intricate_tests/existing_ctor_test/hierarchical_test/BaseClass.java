@@ -30,7 +30,7 @@ public abstract class BaseClass<T> {
             this.listDummy = (List<DummyObject>) listDummy;
         }
         this.x = x;
-        if (StringArsenal.current().isEmpty(paramText)) {
+        if (StringArsenal.current().with(paramText).isEmpty()) {
             paramText = "";
         }
         this.text = paramText;
