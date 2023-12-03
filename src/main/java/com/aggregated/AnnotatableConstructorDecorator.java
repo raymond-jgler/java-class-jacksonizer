@@ -47,7 +47,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
   public static void enqueueWith(Class clz) {
     if (Objects.isNull(clz) || lineUps.contains(clz) || visited.contains(cleanseClassPath(clz.getName()))
-            || StringUtils.containsAny(clz.getName(), "org", "java", "java.util")) {
+            || StringArsenal.current().current().containsAny(clz.getName(), "org", "java", "java.util")) {
       return;
     }
     lineUps.offer(clz);
@@ -185,7 +185,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
                   /**
                    * Add to this list, it will process this.
                    */
-                  concurrentModifiable.offer(StringUtils.stripUntilDollarSign(eachRaw));
+                  concurrentModifiable.offer(StringArsenal.current().stripUntilDollarSign(eachRaw));
                 }
                 currentNode = Class.forName(eachRaw);
                 if (Objects.isNull(currentNode) || lineUps.contains(currentNode)) {
@@ -246,11 +246,11 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
       if (each.contains(String.valueOf(by))) {
         return divideAndConquerBy(each.split(","), running, by);
       }
-      if (StringUtils.containsAny(each, "java.util", "java.lang") || running.contains(StringUtils.stripDoubleEndedNonAlphaNumeric(each))) {
+      if (StringArsenal.current().containsAny(each, "java.util", "java.lang") || running.contains(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(each))) {
         continue;
       }
       for (String inner : splitted) {
-        if (!inner.contains(".") || StringUtils.containsAny(inner, "java.util", "java.lang") || running.contains(inner)) {
+        if (!inner.contains(".") || StringArsenal.current().containsAny(inner, "java.util", "java.lang") || running.contains(inner)) {
           continue;
         }
         running.offer(cleanseClassPath(inner));
@@ -260,9 +260,9 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
 
   public static String cleanseClassPath(String raw) {
-    String resolved = StringUtils
-            .stripUntilClassPath(StringUtils
-                            .stripDoubleEndedNonAlphaNumeric(StringUtils
+    String resolved = StringArsenal
+            .stripUntilClassPath(StringArsenal
+                            .stripDoubleEndedNonAlphaNumeric(StringArsenal
                                     .resolveReplaces(raw,
                                             "class ",
                                             "",
@@ -277,7 +277,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
     if (resolved.contains("L") && resolved.indexOf(".") < resolved.indexOf("L")) {
       return resolved;
     }
-    return StringUtils.resolveReplaces(resolved, "L", "");
+    return StringArsenal.current().resolveReplaces(resolved, "L", "");
   }
 
   private void enqueueWithImportedDomainClasses(String content) {
@@ -293,7 +293,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
           importLine = importLine.substring(0, importLine.indexOf(";"));
         }
         Class clazz = Class.forName(importLine);
-        if (StringUtils.containsAny(importLine, "Builder", "Util") || ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
+        if (StringArsenal.current().containsAny(importLine, "Builder", "Util") || ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
           continue;
         }
         lineUps.offer(clazz);
@@ -307,7 +307,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
       if (ReflectionUtils.isForbidden(clazz, rawInput) || ReflectionUtils.hardCodeIsJackson(clazz)) {
         continue;
       }
-      if (visited.contains(StringUtils.stripDoubleEndedNonAlphaNumeric(clazz.getName()))) {
+      if (visited.contains(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(clazz.getName()))) {
         continue;
       }
       enqueueWith(clazz);

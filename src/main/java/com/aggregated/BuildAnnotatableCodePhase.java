@@ -66,9 +66,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     CONSTRUCTOR_ANNOTATION = AT + rawInput.getCtorAnnotation();
     FIELD_ANNOTATION = AT + rawInput.getFieldAnnotation();
     CONSTRUCTOR_ANNOTATION_PACKAGE =
-            StringUtils.buildAnnotationPackage(rawInput.getCtorAnnotationPackage(), rawInput.getCtorAnnotation());
+            StringArsenal.current().buildAnnotationPackage(rawInput.getCtorAnnotationPackage(), rawInput.getCtorAnnotation());
     PARAM_ANNOTATION_PACKAGE =
-            StringUtils.buildAnnotationPackage(rawInput.getFieldAnnotationPackage(), rawInput.getFieldAnnotation());
+            StringArsenal.current().buildAnnotationPackage(rawInput.getFieldAnnotationPackage(), rawInput.getFieldAnnotation());
 
     this.rawCustomSerImportStrings = rawInput.getImportStrings();
     if (!Objects.isNull(this.rawCustomSerImportStrings)) {
@@ -112,14 +112,14 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   private List<DecorationLocalField> buildListFromSpacedStrings(List<String> source) {
     List<DecorationLocalField> res = new ArrayList<>();
     for (String each : source) {
-      if (StringUtils.isEmpty(each)) {
+      if (StringArsenal.current().isEmpty(each)) {
         continue;
       }
       String fieldType;
       String fieldName;
-      if (StringUtils.containsAny(each, "<", ">", ".")) {
-        int closeBrctEnding = StringUtils.lastIndexOf(each, '>', each.length() - 1, 1, Boolean.TRUE);
-        int dotEnding = StringUtils.lastIndexOf(each, '.', each.length() - 1, 1, Boolean.TRUE);
+      if (StringArsenal.current().containsAny(each, "<", ">", ".")) {
+        int closeBrctEnding = StringArsenal.current().lastIndexOf(each, '>', each.length() - 1, 1, Boolean.TRUE);
+        int dotEnding = StringArsenal.current().lastIndexOf(each, '.', each.length() - 1, 1, Boolean.TRUE);
         int finalEnding = -1;
         if (Math.min(dotEnding, closeBrctEnding) == -1) {
           finalEnding = Math.max(dotEnding, closeBrctEnding);
@@ -134,11 +134,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         fieldName = splitted[1];
       }
       String evalFullPath = "";
-      for (String eachRawType : new HashSet<>(StringUtils.makeNonAlphaStringsFrom(fieldType))) {
-        if (!StringUtils.isEmpty(fieldType) && !StringUtils.isAllLowerCase(fieldType) && !shouldSkipImport(fieldType)) {
+      for (String eachRawType : new HashSet<>(StringArsenal.current().makeNonAlphaStringsFrom(fieldType))) {
+        if (!StringArsenal.current().isEmpty(fieldType) && !StringArsenal.current().isAllLowerCase(fieldType) && !shouldSkipImport(fieldType)) {
           evalFullPath = getExactFullPathFor(eachRawType);
         }
-        if (StringUtils.isEmpty(eachRawType)) {
+        if (StringArsenal.current().isEmpty(eachRawType)) {
           evalFullPath = fieldType;
         } else {
           if (!evalFullPath.contains(fieldType)) {
@@ -152,12 +152,12 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
          * Eval each field type to search for import.
          */
         if (Objects.nonNull(candidate) && Objects.nonNull(candidate.getGenericTypeName())) {
-          for (String eachType : new HashSet<>(StringUtils.makeNonAlphaStringsFrom(candidate.getGenericTypeName()))) {
+          for (String eachType : new HashSet<>(StringArsenal.current().makeNonAlphaStringsFrom(candidate.getGenericTypeName()))) {
             if (shouldSkipImport(eachType)) {
               continue;
             }
             final String fullImportString = getExactFullPathFor(eachType);
-            if (StringUtils.isEmpty(fullImportString)) {
+            if (StringArsenal.current().isEmpty(fullImportString)) {
               continue;
             }
             /**
@@ -165,7 +165,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
              * Enqueue this class,
              * for the full bfs flow
              */
-            if (rawInput.getBfsParams() && StringUtils.isNotEmpty(fullImportString)) {
+            if (rawInput.getBfsParams() && StringArsenal.current().isNotEmpty(fullImportString)) {
               try {
                 if (Objects.nonNull(fullImportString)) {
                   AnnotatableConstructorDecorator.enqueueWith(ReflectionUtils.getClass(fullImportString));
@@ -322,7 +322,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * if the universe
      * doesn't want to process this class.
      */
-    if (StringUtils.isEmpty(annotatedConstructorCode) || SKIP_MARKER.equalsIgnoreCase(annotatedConstructorCode)) {
+    if (StringArsenal.current().isEmpty(annotatedConstructorCode) || SKIP_MARKER.equalsIgnoreCase(annotatedConstructorCode)) {
       return new BuildConstructorPhaseOutput(SKIP_MARKER);
     }
 
@@ -415,7 +415,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   private String prependWrapperObject(String firstHalf) {
     StringBuilder finalRes = new StringBuilder();
     final String toPrepend = "@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.WRAPPER_OBJECT)";
-    int beforeClassIdx =  StringUtils.firstIndexOf(firstHalf, '\r', CLASS_KEYWORD_N_NAME_IDX, Boolean.TRUE);
+    int beforeClassIdx =  StringArsenal.current().firstIndexOf(firstHalf, '\r', CLASS_KEYWORD_N_NAME_IDX, Boolean.TRUE);
     final String resultFirstHalf = firstHalf.substring(0, beforeClassIdx);
     final String resultSecondHalf = firstHalf.substring(beforeClassIdx + 1, firstHalf.length());
 
@@ -458,8 +458,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       );
 
       int end = Math.max(
-              StringUtils.firstIndexOf(runningContent, SEMICOLON, field.getIndexInClass(), true),
-              StringUtils.firstIndexOf(runningContent, '\r', correspondingFieldIndex, true)
+              StringArsenal.current().firstIndexOf(runningContent, SEMICOLON, field.getIndexInClass(), true),
+              StringArsenal.current().firstIndexOf(runningContent, '\r', correspondingFieldIndex, true)
       );
 
       String toPrepend = runningContent.substring(0, end);
@@ -467,7 +467,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
               .append(toPrepend)
               .append(SINGLE_BREAK)
               .append(field.getTransformed(true))
-              .append(runningContent.substring(StringUtils.firstIndexOf(runningContent, SEMICOLON, end, false) + 1,
+              .append(runningContent.substring(StringArsenal.current().firstIndexOf(runningContent, SEMICOLON, end, false) + 1,
                       runningContent.length()));
 
       runningContent = sb.toString();
@@ -542,9 +542,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         continue;
       }
       String stringForm = CLASS_CONTENT.substring(internIdx, CLASS_CONTENT.indexOf(SEMICOLON, internIdx) + 1);
-      stringForm = StringUtils
+      stringForm = StringArsenal
               .stripDoubleEndedNonAlphaNumeric(
-                      StringUtils.findPrependablePieceFrom(CLASS_CONTENT, internIdx, null, false)) + stringForm;
+                      StringArsenal.current().findPrependablePieceFrom(CLASS_CONTENT, internIdx, null, false)) + stringForm;
 
       CustomSerializationIndexedField indexedField = new CustomSerializationIndexedField(internIdx, field, stringForm);
       indexedField.transformDecorate(buildCompleteCustomSerAnnotation("using"));
@@ -557,13 +557,13 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     List<String> annotationLines = new ArrayList<>();
     for (int i = 0, n = customSerClassNames.size(); i < n; i++) {
       StringBuilder annotationLine = new StringBuilder();
-      String customSerClass = AT + StringUtils.getLastWord(this.customSerAnnotStrings.get(i), DOT);
+      String customSerClass = AT + StringArsenal.current().getLastWord(this.customSerAnnotStrings.get(i), DOT);
       annotationLine.append(customSerClass)
               .append(OPEN_PAREN)
-              .append(StringUtils
+              .append(StringArsenal
                       .formKeyValuePair(
                               annotationProp,
-                              StringUtils.getLastWord(customSerClassNames.get(i), DOT) + DOT + CLASS_KEYWORD,
+                              StringArsenal.current().getLastWord(customSerClassNames.get(i), DOT) + DOT + CLASS_KEYWORD,
                               EQUAL))
 
               .append(CLOSE_PAREN);
@@ -598,12 +598,12 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
 
   private String stripFinalClass(String firstHalf) {
     String theRest              = firstHalf.substring(firstHalf.indexOf(OPEN_BRACKET, CLASS_KEYWORD_N_NAME_IDX));
-    int    stop                 = Math.min(StringUtils.lastIndexOf(firstHalf, '\r', CLASS_KEYWORD_N_NAME_IDX, 1, null),
-            StringUtils.lastIndexOf(firstHalf, '\n', CLASS_KEYWORD_N_NAME_IDX, 1, null));
+    int    stop                 = Math.min(StringArsenal.current().lastIndexOf(firstHalf, '\r', CLASS_KEYWORD_N_NAME_IDX, 1, null),
+            StringArsenal.current().lastIndexOf(firstHalf, '\n', CLASS_KEYWORD_N_NAME_IDX, 1, null));
     String splittedFirstPartIdx = firstHalf.substring(0, stop);
     int    bridgedIdx           = firstHalf.indexOf(OPEN_BRACKET, stop);
     String classDeclaredPart    = firstHalf.substring(stop, bridgedIdx);
-    classDeclaredPart = StringUtils.resolveReplaces(classDeclaredPart, FINAL_KEYWORD, "", SPACE + SPACE, SPACE);
+    classDeclaredPart = StringArsenal.current().resolveReplaces(classDeclaredPart, FINAL_KEYWORD, "", SPACE + SPACE, SPACE);
 
     return splittedFirstPartIdx + classDeclaredPart + theRest;
   }
@@ -706,7 +706,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     //TODO build new with if check er local date
     for (int i = 0, n = builtFields.size(); i < n; i++) {
       String field = builtFields.get(i);
-      if (StringUtils.isEmpty(field) || StringUtils.isEmpty(extractVarName(field)) || field.contains(WEIRD_FIELD)) {
+      if (StringArsenal.current().isEmpty(field) || StringArsenal.current().isEmpty(extractVarName(field)) || field.contains(WEIRD_FIELD)) {
         continue;
       }
       if (i > 0) {
@@ -777,11 +777,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     } else {
       fieldType = field.getGenericTypeName();
       for (String each : COMMON_PACKAGE_LIST) {
-        fieldType = StringUtils.resolveReplaces(fieldType, each + DOT, "");
+        fieldType = StringArsenal.current().resolveReplaces(fieldType, each + DOT, "");
       }
       if (fieldType.contains(DOT)) {
-        fieldType = StringUtils.bulkCascadeRemoveSuffixedString(fieldType, DOT.charAt(0), '<', ',', '>');
-        fieldType = StringUtils.resolveReplaces(fieldType, "$", DOT);
+        fieldType = StringArsenal.current().bulkCascadeRemoveSuffixedString(fieldType, DOT.charAt(0), '<', ',', '>');
+        fieldType = StringArsenal.current().resolveReplaces(fieldType, "$", DOT);
       }
       /**
        * Hotfix for:
@@ -790,7 +790,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
        */
       if (fieldType.contains(DOT)) {
         final String importRegion = getImportRegion();
-        if (StringUtils.isEmpty(importRegion)) {
+        if (StringArsenal.current().isEmpty(importRegion)) {
           return fieldType;
         }
         if (importRegion.contains(fieldType)) {
@@ -808,17 +808,17 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     StringBuilder sb = new StringBuilder();
     for (Character c : genericTypeInfo.toCharArray()) {
       if (splitTellerSet.contains(c)) {
-        if (StringUtils.isEmpty(sb.toString()) || StringUtils.containsAny(sb.toString(), "java.lang", "boolean", "int", "char", "double", "float", "long", "short", "byte", "String", "Integer", "Boolean", "Character")) {
+        if (StringArsenal.current().isEmpty(sb.toString()) || StringArsenal.current().containsAny(sb.toString(), "java.lang", "boolean", "int", "char", "double", "float", "long", "short", "byte", "String", "Integer", "Boolean", "Character")) {
           continue;
         }
-        importLines.add(StringUtils.correctifyImportString(sb.toString(), '.'));
+        importLines.add(StringArsenal.current().correctifyImportString(sb.toString(), '.'));
         sb.setLength(0);
         continue;
       }
       sb.append(c);
     }
     if (sb.length() > 0) {
-      importLines.add(StringUtils.correctifyImportString(sb.toString(), '.'));
+      importLines.add(StringArsenal.current().correctifyImportString(sb.toString(), '.'));
     }
     return importLines;
   }
@@ -898,7 +898,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * If exception occurs,
      * go to next class (maybe inner).
      */
-    if (!isDefaultCtor && (StringUtils.isEmpty(ctorBody) || SKIP_MARKER.equalsIgnoreCase(ctorBody))) {
+    if (!isDefaultCtor && (StringArsenal.current().isEmpty(ctorBody) || SKIP_MARKER.equalsIgnoreCase(ctorBody))) {
       return SKIP_MARKER;
     }
     /**
@@ -931,9 +931,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       for (String curr : currentFields) {
         try {
           String className = curr.split(SPACE)[0];
-          for (String possibleClassName : StringUtils.makeNonAlphaStringsFrom(className)) {
+          for (String possibleClassName : StringArsenal.current().makeNonAlphaStringsFrom(className)) {
 //            Class clazz = ReflectionUtils.getClass(StringUtils.stripDoubleEndedNonAlphaNumeric(getFullPathFor(possibleClassName)));
-            Class clazz = ReflectionUtils.getClass(StringUtils.stripDoubleEndedNonAlphaNumeric(getExactFullPathFor(possibleClassName)));
+            Class clazz = ReflectionUtils.getClass(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(getExactFullPathFor(possibleClassName)));
             if (ReflectionUtils.isForbidden(clazz, rawInput)) {
               continue;
             }
@@ -960,7 +960,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         FileUtils.writeContentToFile("class_report.txt", "class is built with new ctor, please double check" + "\nat " + CLAZZ.getName() + "\n", true);
       }
       for (String rawArgString : fieldStrings) {
-        if (StringUtils.isEmpty(rawArgString) || rawArgString.contains(WEIRD_FIELD)) {
+        if (StringArsenal.current().isEmpty(rawArgString) || rawArgString.contains(WEIRD_FIELD)) {
           continue;
         }
         if (annotatedArgs.length() > 0) {
@@ -1000,22 +1000,22 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         idxOfParam = existingCtorBody.indexOf(intern + dummyEnds[i]);
       }
       String prefixReportMsg = "";
-      int equalSignIdx = StringUtils.lastIndexOf(existingCtorBody,
-              StringUtils.resolveReplaces(EQUAL, SPACE, "").charAt(0),
+      int equalSignIdx = StringArsenal.current().lastIndexOf(existingCtorBody,
+              StringArsenal.current().resolveReplaces(EQUAL, SPACE, "").charAt(0),
               idxOfParam,
               -1, null);
       if (equalSignIdx != -1 && idxOfParam != -1 && equalSignIdx != idxOfParam) {
         /**
          * loop backward, reverse-build a string.
          */
-        exactFieldName = StringUtils.
+        exactFieldName = StringArsenal.current().
                 findPrependablePieceFrom(
                         existingCtorBody.substring(0, equalSignIdx),
                         equalSignIdx - 1, DOT.charAt(0), true);
 
       }
-      if (!StringUtils.isEmpty(exactFieldName) && !exactFieldName.equalsIgnoreCase(intern)) {
-        if (StringUtils.isEmpty(exactFieldName)) {
+      if (!StringArsenal.current().isEmpty(exactFieldName) && !exactFieldName.equalsIgnoreCase(intern)) {
+        if (StringArsenal.current().isEmpty(exactFieldName)) {
           prefixReportMsg = "!!ALERT, param is not assigned to any declared field !\n";
         } else {
           prefixReportMsg = "already added mismatched fields = \n";
@@ -1029,7 +1029,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       throw new RuntimeException("rip");
 //      return intern;
     }
-    return StringUtils.isEmpty(exactFieldName) ? intern : exactFieldName;
+    return StringArsenal.current().isEmpty(exactFieldName) ? intern : exactFieldName;
   }
 
   private int findExistingParaCtor() {
@@ -1042,11 +1042,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       String declaredParm = CLASS_CONTENT
               .substring(openParenIdx + 1, closeParenIdx);
 
-      if (StringUtils.isEmpty(declaredParm)) {
+      if (StringArsenal.current().isEmpty(declaredParm)) {
         continue;
       }
 
-      List<String> declardParmList = normalizeParams(StringUtils.stripComments(declaredParm), Boolean.TRUE);
+      List<String> declardParmList = normalizeParams(StringArsenal.current().stripComments(declaredParm), Boolean.TRUE);
       /**
        * Gradually record the ctor with
        * number of max params in string.
@@ -1090,7 +1090,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
    */
   private String getFullPathFor(String className) {
     try {
-      if (StringUtils.isNotEmpty(getFullPathForClass(className))) {
+      if (StringArsenal.current().isNotEmpty(getFullPathForClass(className))) {
         return getFullPathForClass(className);
       }
       final String zone = getImportRegion();
@@ -1098,7 +1098,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       if (endIdx == -1) {
         return getFullPathForClass(className);
       }
-      int startIdx = StringUtils.lastIndexOf(zone, SPACE.charAt(0), endIdx, 1, null);
+      int startIdx = StringArsenal.current().lastIndexOf(zone, SPACE.charAt(0), endIdx, 1, null);
       if (startIdx == -1) {
         return getFullPathForClass(className);
       }
@@ -1111,7 +1111,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   }
   private String getExactFullPathFor(String className) {
     try {
-      if (StringUtils.isNotEmpty(getFullPathForClass(className))) {
+      if (StringArsenal.current().isNotEmpty(getFullPathForClass(className))) {
         return getFullPathForClass(className);
       }
       final String zone = getImportRegion();
@@ -1124,7 +1124,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
                 .with(line, false)
                 .search(className);
         if (res >= 1) {
-          addPathToClass(className, StringUtils.stripDoubleEndedNonAlphaNumeric(line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length() + 1)));
+          addPathToClass(className, StringArsenal.current().stripDoubleEndedNonAlphaNumeric(line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length() + 1)));
           break;
         }
       }
@@ -1160,7 +1160,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
    * @return
    */
   public static List<String> normalizeParams(String inp, boolean isPreserveOrder) {
-    if (StringUtils.isEmpty(inp)) {
+    if (StringArsenal.current().isEmpty(inp)) {
       return Collections.emptyList();
     }
     DoubleEndedStack<String> stack = new DoubleEndedStack<>();
@@ -1177,7 +1177,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         if (stimulatedSyntaxStack > 0) {
           toReverse.append(cur);
         } else {
-          String cleansed = StringUtils.stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
+          String cleansed = StringArsenal.current().stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
           if (isPreserveOrder) {
             stack.push(cleansed);
           } else {
@@ -1194,7 +1194,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       toReverse.append(cur);
     }
-    String last = StringUtils.stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
+    String last = StringArsenal.current().stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
     if (isPreserveOrder) {
       stack.push(last);
       while (!stack.isEmpty()) {
@@ -1251,7 +1251,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * let's bring it back
      */
     if (startingImportIdx > CLASS_KEYWORD_N_NAME_IDX) {
-      startingImportIdx = StringUtils.lastIndexOf(CLASS_CONTENT, SEMICOLON, CLASS_KEYWORD_N_NAME_IDX, 1, false);
+      startingImportIdx = StringArsenal.current().lastIndexOf(CLASS_CONTENT, SEMICOLON, CLASS_KEYWORD_N_NAME_IDX, 1, false);
     }
 
     finalModified
@@ -1268,11 +1268,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      */
     String zone = getImportRegion();
     TrieRepository trieRepository = TrieRepository.go().resetTrie();
-    if (StringUtils.isNotEmpty(zone)) {
+    if (StringArsenal.current().isNotEmpty(zone)) {
       for (String line : zone.split(String.valueOf(SEMICOLON))) {
         if (line.contains(IMPORT_KEYWORD)) {
           line = line.substring(line.indexOf(IMPORT_KEYWORD) + IMPORT_KEYWORD.length(), line.length()).replace(";", "");
-          line = StringUtils.toStringFromList(StringUtils.makeNonAlphaStringsFrom(line));
+          line = StringArsenal.current().toStringFromList(StringArsenal.current().makeNonAlphaStringsFrom(line));
         }
         trieRepository.with(line, true);
       }
@@ -1280,7 +1280,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     StringBuilder res = new StringBuilder();
     for (int i = 0, n = this.missingImportClassString.size(); i < n; i++) {
       String each = this.missingImportClassString.get(i);
-      if (StringUtils.isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
+      if (StringArsenal.current().isEmpty(each) || each.charAt(0) == '.' || !each.contains(DOT)
       || (trieRepository.containsData() && trieRepository.search(each) > 0)) { //Use Trie to evaluate strings.
         continue;
       }
@@ -1327,7 +1327,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   }
 
   private String extractVarName(String raw) {
-    if (StringUtils.isEmpty(raw)) {
+    if (StringArsenal.current().isEmpty(raw)) {
       return "";
     }
     String[] spaceSplitted = raw.split(SPACE);
@@ -1347,7 +1347,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   private String annotateArg(String raw, String varName) {
     StringBuilder jacksonAnnotated = new StringBuilder();
     StringBuilder middleValue = new StringBuilder(SPACE);
-    if (StringUtils.isNoneBlank(varName)) {
+    if (StringArsenal.current().isNoneBlank(varName)) {
       middleValue.setLength(0);
       middleValue
               .append(OPEN_PAREN)
@@ -1375,8 +1375,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     }
 
     public String getComplete() {
-      return StringUtils.appendIndentableBracketTo(ctorPrototype, String.valueOf(OPEN_BRACKET), "")
-              + StringUtils.appendIndentableBracketTo(methodBody,
+      return StringArsenal.current().appendIndentableBracketTo(ctorPrototype, String.valueOf(OPEN_BRACKET), "")
+              + StringArsenal.current().appendIndentableBracketTo(methodBody,
               String.valueOf(CLOSE_BRACKET),
               IndentationUtils.get(IndentationUtils.OUTER_BLOCK_TAB));
     }

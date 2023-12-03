@@ -1,6 +1,5 @@
 package com.aggregated;
 
-import com.ibm.nws.ejs.ras.Tr;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
@@ -43,7 +42,7 @@ public class Trie {
                 if (!Character.isLetterOrDigit(each)) {
                     continue;
                 }
-                int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
+                int idx = StringArsenal.current().asciiValueOf(each, Boolean.TRUE);
                 if (idx >= 26) {
                     idx -= DIGIT_REBOUNCE;
                 }
@@ -75,7 +74,7 @@ public class Trie {
             if (!Character.isLetterOrDigit(each)) {
                 continue;
             }
-            int idx = StringUtils.asciiValueOf(each, Boolean.TRUE);
+            int idx = StringArsenal.current().asciiValueOf(each, Boolean.TRUE);
             if (idx >= 26) {
                 idx -= DIGIT_REBOUNCE;
             }

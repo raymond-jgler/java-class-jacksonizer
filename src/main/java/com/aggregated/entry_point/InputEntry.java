@@ -1,7 +1,7 @@
 package com.aggregated.entry_point;
 
 import com.aggregated.Driver;
-import com.aggregated.StringUtils;
+import com.aggregated.StringArsenal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class InputEntry {
           line = resolveReplaces(line, ".*", "", "**", "", "*", "", " ", "");
           scanClassesInPackage(line);
         } else {
-          line = resolveJavaFile(StringUtils.stripDoubleEndedNonAlphaNumeric(line));
+          line = resolveJavaFile(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(line));
           Driver.JacksonModeSingleJavaExecution(line);
         }
       }
@@ -103,12 +103,12 @@ public class InputEntry {
     String javaPackage = resolveReplaces(packagePath, "src\\main\\java\\", "", "\\", ".", "//", ".", " ", "");
     LOG.info("==== javaPackage: " + javaPackage.substring(0, javaPackage.length()));
     if (javaPackage.contains("*")) {
-      javaPackage = javaPackage.substring(0, StringUtils.lastIndexOf(javaPackage, '.', null, null, null));
+      javaPackage = javaPackage.substring(0, StringArsenal.current().lastIndexOf(javaPackage, '.', null, null, null));
     }
     Driver.JacksonModePackageExecution(javaPackage);
   }
   private static boolean evalSinglePackage(String inp) {
-    return StringUtils.countCharsFromEnd(inp, '*') == 1;
+    return StringArsenal.current().countCharsFromEnd(inp, '*') == 1;
   }
 }
 

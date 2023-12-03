@@ -21,7 +21,7 @@ public class TrieRepository {
         if (isConcatenate) {
             trie.addWord(inp);
         } else {
-            trie.addWord(StringUtils.makeNonAlphaStringsFrom(inp));
+            trie.addWord(StringArsenal.current().makeNonAlphaStringsFrom(inp));
         }
         return this;
     }
@@ -30,7 +30,7 @@ public class TrieRepository {
         return this;
     }
     public int search(String inp) {
-        if (StringUtils.isEmpty(inp)) {
+        if (StringArsenal.current().isEmpty(inp)) {
             return -1;
         }
         return trie.searchWord(inp.toLowerCase());

@@ -28,7 +28,7 @@ public class DecorationLocalField {
   }
 
   private static String fishyStripFirstDot(String fieldName) {
-    if (StringUtils.isEmpty(fieldName)) {
+    if (StringArsenal.current().isEmpty(fieldName)) {
       return fieldName;
     }
     if (fieldName.charAt(0) == '.') {
@@ -41,7 +41,7 @@ public class DecorationLocalField {
     if (Objects.isNull(this.fullImportStringList)) {
       this.fullImportStringList = new ArrayList<>();
     }
-    if (StringUtils.isEmpty(importString) || this.fullImportStringList.contains(importString)) {
+    if (StringArsenal.current().isEmpty(importString) || this.fullImportStringList.contains(importString)) {
       return;
     }
     this.fullImportStringList.add(importString);

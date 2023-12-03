@@ -1,6 +1,6 @@
 package com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test;
 
-import com.aggregated.StringUtils;
+import com.aggregated.StringArsenal;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject01;
 import com.aggregated.inline_tests.intricate_tests.existing_ctor_test.fuzzy_class.DummyObject02;
@@ -30,7 +30,7 @@ public abstract class BaseClass<T> {
             this.listDummy = (List<DummyObject>) listDummy;
         }
         this.x = x;
-        if (StringUtils.isEmpty(paramText)) {
+        if (StringArsenal.current().isEmpty(paramText)) {
             paramText = "";
         }
         this.text = paramText;

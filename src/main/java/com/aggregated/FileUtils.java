@@ -17,7 +17,7 @@ public class FileUtils {
     if (packageName.contains(BASE_MODULE_PATH)) {
       return new File(packageName);
     }
-    return new File(BASE_MODULE_PATH + StringUtils.resolveReplaces(packageName, ".**", "", ".", "//"));
+    return new File(BASE_MODULE_PATH + StringArsenal.current().resolveReplaces(packageName, ".**", "", ".", "//"));
   }
 
   public static void writeContentToFile(String fileName, String content, boolean isAppend) {

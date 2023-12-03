@@ -21,7 +21,7 @@ public class ReflectionUtils {
    * @return
    */
   public static Class getClass(String unresolvedName) {
-    if (StringUtils.isAllLowerCase(unresolvedName)) {
+    if (StringArsenal.current().isAllLowerCase(unresolvedName)) {
       return null;
     }
     String toPrint = unresolvedName;
@@ -29,10 +29,10 @@ public class ReflectionUtils {
     int dotIdx = -1;
     do {
       try {
-        clazz = Class.forName(StringUtils.stripDoubleEndedNonAlphaNumeric(unresolvedName));
+        clazz = Class.forName(StringArsenal.current().stripDoubleEndedNonAlphaNumeric(unresolvedName));
       } catch (ClassNotFoundException e) {
         try {
-          unresolvedName = StringUtils.resolveReplaces(unresolvedName,
+          unresolvedName = StringArsenal.current().resolveReplaces(unresolvedName,
                   "//",
                   ".",
                   "\\",
@@ -122,7 +122,7 @@ public class ReflectionUtils {
       return false;
     }
     for (String eachSkipped : skippedClasses) {
-      if (StringUtils.containsAny(className, eachSkipped) || StringUtils.endsWithAny(className,
+      if (StringArsenal.current().containsAny(className, eachSkipped) || StringArsenal.current().endsWithAny(className,
               eachSkipped) || className.equalsIgnoreCase(eachSkipped)
               || eachSkipped.equalsIgnoreCase(className)) {
         return true;
@@ -166,13 +166,13 @@ public class ReflectionUtils {
       if (running.contains("/**") || running.contains("//") || running.contains("/***")) {
         //skip cmt block
 //        for (i += 1; i < n && (!searchRange[i].contains("//") && !searchRange[i].contains("*/")); i++) {}
-        for (i += 1; i < n && !StringUtils.containsAny(FIELD_REGION[i], "*/", "**/", "***/", "//", "\n", "\r"); i++) {
+        for (i += 1; i < n && !StringArsenal.current().containsAny(FIELD_REGION[i], "*/", "**/", "***/", "//", "\n", "\r"); i++) {
         }
         i++;
         continue;
       }
       if (running.contains(fieldName)) {
-        if (false == StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
+        if (false == StringArsenal.current().resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
           continue;
         }
         if (running.contains(";")) {
@@ -184,7 +184,7 @@ public class ReflectionUtils {
             if (running.contains("null") || running.contains("false") || running.contains("true")) {
               return true;
             }
-            if (StringUtils.containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
+            if (StringArsenal.current().containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
               break;
             }
           }
@@ -198,7 +198,7 @@ public class ReflectionUtils {
               if (running.contains("null") || running.contains("false") || running.contains("true")) {
                 return true;
               }
-              if (StringUtils.containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
+              if (StringArsenal.current().containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
                 break;
               }
             }

@@ -16,12 +16,12 @@ public class BuildConstructorPhaseOutput extends ChainedOutput {
 
   @Override
   public boolean failVerify() {
-    return StringUtils.isEmpty(this.completeModifiedContent.toString());
+    return StringArsenal.current().isEmpty(this.completeModifiedContent.toString());
   }
 
   @Override
   public void reset() {
-    if (StringUtils.isNotEmpty(this.completeModifiedContent.toString())) {
+    if (StringArsenal.current().isNotEmpty(this.completeModifiedContent.toString())) {
       this.completeModifiedContent.setLength(0);
     } else {
       this.completeModifiedContent = new StringBuilder();

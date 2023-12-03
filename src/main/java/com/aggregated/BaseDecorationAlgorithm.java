@@ -1,7 +1,6 @@
 package com.aggregated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,7 @@ public abstract class BaseDecorationAlgorithm implements DecorationAlgorithm {
 
   //TODO shuda let file utils do this.
   private void beginTakeFiles() {
-    if (StringUtils.isNotEmpty(this.rawInput.getSingleJavaFileName())) {
+    if (StringArsenal.current().isNotEmpty(this.rawInput.getSingleJavaFileName())) {
       this.processibleFileList.add(FileUtils.makeFolderOrFile(this.rawInput.getSingleJavaFileName()));
       return;
     }

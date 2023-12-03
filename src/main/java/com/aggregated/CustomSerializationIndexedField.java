@@ -51,7 +51,7 @@ public class CustomSerializationIndexedField {
             sb.append(processAnnotation(eachAnnotLine));
             idx++;
         }
-        this.transformed = StringUtils
+        this.transformed = StringArsenal
                 .resolveReplaces(sb.append("\n" ).toString(), ";", "")
                 + stringForm;
 

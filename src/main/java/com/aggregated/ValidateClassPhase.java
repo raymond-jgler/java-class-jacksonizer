@@ -86,7 +86,7 @@ public class ValidateClassPhase extends BaseConstructorPhaseAlgorithm {
 
   public static boolean hardCodeIsGoodClass(Class clazz) {
     if (clazz.isAnnotationPresent(JsonDeserialize.class) || clazz.isAnnotationPresent(JsonSerialize.class)
-            || StringUtils.containsAny(clazz.getSimpleName(), "serializer", "deserializer") || clazz.getSimpleName().equalsIgnoreCase("Builder")) {
+            || StringArsenal.current().containsAny(clazz.getSimpleName(), "serializer", "deserializer") || clazz.getSimpleName().equalsIgnoreCase("Builder")) {
       return false;
     }
     Boolean isJacksonAnnotated = Boolean.parseBoolean(null);
@@ -148,7 +148,7 @@ public class ValidateClassPhase extends BaseConstructorPhaseAlgorithm {
     if (!isSubClassOf(CLAZZ)) {
       return false;
     }
-    if (!CLAZZ.getName().contains("$") && StringUtils.containsAny(CLASS_CONTENT, rawInput.getCtorAnnotation(), rawInput.getFieldAnnotation())) {
+    if (!CLAZZ.getName().contains("$") && StringArsenal.current().containsAny(CLASS_CONTENT, rawInput.getCtorAnnotation(), rawInput.getFieldAnnotation())) {
       return true;
     }
     final String       className      = CLAZZ.getSimpleName();
@@ -161,7 +161,7 @@ public class ValidateClassPhase extends BaseConstructorPhaseAlgorithm {
       return false;
     }
     for (String eachSkipped : skippedClasses) {
-      if (StringUtils.containsAny(className, eachSkipped) || StringUtils.endsWithAny(className,
+      if (StringArsenal.current().containsAny(className, eachSkipped) || StringArsenal.current().endsWithAny(className,
               eachSkipped) || className.equalsIgnoreCase(eachSkipped)
               || eachSkipped.equalsIgnoreCase(className)) {
         return true;

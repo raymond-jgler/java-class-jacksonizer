@@ -95,7 +95,7 @@ public class RawClientRuleInput {
     if (!NullabilityUtils.requireAllNonNull(false, serMap, deserMap)) {
       return null;
     }
-    if (StringUtils.isEmpty(serMap.getValues( " ")) || StringUtils.isEmpty(deserMap.getValues(" "))) {
+    if (StringArsenal.current().isEmpty(serMap.getValues( " ")) || StringArsenal.current().isEmpty(deserMap.getValues(" "))) {
       return null;
     }
     return Arrays.asList(serMap.getValues(" "), deserMap.getValues(" "));
@@ -110,7 +110,7 @@ public class RawClientRuleInput {
     if (!NullabilityUtils.requireAllNonNull(false, serMap, deserMap)) {
       return null;
     }
-    if (StringUtils.isEmpty(serMap.getValues( " ")) || StringUtils.isEmpty(deserMap.getValues(" "))) {
+    if (StringArsenal.current().isEmpty(serMap.getValues( " ")) || StringArsenal.current().isEmpty(deserMap.getValues(" "))) {
       return null;
     }
     Map<String, String> result = new HashMap<>();
@@ -172,7 +172,7 @@ public class RawClientRuleInput {
   }
 
   public RawClientRuleInput addAnnotationPackage(String packageName) {
-    if (StringUtils.isNotEmpty(this.ctorAnnotationPackage) && StringUtils.isNotEmpty(this.fieldAnnotationPackage)) {
+    if (StringArsenal.current().isNotEmpty(this.ctorAnnotationPackage) && StringArsenal.current().isNotEmpty(this.fieldAnnotationPackage)) {
       return this;
     }
     /**
@@ -180,7 +180,7 @@ public class RawClientRuleInput {
      * 2nd time is for field.
      * Dunno if should split into separate methods.
      */
-    if (StringUtils.isEmpty(this.ctorAnnotationPackage)) {
+    if (StringArsenal.current().isEmpty(this.ctorAnnotationPackage)) {
       this.ctorAnnotationPackage = packageName;
       return this;
     }

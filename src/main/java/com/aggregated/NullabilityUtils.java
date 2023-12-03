@@ -29,7 +29,7 @@ public class NullabilityUtils {
       return false;
     }
     for (String each : params) {
-      if (StringUtils.isEmpty(each)) {
+      if (StringArsenal.current().isEmpty(each)) {
         if (isExit) {
           throw new RuntimeException(each + " is null/empty");
         }

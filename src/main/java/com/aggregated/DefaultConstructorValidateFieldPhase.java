@@ -56,7 +56,7 @@ public class DefaultConstructorValidateFieldPhase extends BaseConstructorPhaseAl
                 continue;
             }
             if (running.contains(fieldName)) {
-                if (false == StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
+                if (false == StringArsenal.current().resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
                     continue;
                 }
                 if (running.contains(";")) {

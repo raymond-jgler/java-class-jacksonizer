@@ -14,7 +14,7 @@ public class WriteConstructorResultPhase extends BaseConstructorPhaseAlgorithm {
     BuildConstructorPhaseOutput prevOutput = (BuildConstructorPhaseOutput) previousInput;
     String                      ctorCode   = prevOutput.getRawValues().toString();
     prevOutput.reset();
-    if (StringUtils.isEmpty(ctorCode) || "SKIP".equalsIgnoreCase(ctorCode)) {
+    if (StringArsenal.current().isEmpty(ctorCode) || "SKIP".equalsIgnoreCase(ctorCode)) {
       return new WriteConstructorResultPhaseOutput();
     }
     if (shouldSkipCurrentClass()) {

@@ -189,7 +189,7 @@ public class ClassDecorator {
 
   private void generateAlgorithms() {
     if (Objects.isNull(this.modeToRules) || MapUtils.isEmpty(this.modeToRules)) {
-      if (StringUtils.isNotEmpty(this.ruleClientRawInput.getSingleJavaFileName())) {
+      if (StringArsenal.current().isNotEmpty(this.ruleClientRawInput.getSingleJavaFileName())) {
         this.algorithms  = new ArrayList<>();
         this.algorithms.add(DecorationAlgorithmFactory.fromStrategyMode(InputReceiver.STRING_BASED_INPUT,
                 DecorationStrategyMode.ANNOTATE_PARAMERTISED_CONSTRUCTOR,

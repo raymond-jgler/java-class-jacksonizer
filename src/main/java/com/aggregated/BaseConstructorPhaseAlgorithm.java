@@ -145,7 +145,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     if (className.charAt(0) == '.') {
       return;
     }
-    classToPath.put(StringUtils.correctifyImportString(className, '.'), path);
+    classToPath.put(StringArsenal.current().correctifyImportString(className, '.'), path);
   }
 
   public static String getFullPathForClass(String className, boolean isCloseMatch) {
@@ -167,7 +167,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     if (MapUtils.isEmpty(classToPath) || !classToPath.containsKey(className)) {
       return "";
     }
-    return StringUtils.stripDoubleEndedNonAlphaNumeric(classToPath.get(className));
+    return StringArsenal.current().stripDoubleEndedNonAlphaNumeric(classToPath.get(className));
   }
 
   public static void beginWith(Class fromClazz) {
@@ -212,7 +212,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     CLAZZ = clazz;
     if (isUpdateTopLvlClass) {
       try {
-        TOP_LEVEL_CLAZZ = Class.forName(StringUtils.stripUntilDollarSign(clazz.getName()));
+        TOP_LEVEL_CLAZZ = Class.forName(StringArsenal.current().stripUntilDollarSign(clazz.getName()));
       } catch (ClassNotFoundException e) {
         return; //chill and return
       }
@@ -254,14 +254,14 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   protected static int getEndingImportRegionIndex() {
-    int commentIdx = StringUtils.lastIndexOf(
+    int commentIdx = StringArsenal.current().lastIndexOf(
             CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
             '/',
             CLASS_KEYWORD_N_NAME_IDX - 1,
             1,
             Boolean.FALSE);
 
-    int seeminglyLastImport = StringUtils.lastIndexOf(
+    int seeminglyLastImport = StringArsenal.current().lastIndexOf(
             CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
             SEMICOLON,
             CLASS_KEYWORD_N_NAME_IDX - 1,
@@ -294,7 +294,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
     slashedFullName =
             InputReceiver.BASE_SOURCE + TOP_LEVEL_CLAZZ.getPackage().getName() + "." + TOP_LEVEL_CLAZZ.getSimpleName();
-    slashedFullName = StringUtils.resolveReplaces(slashedFullName, ".", "\\\\");
+    slashedFullName = StringArsenal.current().resolveReplaces(slashedFullName, ".", "\\\\");
     if (!slashedFullName.endsWith(ENDING_JAVA_EXT)) {
       slashedFullName += ENDING_JAVA_EXT;
     }
@@ -312,7 +312,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
   protected static boolean isValidCtor(int idx) {
     String checkScope = CLASS_CONTENT.substring(CLASS_CONTENT.indexOf(CLAZZ.getSimpleName(), idx),
             CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
-    checkScope = StringUtils.stripDoubleEndedNonAlphaNumeric(checkScope).substring(CLAZZ.getSimpleName().length());
+    checkScope = StringArsenal.current().stripDoubleEndedNonAlphaNumeric(checkScope).substring(CLAZZ.getSimpleName().length());
     for (int i = 0, n = checkScope.length(); i < n; i++) {
       Character c = checkScope.charAt(i);
       if (c == OPEN_PAREN) {
@@ -352,7 +352,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
           if (internIdx == -1) {
             continue;
           }
-          String seeminglyAccessMod =  StringUtils.findPrependablePieceFrom(
+          String seeminglyAccessMod =  StringArsenal.current().findPrependablePieceFrom(
                   CLASS_CONTENT,
                   internIdx,
                   '\r',
@@ -373,7 +373,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
               if (closeParenIdx != -1) {
                 String declaredParm = CLASS_CONTENT
                         .substring(openParenIdx + 1, closeParenIdx);
-                if (StringUtils.isEmpty(declaredParm)) {
+                if (StringArsenal.current().isEmpty(declaredParm)) {
                   hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
                 }
               }
@@ -402,10 +402,10 @@ public abstract class BaseConstructorPhaseAlgorithm {
   }
 
   public static boolean shouldSkipImport(String field) {
-    if (StringUtils.isEmpty(field) || StringUtils.isAllLowerCase(field)) {
+    if (StringArsenal.current().isEmpty(field) || StringArsenal.current().isAllLowerCase(field)) {
       return true;
     }
-    return StringUtils.containsAny(field, "java.lang",
+    return StringArsenal.current().containsAny(field, "java.lang",
             "boolean",
             "int",
             "char",
@@ -438,10 +438,10 @@ public abstract class BaseConstructorPhaseAlgorithm {
       return false;
     }
     for (String each : list) {
-      if (!StringUtils.isNoneBlank(inp) || !StringUtils.isNoneBlank(inp)) {
+      if (!StringArsenal.current().isNoneBlank(inp) || !StringArsenal.current().isNoneBlank(inp)) {
         continue;
       }
-      if (StringUtils.isAnagram(each, inp)) {
+      if (StringArsenal.current().isAnagram(each, inp)) {
         return true;
       }
     }
@@ -497,7 +497,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
         int goodValCounter = 0;
         for (int i = 0, n = mayContainNoises.length; i < n; i++) {
           String each = mayContainNoises[i];
-          if (StringUtils.isEmpty(each)) {
+          if (StringArsenal.current().isEmpty(each)) {
             continue;
           }
           if (Character.isLetterOrDigit(each.charAt(0)) || each.charAt(0) == '=') {
@@ -522,12 +522,12 @@ public abstract class BaseConstructorPhaseAlgorithm {
         break;
       }
       extractedRange =
-              StringUtils.stripDoubleEndedNonAlphaNumeric(
+              StringArsenal.current().stripDoubleEndedNonAlphaNumeric(
                       extractedRange.substring(extractedRange.indexOf(prefix) + prefix.length() + 1, extractedRange.length()));
 
       if (extractedRange.contains(SPACE) || extractedRange.contains("<")) {
         extractedRange = extractedRange.split(SPACE)[0];
-        int idx = StringUtils.firstIdxOfNonAlphanumeric(extractedRange);
+        int idx = StringArsenal.current().firstIdxOfNonAlphanumeric(extractedRange);
         if (idx != -1) {
           extractedRange = extractedRange.substring(0, idx);
         }
@@ -559,7 +559,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     final String className = CLAZZ.getSimpleName();
     final List<String> skippedClasses = rawInput.getSkipClasses();
     for (String eachSkipped : skippedClasses) {
-      if (StringUtils.containsAny(className, eachSkipped) || StringUtils.endsWithAny(className,
+      if (StringArsenal.current().containsAny(className, eachSkipped) || StringArsenal.current().endsWithAny(className,
               eachSkipped)) {
         return true;
       }
