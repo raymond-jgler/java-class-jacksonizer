@@ -111,9 +111,9 @@ public class ReflectionUtils {
     if (Objects.isNull(skippedClasses) || CLAZZ.getDeclaredClasses().length > 0) {
       return false;
     }
+    StringArsenal stringArsenal = StringArsenal.current().with(className);
     for (String eachSkipped : skippedClasses) {
-      if (StringArsenal.current().containsAny(className, eachSkipped) || StringArsenal.current().endsWithAny(className,
-              eachSkipped) || className.equalsIgnoreCase(eachSkipped)
+      if (stringArsenal.containsAny(eachSkipped) || stringArsenal.endsWithAny(eachSkipped) || className.equalsIgnoreCase(eachSkipped)
               || eachSkipped.equalsIgnoreCase(className)) {
         return true;
       }

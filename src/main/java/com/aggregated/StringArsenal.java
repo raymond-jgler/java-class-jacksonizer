@@ -144,7 +144,7 @@ public class StringArsenal {
                 sb.append(c);
             }
         }
-        this.statefulData = resolveReplaces(sb.toString(), "/", "").getInternal();
+        this.statefulData = resolveReplaces( "/", "").getInternal();
         return this;
     }
 
