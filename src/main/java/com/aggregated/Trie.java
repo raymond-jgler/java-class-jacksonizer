@@ -1,7 +1,12 @@
 package com.aggregated;
 
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A Trie's implementation
  * works only on lower-cased letters and digits.
@@ -50,6 +55,18 @@ public class Trie {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+    public boolean containsData() {
+        return containsData(root, new AtomicBoolean(false));
+    }
+    public boolean containsData(TrieNode node, AtomicBoolean res) {
+        if (CollectionUtils.isNotEmpty(Arrays.asList(node.trieNodes))) {
+            return true;
+        }
+        for (TrieNode eachNode : node.trieNodes) {
+            res.set(containsData(eachNode, res));
+        }
+        return res.get();
     }
     public int searchWord(String inp) {
         TrieNode current = root;
