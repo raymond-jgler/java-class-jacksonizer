@@ -1,12 +1,19 @@
 # Welcome to Java Class Annotatable Constructor Templater !
 
+Given an existing Java class, this will add your custom annotations to the existing constructor if it sees fit ( covers all serializable fields) , 
+or it writes a new one (basic field assignment), 
+there are **four** configurable flags to :
+_ process the top-parent class down to its children in the hierarchy.
+_ process each constructor's parameter if domain-related.
+_ process each instance field if domain-related.
+_ process each class found in import region if domain-related.
+
 # To use/test right away :
 1. please clone the code and check out at **main**
 2. refer to [input.txt](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/resources/input.txt#L4)
 3. execute [InputEntry.java](https://github.com/trgpnt/Java-Class-Annotatable-Constructor-Templater/blob/c94af4ab49db625c4890d244a26d7547083c78db/src/main/java/com/aggregated/entry_point/InputEntry.java#L11)
 
 ## Overview:
-
 _ This method will eventually annotate contructor (existing or write new) and its parameters(s) using client's annotation inputs.
 
 ## Constructor's qualification :
