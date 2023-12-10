@@ -25,7 +25,6 @@ public class StringInputGenerator extends BaseInputGenerator {
             char randomChar = ALL_CHARACTERS.charAt(random.nextInt(ALL_CHARACTERS.length()));
             stringBuilder.append(randomChar);
         }
-
         return stringBuilder.toString();
     }
     private StringInputGenerator() {}
