@@ -47,11 +47,11 @@ public class IndentationUtils {
     }
   }
   public static String genCharsWithLen(char x, int length) {
-    String res = "";
+    StringBuilder res = new StringBuilder();
     for (int i = 0; i < length - 1; i++) {
-      res += x;
+      res.append(x);
     }
-    return res;
+    return res.toString();
   }
 
   /**
@@ -154,11 +154,11 @@ public class IndentationUtils {
 
   private static void rebalanceBasedOnOuterTab() {
     int outerTabLen = outerAndInnerTabs.get(OUTER_BLOCK_TAB).length();
-    String innerTabs = "";
+    StringBuilder innerTabs = new StringBuilder();
     for (int i = 0; i <= outerTabLen; i++) {
-      innerTabs += TAB;
+      innerTabs.append(TAB);
     }
-    outerAndInnerTabs.put(INNER_BLOCK_TAB, innerTabs);
+    outerAndInnerTabs.put(INNER_BLOCK_TAB, innerTabs.toString());
   }
 }
 

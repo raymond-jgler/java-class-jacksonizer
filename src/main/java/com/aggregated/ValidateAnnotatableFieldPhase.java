@@ -67,7 +67,7 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
         continue;
       }
       if (running.contains(fieldName)) {
-        if (false == StringUtils.stripDoubleEndedNonAlphaNumeric(running).equalsIgnoreCase(fieldName)) {
+        if (!StringUtils.stripDoubleEndedNonAlphaNumeric(running).equalsIgnoreCase(fieldName)) {
           continue;
         }
         if (running.contains(";")) {

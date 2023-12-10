@@ -314,7 +314,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
             CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
     checkScope = StringUtils.stripDoubleEndedNonAlphaNumeric(checkScope).substring(CLAZZ.getSimpleName().length());
     for (int i = 0, n = checkScope.length(); i < n; i++) {
-      Character c = checkScope.charAt(i);
+      char c = checkScope.charAt(i);
       if (c == OPEN_PAREN) {
         return true;
       }
@@ -586,7 +586,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     int successTimes = 0;
     int attempts = -1;
     int internRes = -1;
-    String spaceQty = "";
+    StringBuilder spaceQty = new StringBuilder();
     if (!startAt.isPresent()) {
       startAt = Optional.of(0);
     }
@@ -619,10 +619,10 @@ public abstract class BaseConstructorPhaseAlgorithm {
         /**
          * Otherwise, update to find the n-th match
          */
-        spaceQty = "";
+        spaceQty = new StringBuilder();
         startAt = Optional.of(res + 1);
       }
-      spaceQty += " "; //expand the space every time
+      spaceQty.append(" "); //expand the space every time
       res = classContent.indexOf(prefix + spaceQty + prefixed, startAt.get());
     } while (true);
   }

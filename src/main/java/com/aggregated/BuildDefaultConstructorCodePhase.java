@@ -17,12 +17,16 @@ public class BuildDefaultConstructorCodePhase extends BaseConstructorPhaseAlgori
     private String buildFullCtor(Class<?> clazz, String modifierKeyWord, PhaseChainedResult previousInput) {
         Map<String, String> lineBreaksNTabs = IndentationUtils.build(Optional.empty());
         StringBuilder constructorCode = new StringBuilder("");
+        //TODO if parent already private default ctor
+        //	-> abrupty return emtpy...;
         constructorCode
-                .append(IndentationUtils.LINE_BREAK + lineBreaksNTabs.get(IndentationUtils.OUTER_BLOCK_TAB) + modifierKeyWord)
-                .append(" " + clazz.getSimpleName())
-                //TODO if parent already private default ctor
-                //	-> abrupty return emtpy...;
-                .append("() {" + IndentationUtils.LINE_BREAK + lineBreaksNTabs.get(IndentationUtils.INNER_BLOCK_TAB) + "super();");
+                .append(IndentationUtils.LINE_BREAK)
+                .append(lineBreaksNTabs.get(IndentationUtils.OUTER_BLOCK_TAB))
+                .append(modifierKeyWord).append(" ")
+                .append(clazz.getSimpleName())
+                .append("() {" + IndentationUtils.LINE_BREAK)
+                .append(lineBreaksNTabs.get(IndentationUtils.INNER_BLOCK_TAB))
+                .append("super();");
 
         /**
          * To eval if already non-null field.
@@ -30,13 +34,13 @@ public class BuildDefaultConstructorCodePhase extends BaseConstructorPhaseAlgori
         DefaultConstructorFieldPhaseOutput output = (DefaultConstructorFieldPhaseOutput) previousInput;
         if (Objects.nonNull(output.getFieldToDefaultValue())) {
             for (Map.Entry<Field, String> entry : output.getFieldToDefaultValue().entrySet()) {
-                constructorCode.append(IndentationUtils.LINE_BREAK + lineBreaksNTabs.get(IndentationUtils.INNER_BLOCK_TAB) + "this.")
+                constructorCode.append(IndentationUtils.LINE_BREAK).append(lineBreaksNTabs.get(IndentationUtils.INNER_BLOCK_TAB)).append("this.")
                         .append(entry.getKey().getName()).append(" = ").append(entry.getValue()).append(";");
             }
         }
         //flush
         output.reset();
-        constructorCode.append(IndentationUtils.LINE_BREAK + lineBreaksNTabs.get(IndentationUtils.OUTER_BLOCK_TAB) + "}");
+        constructorCode.append(IndentationUtils.LINE_BREAK).append(lineBreaksNTabs.get(IndentationUtils.OUTER_BLOCK_TAB)).append("}");
         return constructorCode.toString();
     }
     @Override
@@ -54,7 +58,7 @@ public class BuildDefaultConstructorCodePhase extends BaseConstructorPhaseAlgori
         }
         StringBuilder modifiedCodeBuilder = new StringBuilder(CLASS_CONTENT.length() + constructorCode.length());
         modifiedCodeBuilder.append(CLASS_CONTENT, 0, WRITABLE_CTOR_IDX + 1);
-        modifiedCodeBuilder.append("  " + constructorCode);
+        modifiedCodeBuilder.append(SPACE).append(constructorCode);
         modifiedCodeBuilder.append(CLASS_CONTENT, WRITABLE_CTOR_IDX + 1, CLASS_CONTENT.length());
         return new BuildConstructorPhaseOutput(modifiedCodeBuilder.toString());
     }

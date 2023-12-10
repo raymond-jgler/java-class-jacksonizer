@@ -19,7 +19,7 @@ public class DecorationLocalField {
     this.genericTypeName = genericTypeName;
     this.typeFullName    = typeFullName;
     this.typeShortName   = typeShortName;
-    this.isFinal = Objects.isNull(isFinal) ? false : isFinal;
+    this.isFinal = !Objects.isNull(isFinal) && isFinal;
   }
 
   public static DecorationLocalField createFrom(String fieldName, String genericTypeName, String typeFullName, String typeShortName, Boolean isFinal) {

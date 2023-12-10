@@ -45,7 +45,7 @@ public class StringUtils {
 
   public static boolean containsAny(String toCheck, String... args) {
     for (String each : args) {
-      if (toCheck.contains(each) || toCheck.contains(each) || each.contains(toCheck) || each.contains(toCheck)) {
+      if (toCheck.contains(each) || each.contains(toCheck)) {
         return true;
       }
     }
@@ -488,7 +488,7 @@ public class StringUtils {
    * @return
    */
   public static int asciiValueOf(char c, boolean isRebounce) {
-    int asciiVal = -1;
+    int asciiVal;
     if (!isRebounce || !Character.isLetter(c)) {
       return c;
     }
@@ -518,8 +518,8 @@ public class StringUtils {
     int n = x.length();
     int m = y.length();
     for (; i < n && i < m; i++) {
-      Character c1 = x.charAt(i);
-      Character c2 = y.charAt(i);
+      char c1 = x.charAt(i);
+      char c2 = y.charAt(i);
       if (Character.isLetterOrDigit(c1)) {
         map1[asciiValueOf(c1, Boolean.TRUE)]++;
       }
@@ -529,14 +529,14 @@ public class StringUtils {
     }
 
     for (; i < n; i++) {
-      Character c1 = x.charAt(i);
+      char c1 = x.charAt(i);
       if (Character.isLetterOrDigit(c1)) {
         map1[asciiValueOf(c1, Boolean.TRUE)]++;
       }
     }
 
     for (; i < m; i++) {
-      Character c2 = y.charAt(i);
+      char c2 = y.charAt(i);
       if (Character.isLetterOrDigit(c2)) {
         map2[asciiValueOf(c2, Boolean.TRUE)]++;
       }

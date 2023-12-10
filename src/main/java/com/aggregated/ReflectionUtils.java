@@ -26,7 +26,7 @@ public class ReflectionUtils {
     }
     String toPrint = unresolvedName;
     Class<?> clazz = null;
-    int dotIdx = -1;
+    int dotIdx;
     do {
       try {
         clazz = Class.forName(StringUtils.stripDoubleEndedNonAlphaNumeric(unresolvedName));
@@ -54,7 +54,7 @@ public class ReflectionUtils {
           unresolvedName = unresolvedName.substring(dotIdx + 1, unresolvedName.length());
         }
       }
-    } while (Objects.isNull(clazz) && unresolvedName != "");
+    } while (Objects.isNull(clazz) && !unresolvedName.equals(""));
 
     if (Objects.isNull(clazz)) {
 //      LOG.error("failed to get class from " + toPrint);
@@ -172,7 +172,7 @@ public class ReflectionUtils {
         continue;
       }
       if (running.contains(fieldName)) {
-        if (false == StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
+        if (!StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
           continue;
         }
         if (running.contains(";")) {

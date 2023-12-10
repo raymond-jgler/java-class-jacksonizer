@@ -69,7 +69,7 @@ public class ValidateClassPhase extends BaseConstructorPhaseAlgorithm {
     }
     List<Constructor> declaredCtors = Arrays.asList(CLAZZ.getDeclaredConstructors());
 
-    Boolean isJacksonAnnotated = Boolean.parseBoolean(null);
+    boolean isJacksonAnnotated = false;
     for (Constructor ctor : declaredCtors) {
       if (ctor.getParameterCount() >= 0 ) {
         if (ctor.isAnnotationPresent(JsonCreator.class)) {
@@ -89,7 +89,7 @@ public class ValidateClassPhase extends BaseConstructorPhaseAlgorithm {
             || StringUtils.containsAny(clazz.getSimpleName(), "serializer", "deserializer") || clazz.getSimpleName().equalsIgnoreCase("Builder")) {
       return false;
     }
-    Boolean isJacksonAnnotated = Boolean.parseBoolean(null);
+    boolean isJacksonAnnotated = false;
     for (Constructor ctor : clazz.getDeclaredConstructors()) {
       if (ctor.getParameterCount() >= 0 ) {
         if (ctor.isAnnotationPresent(JsonCreator.class)) {

@@ -281,6 +281,9 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
   }
 
   private void enqueueWithImportedDomainClasses(String content) {
+    if (StringUtils.isEmpty(content)) {
+      return;
+    }
     String subbed = content.substring(0, content.indexOf("{"));
     String [] splitted = subbed.split(";");
     for (String each : splitted) {

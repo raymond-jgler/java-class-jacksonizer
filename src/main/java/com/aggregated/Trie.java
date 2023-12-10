@@ -85,7 +85,7 @@ public class Trie {
         }
         return current.count;
     }
-    class TrieNode {
+    static class TrieNode {
         TrieNode[] trieNodes;
         int count;
         private TrieNode() {

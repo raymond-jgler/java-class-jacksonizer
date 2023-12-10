@@ -36,6 +36,7 @@ public class DefaultConstructorDecorator extends BaseDecorationAlgorithm {
              */
             processTrusted(clazz, Boolean.FALSE);
             if (ReflectionUtils.hasInnerClasses(clazz)) {
+                assert clazz != null;
                 recursivelyProcessTrustedInnerClasses(Arrays.asList(clazz.getDeclaredClasses()));
             } else {
                 IndentationUtils.resetIndent();

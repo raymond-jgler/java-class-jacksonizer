@@ -23,7 +23,7 @@ public class DefaultConstructorValidateFieldPhase extends BaseConstructorPhaseAl
         String[] searchRange = CLASS_CONTENT.substring(newFrom, newTo).split(" ");
         for (Field field : CLAZZ.getDeclaredFields()) {
             int fieldModifiers = field.getModifiers();
-            if (Modifier.isStatic(fieldModifiers) || !Modifier.isFinal(fieldModifiers) || field.getName().contains("this$") || (Modifier.isFinal(fieldModifiers) && false == isFieldUnassigned(field.getName(), searchRange))) {
+            if (Modifier.isStatic(fieldModifiers) || !Modifier.isFinal(fieldModifiers) || field.getName().contains("this$") || (Modifier.isFinal(fieldModifiers) && !isFieldUnassigned(field.getName(), searchRange))) {
                 continue;
             }
             fieldToDefaultValue.putIfAbsent(field, getDefaultValueForPrimitiveType(field.getType()));
@@ -56,7 +56,7 @@ public class DefaultConstructorValidateFieldPhase extends BaseConstructorPhaseAl
                 continue;
             }
             if (running.contains(fieldName)) {
-                if (false == StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
+                if (!StringUtils.resolveReplaces(running, "\r", "", "\n", "", " ", "").equals(fieldName)) {
                     continue;
                 }
                 if (running.contains(";")) {

@@ -220,9 +220,7 @@ public class RawClientRuleInput {
 
   //TODO, work-around-able
   public RawClientRuleInput isAnyBaseClass(boolean isAnyBaseClass) {
-    if (isAnyBaseClass) {
-      this.isAnyBaseClass = isAnyBaseClass;
-    }
+    this.isAnyBaseClass = isAnyBaseClass;
     return this;
   }
 
@@ -248,9 +246,7 @@ public class RawClientRuleInput {
   }
 
   public RawClientRuleInput withSubPackages(boolean isSubPackages) {
-    if (isSubPackages) {
-      this.isSubPackages = isSubPackages;
-    }
+    this.isSubPackages = isSubPackages;
     return this;
   }
 
@@ -281,7 +277,7 @@ public class RawClientRuleInput {
   }
 
   public RawClientRuleInput buildSerialization(String customSerKey, String fullCustomClassName, String fullAnnotName, String fullTypeName, SerializationMap.RULE_SCOPE... ruleScope) {
-    NullabilityUtils.isAllNonEmpty(true, customSerKey, fullCustomClassName, fullAnnotName, fullTypeName, String.valueOf(ruleScope));
+    NullabilityUtils.isAllNonEmpty(true, customSerKey, fullCustomClassName, fullAnnotName, fullTypeName, Arrays.toString(ruleScope));
     SerializationMap serializationMap = new SerializationMap(fullCustomClassName, fullAnnotName, fullTypeName, ruleScope);
     if (Objects.isNull(this.customSerMap)) {
       this.customSerMap = new HashMap<>();

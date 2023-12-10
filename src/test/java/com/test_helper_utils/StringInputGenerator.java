@@ -21,7 +21,6 @@ public class StringInputGenerator extends BaseInputGenerator {
 
     public static String randomWith(int length) {
         StringBuilder stringBuilder = new StringBuilder(length);
-
         for (int i = 0; i < length; i++) {
             char randomChar = ALL_CHARACTERS.charAt(random.nextInt(ALL_CHARACTERS.length()));
             stringBuilder.append(randomChar);

@@ -230,7 +230,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
      * Annotate custom serialization annotations on fields before
      * building the constructor's code
      */
-    if (STARTING_CTOR_IDX > 0 && !CollectionUtils.isEmpty(this.customSerAnnotStrings)) {
+    if (STARTING_CTOR_IDX > 0 && !CollectionUtils.isEmpty(customSerializationIndexedFields) && !CollectionUtils.isEmpty(this.customSerAnnotStrings)) {
       String previousContent = CLASS_CONTENT;
       CLASS_CONTENT         = annotateFields(customSerializationIndexedFields);
       isClassContentChanged = !previousContent.equalsIgnoreCase(CLASS_CONTENT);
@@ -361,7 +361,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
        */
       ENDING_CTOR_IDX = STARTING_CTOR_IDX;
     }
-    if ((rawInput.getWithSuperConstructor() && Objects.nonNull(getHasStringLevelDefaultCtor()) && !getHasStringLevelDefaultCtor().get())
+    if ((rawInput.getWithSuperConstructor() && Objects.nonNull(getHasStringLevelDefaultCtor()) && getHasStringLevelDefaultCtor().isPresent() && !getHasStringLevelDefaultCtor().get())
             && (isAllNonFinalFields() || (serializableFields.size() == 0))) {
       defaultCtorCode.append(buildConstructorCode(isFromExisting, Boolean.FALSE, Boolean.TRUE));
     }
@@ -436,6 +436,9 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
    * @return
    */
   private String annotateFields(List<CustomSerializationIndexedField> customSerializationIndexedFields) {
+    if (CollectionUtils.isEmpty(customSerializationIndexedFields)) {
+      return "";
+    }
     StringBuilder sb = new StringBuilder();
     String runningContent = CLASS_CONTENT;
     String fieldName = "";
@@ -513,14 +516,14 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       if (CollectionUtils.isEmpty(filterRuleIndexes)) {
         return false;
       }
-      for (Integer idx : filterRuleIndexes) {
+      for (int idx : filterRuleIndexes) {
         containsFieldInTheCheckScope =
                 isFieldWithinScope(
                         fieldName,
                         CLASS_CONTENT.substring(idx, CLASS_CONTENT.indexOf(SEMICOLON, idx))
                 );
         if (containsFieldInTheCheckScope) {
-          return true;
+          break;
         }
       }
     }
@@ -1165,8 +1168,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     }
     DoubleEndedStack<String> stack = new DoubleEndedStack<>();
     int stimulatedSyntaxStack = 0;
-    final Character GREATER_SIGN = '>';
-    final Character LESSER_SIGN = '<';
+    final char GREATER_SIGN = '>';
+    final char LESSER_SIGN = '<';
     int n = inp.length() - 1;
     StringBuilder toReverse = new StringBuilder();
     List<String> collector = new ArrayList<>();
@@ -1306,24 +1309,30 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   }
 
   private String buildAnnotationImports() {
-    String fixedPart = SINGLE_BREAK + IMPORT_KEYWORD + CONSTRUCTOR_ANNOTATION_PACKAGE + SINGLE_BREAK
-            + IMPORT_KEYWORD + PARAM_ANNOTATION_PACKAGE;
+    StringBuilder fixedPart = new StringBuilder();
+    fixedPart.append(SINGLE_BREAK)
+            .append(IMPORT_KEYWORD)
+            .append(CONSTRUCTOR_ANNOTATION_PACKAGE)
+            .append(SINGLE_BREAK)
+            .append(IMPORT_KEYWORD)
+            .append(PARAM_ANNOTATION_PACKAGE);
     /**
      * Process to add the required custom serilization imports..
      */
     if (!NullabilityUtils.isAllNonEmpty(false, String.valueOf(rawCustomSerImportStrings))) {
-      return fixedPart;
+      return fixedPart.toString();
     }
     if (Boolean.FALSE == this.isNeedToAddCustomImports) {
-      return fixedPart;
+      return fixedPart.toString();
     }
     for (int i = 0, n = this.customSerAnnotStrings.size(); i < n; i++) {
-      fixedPart += SINGLE_BREAK + IMPORT_KEYWORD + SPACE + this.customSerAnnotStrings.get(i) + SEMICOLON;
+      fixedPart.append(SINGLE_BREAK + IMPORT_KEYWORD + SPACE).append(this.customSerAnnotStrings.get(i)).append(SEMICOLON);
     }
     for (int i = 0, n = this.customSerClassNames.size(); i < n; i++) {
-      fixedPart += SINGLE_BREAK + IMPORT_KEYWORD + SPACE + this.customSerClassNames.get(i) + SEMICOLON;
+      fixedPart.append(SINGLE_BREAK + IMPORT_KEYWORD + SPACE).append(this.customSerClassNames.get(i)).append(SEMICOLON);
     }
-    return fixedPart;
+
+    return fixedPart.toString();
   }
 
   private String extractVarName(String raw) {

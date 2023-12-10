@@ -71,7 +71,7 @@ public abstract class BaseDecorationAlgorithm implements DecorationAlgorithm {
       LOG.error(errorMsg);
       throw new RuntimeException(errorMsg);
     }
-    for (File file : files.listFiles()) {
+    for (File file : Objects.requireNonNull(files.listFiles())) {
       if (file.isDirectory()) {
         if (rawInput.isSubPackages()) {
           takeRootOrAllFiles(file);
