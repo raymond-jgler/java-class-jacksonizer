@@ -1,8 +1,9 @@
 package com.main_logic_tests.string_utils;
 
 import com.aggregated.StringUtils;
+import com.test_helper_utils.GENERATOR_TYPE;
 import com.test_helper_utils.StringInputGenerator;
-import com.test_helper_utils.TestInputGeneratorRepository;
+import com.test_helper_utils.TestInputGeneratorContainer;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StringUtilsTest_IsNoneBlank {
     private static final Function<String, Boolean> LOGIC = StringUtils::isNoneBlank;
-    private static final StringInputGenerator MOUNTED_STRING_MODE = (StringInputGenerator) TestInputGeneratorRepository.current().get(TestInputGeneratorRepository.STRING);
+    private static final StringInputGenerator MOUNTED_STRING_MODE = (StringInputGenerator) TestInputGeneratorContainer.current().generate(GENERATOR_TYPE.STRING);
     @Test
     public void shouldHandleBlankString() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(Optional.of(0)));
