@@ -24,6 +24,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   private static final String COMMENT_BLOCK = "/*";
   private static final String AT = "@";
   private static final String SKIP_MARKER = "SKIP";
+  private static final Set<Character> PARAM_BASED_CHARACTERS = new HashSet<>();
   private static final String WEIRD_FIELD = "this$";
   private static final String CONSTRUCTOR_BODY = "CONSTRUCTOR_BODY";
   private static final String DECLARED_FIELDS = "DECLARED_FIELDS";
@@ -54,6 +55,11 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
           "java.net",
           "java.util.concurrent"
   );
+  static {
+    PARAM_BASED_CHARACTERS.add(',');
+    PARAM_BASED_CHARACTERS.add('<');
+    PARAM_BASED_CHARACTERS.add('>');
+  }
   /**
    * This flag controls
    * if custom annotation is added
@@ -1182,7 +1188,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
         if (stimulatedSyntaxStack > 0) {
           toReverse.append(cur);
         } else {
-          String cleansed = StringUtils.stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
+          String cleansed = StringUtils.ensureOneWhitespace(toReverse.reverse().toString(), PARAM_BASED_CHARACTERS);
           if (isPreserveOrder) {
             stack.push(cleansed);
           } else {
@@ -1199,7 +1205,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       }
       toReverse.append(cur);
     }
-    String last = StringUtils.stripDoubleEndedNonAlphaNumeric(toReverse.reverse().toString());
+    String last = StringUtils.ensureOneWhitespace(toReverse.reverse().toString(), PARAM_BASED_CHARACTERS);
     if (isPreserveOrder) {
       stack.push(last);
       while (!stack.isEmpty()) {

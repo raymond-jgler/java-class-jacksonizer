@@ -42,6 +42,9 @@ public class StringUtils {
     }
     return false;
   }
+  public static boolean isBlank(String inp) {
+    return !isNoneBlank(inp);
+  }
 
   public static boolean containsAny(String toCheck, String... args) {
     for (String each : args) {
@@ -555,6 +558,36 @@ public class StringUtils {
       return false;
     }
     return true;
+  }
+
+  /**
+   * We only consume letter / digit character, except given characters.
+   * This will apply #stripDoubleEndedNonAlphaNumeric's logic,
+   * and also ensure each pair of consecutive characters are only one-spaced separated.
+   * @param inp
+   * @return
+   */
+  public static String ensureOneWhitespace(String inp, Set<Character> consumable) {
+    if (StringUtils.isEmpty(inp) || StringUtils.isBlank(inp)) {
+      return "";
+    }
+    StringBuilder runner = new StringBuilder();
+    boolean isMetSpace = false;
+    for (int i = 0, n = inp.length(); i < n; i++) {
+      Character c = inp.charAt(i);
+      if (Character.isLetterOrDigit(c) || consumable.contains(c)) {
+        runner.append(c);
+        isMetSpace = false;
+        continue;
+      }
+      if (Character.isSpaceChar(c)) {
+        if (i > 0 && !isMetSpace && runner.length() > 0) {
+          runner.append(c);
+          isMetSpace = true;
+        }
+      }
+    }
+    return runner.toString();
   }
 }
 
