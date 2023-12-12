@@ -649,7 +649,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       superLine = new StringBuilder(IndentationUtils.get(IndentationUtils.INNER_BLOCK_TAB) + "super(");
       List<String> uniqueCleansed = removeDups(parentFields);
       for (int i = 0, n = uniqueCleansed.size(); i < n; i++) {
-        superLine.append(uniqueCleansed.get(i));
+        superLine.append(uniqueCleansed.get(i).trim());
         if (i < n - 1) {
           superLine.append(", ");
         }
@@ -765,7 +765,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       if (Objects.isNull(field) || fieldName.contains(WEIRD_FIELD)) {
         continue;
       }
-      String toAdd = evalFieldString(field) + SPACE + fieldName;
+      String spaceOrEmpty = field.getFieldName().contains(SPACE) ? "" : SPACE;
+      String toAdd = evalFieldString(field) + spaceOrEmpty + fieldName;
       if (res.contains(toAdd)) {
         continue;
       }
@@ -913,7 +914,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     List<String> parent = new ArrayList<>();
     if (CollectionUtils.isNotEmpty(parentFields)) {
       for (DecorationLocalField field : parentFields) {
-        String toAdd = evalFieldString(field) + SPACE + field.getFieldName();
+        String spaceOrEmpty = field.getFieldName().contains(SPACE) ? "" : SPACE;
+        String toAdd = evalFieldString(field) + spaceOrEmpty + field.getFieldName();
         if (parent.contains(toAdd)) {
           continue;
         }
