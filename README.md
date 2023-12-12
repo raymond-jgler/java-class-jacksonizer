@@ -1,6 +1,6 @@
 # Welcome to Java Class Annotatable Constructor Templater !
 
-If tons of existing Java classes need to be provided with configurable annotation - required from most modern (de)serialization libraries, 
+>If tons of existing Java classes need to be provided with configurable annotation - required from most modern (de)serialization libraries, 
 then this tool will help you automate them, it directly modifies the Java files.
 
 Given an existing Java class, this will add your custom annotations to the existing constructor if it sees fit ( covers all serializable fields) , 
