@@ -765,8 +765,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       if (Objects.isNull(field) || fieldName.contains(WEIRD_FIELD)) {
         continue;
       }
-      String spaceOrEmptySpace = field.getFieldName().contains(SPACE) ? "" : SPACE;
-      String toAdd = evalFieldString(field) + spaceOrEmptySpace + fieldName;
+      String spaceOrEmpty = field.getFieldName().contains(SPACE) ? "" : SPACE;
+      String toAdd = evalFieldString(field) + spaceOrEmpty + fieldName;
       if (res.contains(toAdd)) {
         continue;
       }
@@ -914,8 +914,8 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
     List<String> parent = new ArrayList<>();
     if (CollectionUtils.isNotEmpty(parentFields)) {
       for (DecorationLocalField field : parentFields) {
-        String spaceOrEmptySpace = field.getFieldName().contains(SPACE) ? "" : SPACE;
-        String toAdd = evalFieldString(field) + spaceOrEmptySpace + field.getFieldName();
+        String spaceOrEmpty = field.getFieldName().contains(SPACE) ? "" : SPACE;
+        String toAdd = evalFieldString(field) + spaceOrEmpty + field.getFieldName();
         if (parent.contains(toAdd)) {
           continue;
         }
