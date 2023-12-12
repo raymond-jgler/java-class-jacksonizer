@@ -23,7 +23,8 @@ public abstract class BaseClass<T> {
     private List<DummyObject> listDummy;
     private Map<String, HelloIImAnotherDummy> ok;
     protected BaseClass(){}
-    BaseClass(Integer x, String paramText, boolean y, Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary, Map<String, Map<String, Map<SortedSet<Integer>, DummyObject02>>> amIScary02, DummyObject01 dummyObject01, DummyObject dummyObject, Collection<DummyObject> listDummy, Map<String, HelloIImAnotherDummy> ok) {
+
+    BaseClass(Integer x, String paramText, boolean y, Map<String, Map<String, Map<SortedSet<Integer>, String>>> amIScary, Map<String, Map<String, Map<SortedSet<Integer>, DummyObject02>>> amIScary02, DummyObject01 dummyObject01, DummyObject     dummyObject, Collection<DummyObject>    listDummy, Map<String, HelloIImAnotherDummy>    ok) {
         if (listDummy.size() == 0) {
             this.listDummy = Collections.emptyList();
         } else {
