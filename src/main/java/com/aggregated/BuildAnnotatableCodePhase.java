@@ -649,7 +649,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       superLine = new StringBuilder(IndentationUtils.get(IndentationUtils.INNER_BLOCK_TAB) + "super(");
       List<String> uniqueCleansed = removeDups(parentFields);
       for (int i = 0, n = uniqueCleansed.size(); i < n; i++) {
-        superLine.append(uniqueCleansed.get(i));
+        superLine.append(uniqueCleansed.get(i).trim());
         if (i < n - 1) {
           superLine.append(", ");
         }
