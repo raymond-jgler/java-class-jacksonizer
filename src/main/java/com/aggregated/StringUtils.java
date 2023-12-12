@@ -130,6 +130,9 @@ public class StringUtils {
    * @return
    */
   public static String stripDoubleEndedNonAlphaNumeric(String inp) {
+    if (StringUtils.isEmpty(inp)) {
+      return ""; //avoid NPE
+    }
     final int  THRESHOLD = 200;
     final long start     = System.currentTimeMillis();
     int        left      = 0, n = inp.length() - 1, right = n;

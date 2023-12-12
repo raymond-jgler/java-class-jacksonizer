@@ -1340,7 +1340,7 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
       return "";
     }
     String[] spaceSplitted = raw.split(SPACE);
-    return spaceSplitted[spaceSplitted.length - 1].trim();
+    return StringUtils.stripDoubleEndedNonAlphaNumeric(spaceSplitted[spaceSplitted.length - 1]);
   }
 
   /**
