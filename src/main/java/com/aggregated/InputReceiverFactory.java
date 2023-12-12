@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 public class InputReceiverFactory {
@@ -22,3 +8,14 @@ public class InputReceiverFactory {
         return null;
     }
 }
+
+
+
+
+
+
+
+
+
+
+

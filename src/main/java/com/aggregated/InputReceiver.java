@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import java.util.Arrays;
@@ -30,3 +16,17 @@ public abstract class InputReceiver {
     public static final InputReceiver FILE_BASED_INPUT = FileBasedInputReceiver.buildWith(null);
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
