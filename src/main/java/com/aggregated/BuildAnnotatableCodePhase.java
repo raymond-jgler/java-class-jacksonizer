@@ -1317,31 +1317,36 @@ public class BuildAnnotatableCodePhase extends BaseConstructorPhaseAlgorithm {
   }
 
   private String buildAnnotationImports() {
-    StringBuilder fixedPart = new StringBuilder();
-    fixedPart.append(SINGLE_BREAK)
+    StringBuilder fixedPart = new StringBuilder()
+            .append(SINGLE_BREAK)
             .append(IMPORT_KEYWORD)
             .append(CONSTRUCTOR_ANNOTATION_PACKAGE)
             .append(SINGLE_BREAK)
             .append(IMPORT_KEYWORD)
             .append(PARAM_ANNOTATION_PACKAGE);
+
     /**
-     * Process to add the required custom serilization imports..
+     * Process to add the required custom serialization imports...
      */
     if (!NullabilityUtils.isAllNonEmpty(false, String.valueOf(rawCustomSerImportStrings))) {
       return fixedPart.toString();
     }
+
     if (Boolean.FALSE == this.isNeedToAddCustomImports) {
       return fixedPart.toString();
     }
+
     for (int i = 0, n = this.customSerAnnotStrings.size(); i < n; i++) {
-      fixedPart.append(SINGLE_BREAK + IMPORT_KEYWORD + SPACE).append(this.customSerAnnotStrings.get(i)).append(SEMICOLON);
+      fixedPart.append(SINGLE_BREAK).append(IMPORT_KEYWORD).append(SPACE).append(this.customSerAnnotStrings.get(i)).append(SEMICOLON);
     }
+
     for (int i = 0, n = this.customSerClassNames.size(); i < n; i++) {
-      fixedPart.append(SINGLE_BREAK + IMPORT_KEYWORD + SPACE).append(this.customSerClassNames.get(i)).append(SEMICOLON);
+      fixedPart.append(SINGLE_BREAK).append(IMPORT_KEYWORD).append(SPACE).append(this.customSerClassNames.get(i)).append(SEMICOLON);
     }
 
     return fixedPart.toString();
   }
+
 
   private String extractVarName(String raw) {
     if (StringUtils.isEmpty(raw)) {

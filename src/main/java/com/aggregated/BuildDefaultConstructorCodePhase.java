@@ -15,7 +15,7 @@ public class BuildDefaultConstructorCodePhase extends BaseConstructorPhaseAlgori
         super(input);
     }
     private String buildFullCtor(Class<?> clazz, String modifierKeyWord, PhaseChainedResult previousInput) {
-        Map<String, String> lineBreaksNTabs = IndentationUtils.build(Optional.empty());
+        Map<String, String> lineBreaksNTabs = IndentationUtils.build(0);
         StringBuilder constructorCode = new StringBuilder("");
         //TODO if parent already private default ctor
         //	-> abrupty return emtpy...;

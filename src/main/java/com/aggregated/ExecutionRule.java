@@ -1,16 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,10 +23,10 @@ public final class ExecutionRule {
      */
     public static final ExecutionRule SKIP_INNER_CLASSES = create("skip_inner_classes", "Skip All Encountered Inner Classes ");
 
-    
-	@JsonCreator
-	private ExecutionRule (@JsonProperty("code") String code,
-                         @JsonProperty("description") String description) {
+
+    @JsonCreator
+    private ExecutionRule (@JsonProperty("code") String code,
+                           @JsonProperty("description") String description) {
 
         this.code = code;
         this.description = description;
@@ -65,3 +52,16 @@ public final class ExecutionRule {
         return MEM_CACHED.getOrDefault(code, null);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

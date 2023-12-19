@@ -1,10 +1,12 @@
 package com.test_helper_utils;
 
 import com.aggregated.IndentationUtils;
+import com.aggregated.ThreadUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StringInputGenerator extends BaseInputGenerator {
     private static final StringInputGenerator INSTANCE = new StringInputGenerator();
@@ -17,16 +19,55 @@ public class StringInputGenerator extends BaseInputGenerator {
     private static final String DIGITS = "0123456789";
     private static final String SPECIAL_CHARACTERS = "!@#$%^&*()-_=+[]{}|;:'\",.<>/?`~";
     private static final String ALL_CHARACTERS = LETTERS + DIGITS + SPECIAL_CHARACTERS + " ";
-    private static final Random random = new Random();
-
-    public static String randomWith(int length) {
-        StringBuilder stringBuilder = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            char randomChar = ALL_CHARACTERS.charAt(random.nextInt(ALL_CHARACTERS.length()));
-            stringBuilder.append(randomChar);
+    public String randomWith(int length, RANDOM_TYPE... type) {
+        final int availThreads = Runtime.getRuntime().availableProcessors();
+        Thread[] threads = new Thread[availThreads];
+        int threadIdx = 0;
+        AtomicReference<char[]> container = new AtomicReference<>(new char[length]);
+        AtomicInteger decreaser = new AtomicInteger(availThreads);
+        AtomicInteger increaser = new AtomicInteger(0);
+        AtomicReference<StringBuffer> atomicReferenceChosen = new AtomicReference<>(new StringBuffer(chooseString(type)));
+        AtomicReference<StringBuffer> atomicChosen = new AtomicReference<>(new StringBuffer(atomicReferenceChosen.get()));
+        int bound = atomicReferenceChosen.get().length();
+        for (int i = 0; i < threads.length; i++) {
+            AtomicInteger idx = new AtomicInteger(increaser.get());
+            AtomicInteger atomicLen = new AtomicInteger(length / decreaser.get());
+            Runnable runnable = (() -> {
+                for (; idx.get() < atomicLen.get() - 1;) {
+                    container.get()[idx.getAndIncrement()] = atomicChosen.get().charAt(RandomUtils.randomInt(bound));
+                }
+            });
+            threads[threadIdx++] = new Thread(runnable);
+            increaser.set(atomicLen.get() + 1);
+            decreaser.getAndDecrement();
         }
-        return stringBuilder.toString();
+        ThreadUtils.execute(threads);
+        return new String(container.get());
     }
+    private String chooseString(RANDOM_TYPE ...type) {
+        if (Objects.isNull(type)) {
+            return ALL_CHARACTERS;
+        }
+        StringBuilder runner = new StringBuilder();
+
+        for (RANDOM_TYPE eachType : type) {
+            switch (eachType) {
+                case ALL_CHARACTERS:
+                    return ALL_CHARACTERS;
+                case LETTERS:
+                    runner.append(LETTERS);
+                    break;
+                case NUMBERS:
+                    runner.append(DIGITS);
+                    break;
+                case SPECIAL_CHARACTERS:
+                    runner.append(SPECIAL_CHARACTERS);
+                    break;
+            }
+        }
+        return runner.toString();
+    }
+
     private StringInputGenerator() {}
 
     public static StringInputGenerator current() {
@@ -38,22 +79,13 @@ public class StringInputGenerator extends BaseInputGenerator {
     public String nullAsString() {
         return NULL_AS_STRING;
     }
-    public String blankString(Optional<Integer> spaces) {
-        if (!spaces.isPresent()) {
-            spaces = Optional.of(1);
+    public String blankString(int spaces) {
+        if (spaces == -1) {
+            spaces = 0;
         }
-        return IndentationUtils.genCharsWithLen(SPACE, spaces.get());
+        return IndentationUtils.genCharsWithLen(SPACE, spaces);
     }
-    public String randomWith(Optional<Boolean> useLetters, Optional<Boolean> useNumbers, Optional<Integer> size) {
-        if (!size.isPresent()) {
-            size = Optional.of(DEFAULT_CHARACTER_SIZE);
-        }
-        if (!useLetters.isPresent()) {
-            useLetters = Optional.of(Boolean.TRUE);
-        }
-        if (!useNumbers.isPresent()) {
-            useNumbers = Optional.of(Boolean.TRUE);
-        }
-        return RandomStringUtils.random(size.get(), useLetters.get(), useNumbers.get());
+    public String randomWith(boolean useLetters, boolean useNumbers, int size) {
+        return RandomStringUtils.random(size, useLetters, useNumbers);
     }
 }

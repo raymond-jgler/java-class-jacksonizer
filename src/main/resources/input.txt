@@ -36,4 +36,5 @@
 
 # com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.Child03
 
- com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.Child03
+ #com.aggregated.inline_tests.intricate_tests.existing_ctor_test.hierarchical_test.Child03
+ com.aggregated.inline_tests.intricate_tests.new_ctor_test.hierarchical_test.Child03
