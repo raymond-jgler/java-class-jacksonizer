@@ -1,22 +1,25 @@
 package com.main_logic_tests.string_utils;
 
 import com.aggregated.StringUtils;
-import com.test_helper_utils.GENERATOR_TYPE;
-import com.test_helper_utils.StringInputGenerator;
-import com.test_helper_utils.TestInputGeneratorContainer;
+import com.test_helper_utils.*;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StringUtilsTest_IsNoneBlank {
+    private static final Logger LOG = LoggerFactory.getLogger(StringUtilsTest_IsNoneBlank.class);
     private static final Function<String, Boolean> LOGIC = StringUtils::isNoneBlank;
     private static final StringInputGenerator MOUNTED_STRING_MODE = (StringInputGenerator) TestInputGeneratorContainer.current().generate(GENERATOR_TYPE.STRING);
-    @Test
+    /** 10 million */
+    private static final int randomBound = 10000000;
+    @RepeatedTest(value = 35)
     public void shouldHandleBlankString() {
-        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(Optional.of(0)));
+        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(RandomUtils.randomInt(randomBound)));
         assertTrue(Boolean.FALSE == action);
     }
     @Test
@@ -27,25 +30,19 @@ public class StringUtilsTest_IsNoneBlank {
         assertTrue( Boolean.FALSE == action02);
     }
 
-    @Test
+    @RepeatedTest(value = 30)
     public void shouldHandleOnlyWhitespaceString() {
-        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(Optional.of(10)));
+        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(RandomUtils.randomInt(randomBound)));
         assertTrue(Boolean.FALSE == action);
     }
-    @Test
+    @RepeatedTest(value = 25)
     public void shouldHandleLetterOrDigitString() {
-        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(
-                Optional.of(Boolean.TRUE),
-                                Optional.of(Boolean.TRUE),
-                                Optional.of(15)
-                ));
-
+        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(randomBound, RANDOM_TYPE.LETTERS, RANDOM_TYPE.NUMBERS));
         assertTrue(Boolean.TRUE == action);
     }
-    @Test
+    @RepeatedTest(value = 35)
     public void shouldHandleMixedCharacters() {
-        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(5));
+        final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(RandomUtils.randomInt(randomBound), RANDOM_TYPE.ALL_CHARACTERS));
         assertTrue(Boolean.TRUE == action);
     }
-
 }

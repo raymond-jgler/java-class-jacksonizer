@@ -4,15 +4,14 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class IndentationUtils {
   private static final Logger              LOG             = LoggerFactory.getLogger(IndentationUtils.class);
-  private static       AtomicInteger       currentIndentValue;
+  private static int currentIndentValue;
   public static final  String              LINE_BREAK      = "\n";
   public static final  String              TAB             = "\t";
   public static final  String              OUTER_BLOCK_TAB = "OUTER_BLOCK_TAB";
@@ -21,48 +20,50 @@ public class IndentationUtils {
   private static       Map<String, String> outerAndInnerTabs;
 
   private IndentationUtils() {
-    currentIndentValue = new AtomicInteger(INITIAL_VALUE);
+    currentIndentValue = INITIAL_VALUE;
   }
 
   private static void incrementIndent() {
-    if (Objects.isNull(currentIndentValue)) {
-      currentIndentValue = new AtomicInteger(INITIAL_VALUE);
-    }
-    currentIndentValue.getAndIncrement();
+    currentIndentValue++;
   }
 
   private static void decrementIndent() {
-    if (Objects.isNull(currentIndentValue)) {
-      LOG.error("Indent value is null");
-      return;
-    }
-    currentIndentValue.decrementAndGet();
+    --currentIndentValue;
   }
 
   public static void resetIndent() {
-    if (Objects.isNull(currentIndentValue)) {
-      currentIndentValue = new AtomicInteger(0);
-    } else {
-      currentIndentValue.set(0);
-    }
+    currentIndentValue = 0;
   }
   public static String genCharsWithLen(char x, int length) {
-    StringBuilder res = new StringBuilder();
-    for (int i = 0; i < length - 1; i++) {
-      res.append(x);
+    final int availThreads = Runtime.getRuntime().availableProcessors();
+    Thread[] threads = new Thread[availThreads];
+    int threadIdx = 0;
+    AtomicInteger decreaser = new AtomicInteger(availThreads);
+    AtomicInteger increaser = new AtomicInteger(0);
+    AtomicReference<StringBuffer> stringBufferAtomicReference = new AtomicReference<>(new StringBuffer());
+
+    for (int i = 0; i < threads.length; i++) {
+      AtomicInteger idx = new AtomicInteger(increaser.get());
+      AtomicInteger atomicLen = new AtomicInteger(length / decreaser.get());
+      Runnable runnable = (() -> {
+        for (; idx.get() < atomicLen.get() - 1; idx.getAndIncrement()) {
+          stringBufferAtomicReference.get().append(x);
+        }
+      });
+      threads[threadIdx++] = new Thread(runnable);
+      increaser.set(atomicLen.get() + 1);
+      decreaser.getAndDecrement();
     }
-    return res.toString();
+    ThreadUtils.execute(threads);
+    return stringBufferAtomicReference.get().toString();
   }
 
   /**
    * Build with default ( = 1)
    * or given initialIndentVal.
    */
-  public static Map<String, String> build(Optional<Integer> indentVal) {
-    if (!indentVal.isPresent()) {
-      indentVal = Optional.of(Objects.isNull(currentIndentValue) ? 1 : currentIndentValue.get());
-    }
-    currentIndentValue.set(indentVal.get());
+  public static Map<String, String> build(int indentVal) {
+    currentIndentValue = indentVal;
     if (MapUtils.isEmpty(outerAndInnerTabs)) {
       outerAndInnerTabs = new ConcurrentHashMap<>();
     } else {
@@ -78,7 +79,7 @@ public class IndentationUtils {
       }
       outerAndInnerTabs.put(INNER_BLOCK_TAB, outerAndInnerTabs.getOrDefault(INNER_BLOCK_TAB, TAB) + TAB);
       i++;
-    } while (i <= currentIndentValue.get());
+    } while (i <= currentIndentValue);
 
     return outerAndInnerTabs;
   }
@@ -92,7 +93,7 @@ public class IndentationUtils {
      * Outer - 1 tab
      * Inner - 2 tabs
      */
-    if (currentIndentValue.get() == 1) {
+    if (currentIndentValue == 1) {
       outerAndInnerTabs.put(OUTER_BLOCK_TAB, TAB);
     } else {
       outerAndInnerTabs.put(OUTER_BLOCK_TAB, outerAndInnerTabs.getOrDefault(OUTER_BLOCK_TAB, TAB) + TAB);

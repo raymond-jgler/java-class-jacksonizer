@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.aggregated;
 
 public class ExecutionResult {
@@ -33,3 +19,17 @@ public class ExecutionResult {
         return fileCount;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
