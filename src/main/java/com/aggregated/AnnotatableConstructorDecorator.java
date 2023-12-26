@@ -31,7 +31,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
 
   @Override
   protected void executePhases(PhaseChainedResult previousInput) {
-    PhaseChainedResult runningPhaseResultOutput = InitialDummyPhase.emptyInstance();
+    PhaseChainedResult runningPhaseResultOutput = InitialDummyPhase.instance();
     for (BaseConstructorPhaseAlgorithm phase : algorithmPhases) {
       try {
         runningPhaseResultOutput = phase.execute(previousInput);
@@ -149,7 +149,7 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
          */
         if (rawInput.getBfsImports()) {
           try {
-            String extractedContent = BaseConstructorPhaseAlgorithm.extractClassContent(popped);
+            String extractedContent = BaseConstructorPhaseAlgorithm.extractClassContent(popped, false);
             enqueueWithImportedDomainClasses(extractedContent);
           } catch (Throwable t) {
             throw new RuntimeException("rip");
@@ -357,11 +357,11 @@ public class AnnotatableConstructorDecorator extends BaseDecorationAlgorithm {
           isInner = true; //to reset indentation map
         }
         IndentationUtils.incrementTabMap();
-        BaseConstructorPhaseAlgorithm.updateWith(clazz, true);
+        BaseConstructorPhaseAlgorithm.updateWith(clazz, Boolean.TRUE);
       } else {
         BaseConstructorPhaseAlgorithm.beginWith(clazz);
       }
-      executePhases(InitialDummyPhase.emptyInstance());
+      executePhases(InitialDummyPhase.instance());
     } catch (Throwable t) {
       LOG.info("!!!failed alert " + (isInner ? " inner " : "") + "class = " + clazz.getName());
       FileUtils.writeContentToFile("failed_classes.txt", "error  = " + t.toString() + "\nat " + (isInner ? " inner " : "") + "class = " + clazz.getName(), true);

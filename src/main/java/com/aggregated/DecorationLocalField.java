@@ -1,6 +1,7 @@
 package com.aggregated;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +37,6 @@ public class DecorationLocalField {
     }
     return fieldName;
   }
-
   public void addImportString(String importString) {
     if (Objects.isNull(this.fullImportStringList)) {
       this.fullImportStringList = new ArrayList<>();
@@ -47,8 +47,14 @@ public class DecorationLocalField {
     this.fullImportStringList.add(importString);
   }
 
-  public List<String> getFullImportStringList() {
-    return fullImportStringList;
+  public List<String> getFullImportStringList(boolean isModifiable) {
+    if (Objects.isNull(fullImportStringList)) {
+      return Collections.emptyList();
+    }
+    if (isModifiable) {
+      return fullImportStringList;
+    }
+    return Collections.unmodifiableList(fullImportStringList);
   }
 
   public Boolean getFinal() {

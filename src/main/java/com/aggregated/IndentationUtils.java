@@ -36,26 +36,38 @@ public class IndentationUtils {
   }
   public static String genCharsWithLen(char x, int length) {
     final int availThreads = Runtime.getRuntime().availableProcessors();
-    Thread[] threads = new Thread[availThreads];
-    int threadIdx = 0;
-    AtomicInteger decreaser = new AtomicInteger(availThreads);
-    AtomicInteger increaser = new AtomicInteger(0);
-    AtomicReference<StringBuffer> stringBufferAtomicReference = new AtomicReference<>(new StringBuffer());
-
-    for (int i = 0; i < threads.length; i++) {
-      AtomicInteger idx = new AtomicInteger(increaser.get());
-      AtomicInteger atomicLen = new AtomicInteger(length / decreaser.get());
-      Runnable runnable = (() -> {
-        for (; idx.get() < atomicLen.get() - 1; idx.getAndIncrement()) {
-          stringBufferAtomicReference.get().append(x);
+    int possibleThreads = length / availThreads;
+    if (possibleThreads < 2) {
+      char[] chars = new char[length];
+      int idx = 0;
+      for (int i = 0; i < length; i++) {
+        chars[idx++] = x;
+      }
+      return new String(chars);
+    } else {
+      Thread[] threads = new Thread[availThreads];
+      int threadIdx = 0;
+      AtomicInteger decreaser = new AtomicInteger(availThreads);
+      AtomicInteger increaser = new AtomicInteger(0);
+      AtomicReference<StringBuffer> stringBufferAtomicReference = new AtomicReference<>(new StringBuffer());
+      for (int i = 0; i < threads.length; i++) {
+        AtomicInteger idx = new AtomicInteger(increaser.get());
+        AtomicInteger atomicLen = new AtomicInteger(length / decreaser.get());
+        Runnable runnable = (() -> {
+          for (; idx.get() < atomicLen.get() - 1; idx.getAndIncrement()) {
+            stringBufferAtomicReference.get().append(x);
+          }
+        });
+        if (idx.get() >= atomicLen.get()) {
+          break;
         }
-      });
-      threads[threadIdx++] = new Thread(runnable);
-      increaser.set(atomicLen.get() + 1);
-      decreaser.getAndDecrement();
+        threads[threadIdx++] = new Thread(runnable);
+        increaser.set(atomicLen.get() + 1);
+        decreaser.getAndDecrement();
+      }
+      ThreadUtils.execute(threads);
+      return stringBufferAtomicReference.get().toString();
     }
-    ThreadUtils.execute(threads);
-    return stringBufferAtomicReference.get().toString();
   }
 
   /**

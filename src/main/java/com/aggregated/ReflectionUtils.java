@@ -1,11 +1,13 @@
 package com.aggregated;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -57,7 +59,7 @@ public class ReflectionUtils {
     } while (Objects.isNull(clazz) && !unresolvedName.equals(""));
 
     if (Objects.isNull(clazz)) {
-//      LOG.error("failed to get class from " + toPrint);
+      LOG.error("failed to get class from " + toPrint);
     }
     return clazz;
   }
@@ -142,9 +144,26 @@ public class ReflectionUtils {
     return false;
   }
 
+  public static boolean isAnyAnnotationPresent(Class onClass, Class... annots) {
+    if (Objects.isNull(annots)) {
+      return false;
+    }
+    for (Class each : annots) {
+      if (onClass.isAnnotationPresent(each)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public static boolean hardCodeIsJackson(Class CLAZZ) {
-    if (CLAZZ.isAnnotationPresent(JsonDeserialize.class) || CLAZZ.isAnnotationPresent(JsonSerialize.class) || CLAZZ.getSimpleName().equalsIgnoreCase("Builder")) {
+    if (isAnyAnnotationPresent(CLAZZ, JsonDeserialize.class, JsonSerialize.class)) {
       return true;
+    }
+    for (Constructor each : CLAZZ.getDeclaredConstructors()) {
+      if (each.isAnnotationPresent(JsonCreator.class)) {
+        return true;
+      }
     }
     return false;
   }
@@ -155,8 +174,8 @@ public class ReflectionUtils {
     return clazz.getDeclaredClasses().length > 0 || clazz.getClasses().length > 0;
   }
 
-  private static Boolean isFieldUnassigned(String fieldName) {
-    String[] FIELD_REGION = BaseConstructorPhaseAlgorithm.getFieldRegion();
+  private static Boolean isFieldUnassigned(String fieldName, Class clazz) {
+    String[] FIELD_REGION = BaseConstructorPhaseAlgorithm.getFieldRegion(clazz);
     if (CollectionUtils.isEmpty(Arrays.asList(FIELD_REGION))) {
       LOG.warn("Data is not init-ed");
       return null;
@@ -216,36 +235,10 @@ public class ReflectionUtils {
     return Objects.nonNull(obj) && obj.booleanValue();
   }
 
-  public static List<DecorationLocalField> makeSerializableFieldsFrom(Class CLAZZ) {
-    BaseConstructorPhaseAlgorithm.beginWith(CLAZZ);
-    List<DecorationLocalField> built = new ArrayList<>();
-    for (Field field : CLAZZ.getDeclaredFields()) {
-      if (field.getName().contains("$this")) {
-        continue;
-      }
-      if (ReflectionUtils.isSerializableField(field)) {
-        built.add(createDecoLocalFieldFrom(field));
-      }
-    }
-    return built;
-  }
-
   public static DecorationLocalField createDecoLocalFieldFrom(Field field) {
     return DecorationLocalField.createFrom(field.getName(), field.getGenericType().getTypeName(), field.getType().getName(), field.getType().getSimpleName(), Modifier.isFinal(field.getModifiers()));
   }
 
-  public static boolean isSerializableField(Field field) {
-    int modVal = field.getModifiers();
-    if ((Modifier.isFinal(modVal) && Modifier.isStatic(modVal)) || (Modifier.isTransient(modVal) || field.isAnnotationPresent(Deprecated.class)) || field.getType() == Comparator.class || field.getType() == Logger.class || (Modifier.isFinal(modVal) && !evalBoolean(isFieldUnassigned(field.getName())))) {
-      return false;
-    }
-    if (!Modifier.isStatic(modVal) && evalBoolean(isFieldUnassigned(field.getName()))) {
-      return true;
-    } else if (!Modifier.isStatic(modVal)) {
-      return false;
-    }
-    return false;
-  }
   public static List<DecorationLocalField> merge(List<DecorationLocalField> from, List<DecorationLocalField> with) {
     if (CollectionUtils.isEmpty(with)) {
       return from;

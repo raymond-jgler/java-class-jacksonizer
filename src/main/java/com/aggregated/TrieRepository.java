@@ -21,7 +21,7 @@ public class TrieRepository {
         if (isConcatenate) {
             trie.addWord(inp);
         } else {
-            trie.addWord(StringUtils.makeNonAlphaStringsFrom(inp));
+            trie.addWord(StringUtils.makeNonAlphaStringsFrom(inp, Boolean.TRUE));
         }
         return this;
     }

@@ -38,10 +38,17 @@ public class StringUtils {
         if (isEmpty(input)) {
             return false;
         }
-        for (Character each : input.toCharArray()) {
-            if (Character.isLetterOrDigit(each)) {
+        int l = 0;
+        int r = input.length() - 1;
+        char [] inpArr = input.toCharArray();
+        while (l <= r) {
+            char left = inpArr[l];
+            char right = inpArr[r];
+            if (Character.isLetterOrDigit(left) || Character.isLetterOrDigit(right)) {
                 return true;
             }
+            l++;
+            r--;
         }
         return false;
     }
@@ -51,12 +58,16 @@ public class StringUtils {
     }
 
     public static boolean containsAny(String toCheck, String... args) {
-        for (String each : args) {
-            if (toCheck.contains(each) || each.contains(toCheck)) {
-                return true;
+        AtomicBoolean res = new AtomicBoolean();
+        Arrays.stream(args).parallel().forEach(each -> {
+            if (res.get()) {
+                return;
             }
-        }
-        return false;
+            if (toCheck.contains(each)) {
+                res.set(true);
+            }
+        });
+        return res.get();
     }
 
     public static String resolveReplaces(String orig, String... fromToPairs) {
@@ -93,11 +104,11 @@ public class StringUtils {
         if (inp.isEmpty() || inp.contains(String.valueOf(bracket))) {
             return inp;
         }
-        String res = inp;
-        if (!bracket.equalsIgnoreCase(String.valueOf(res.charAt(res.length() - 1)))) {
-            res += indentVal + bracket;
+        StringBuilder resultBuilder = new StringBuilder(inp);
+        if (!bracket.equalsIgnoreCase(String.valueOf(resultBuilder.charAt(resultBuilder.length() - 1)))) {
+            resultBuilder.append(indentVal).append(bracket);
         }
-        return res;
+        return resultBuilder.toString();
     }
 
     public static String stripUntilDollarSign(String inp) {
@@ -110,7 +121,7 @@ public class StringUtils {
     }
 
     public static String stripUntilClassPath(String inp, Character... toKeep) {
-        Set<Character> toKeeps = new HashSet<>(Arrays.asList(toKeep));
+        List<Character> toKeeps = Arrays.asList(toKeep);
         StringBuilder sb = new StringBuilder();
         for (Character c : inp.toCharArray()) {
             if (Character.isLetterOrDigit(c) || toKeeps.contains(c)) {
@@ -215,7 +226,7 @@ public class StringUtils {
         return count;
     }
 
-    public static List<String> makeNonAlphaStringsFrom(String inp) {
+    public static List<String> makeNonAlphaStringsFrom(String inp, boolean isUnique) {
         if (StringUtils.isEmpty(inp)) {
             return new ArrayList<>();
         }
@@ -231,7 +242,10 @@ public class StringUtils {
             while (r < n && Character.isLetterOrDigit(inpCharArr[r])) {
                 r++;
             }
-            res.add(new String(inpCharArr, l, r - l));
+            final String toAdd = new String(inpCharArr, l, r - l);
+            if (isUnique && !res.contains(toAdd)) {
+                res.add(new String(inpCharArr, l, r - l));
+            }
             l = r + 1;
         }
 
@@ -257,17 +271,6 @@ public class StringUtils {
             res.add(sb.toString());
         }
         return res;
-    }
-
-    public static void main(String[] args) {
-        final long start = System.currentTimeMillis();
-        for (int i = 0; i < 10000000; i++) {
-            makeNonAlphaStringsFrom("fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j" +
-                    "fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j  fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j\" +\n" +
-                    "                    \"fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09jfejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwefoaew fioewj fioaewjf aewofja 10983210 3120fh09j fejwaofiaejwiofjaewiofjoaewjfjaewfiojweiojoaew ifjaewfewfwe foaew fioewj fioaewjf aewofja 10983210 3120fh09j .few. afa wef.wef .ew.f ew..........");
-        }
-        final long end = System.currentTimeMillis();
-        System.out.println(" in : " + (end - start));
     }
 
     /**

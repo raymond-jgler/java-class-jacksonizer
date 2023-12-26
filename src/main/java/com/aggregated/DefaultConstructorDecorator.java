@@ -1,7 +1,5 @@
 package com.aggregated;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +11,7 @@ import java.util.Objects;
 
 public class DefaultConstructorDecorator extends BaseDecorationAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConstructorDecorator.class);
-
-    @JsonCreator
-    public DefaultConstructorDecorator(@JsonProperty("inputReceiver") InputReceiver inputReceiver,
-                                       @JsonProperty("rule") ExecutionRule rule,
-                                       @JsonProperty("rawInput") RawClientRuleInput rawInput,
-                                       @JsonProperty("mode") DecorationStrategyMode mode) {
-
+    public DefaultConstructorDecorator(InputReceiver inputReceiver, ExecutionRule rule, RawClientRuleInput rawInput, DecorationStrategyMode mode) {
         super(inputReceiver, rule, rawInput, mode);
     }
     @Override
@@ -71,7 +63,7 @@ public class DefaultConstructorDecorator extends BaseDecorationAlgorithm {
         } else {
             BaseConstructorPhaseAlgorithm.beginWith(innerClazz);
         }
-        executePhases(InitialDummyPhase.emptyInstance());
+        executePhases(InitialDummyPhase.instance());
     }
     /**
      * Process adding rule-based constructors

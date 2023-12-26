@@ -21,7 +21,6 @@ public abstract class BaseDecorationAlgorithm implements DecorationAlgorithm {
   protected final      List<File>                          processibleFileList = new ArrayList();
   protected            int                                 filesProcessed;
   protected            int                                 fileCount;
-  @JsonCreator
   protected BaseDecorationAlgorithm(RawClientRuleInput rawInput, int fileCount, List algorithmPhases, InputReceiver inputReceiver, int filesProcessed, ExecutionRule rule,DecorationStrategyMode mode) {
 
     this.rawInput = rawInput;
