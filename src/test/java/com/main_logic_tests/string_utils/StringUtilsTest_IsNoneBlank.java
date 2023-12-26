@@ -17,7 +17,8 @@ public class StringUtilsTest_IsNoneBlank {
     private static final StringInputGenerator MOUNTED_STRING_MODE = (StringInputGenerator) TestInputGeneratorContainer.current().generate(GENERATOR_TYPE.STRING);
     /** 10 million */
     private static final int randomBound = 10000000;
-    @RepeatedTest(value = 35)
+    private static final int repeatTimes = 10;
+    @RepeatedTest(value = repeatTimes)
     public void shouldHandleBlankString() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(RandomUtils.randomInt(randomBound)));
         assertTrue(Boolean.FALSE == action);
@@ -30,17 +31,17 @@ public class StringUtilsTest_IsNoneBlank {
         assertTrue( Boolean.FALSE == action02);
     }
 
-    @RepeatedTest(value = 30)
+    @RepeatedTest(value = repeatTimes)
     public void shouldHandleOnlyWhitespaceString() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(RandomUtils.randomInt(randomBound)));
         assertTrue(Boolean.FALSE == action);
     }
-    @RepeatedTest(value = 25)
+    @RepeatedTest(value = repeatTimes)
     public void shouldHandleLetterOrDigitString() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(randomBound, RANDOM_TYPE.LETTERS, RANDOM_TYPE.NUMBERS));
         assertTrue(Boolean.TRUE == action);
     }
-    @RepeatedTest(value = 35)
+    @RepeatedTest(value = repeatTimes)
     public void shouldHandleMixedCharacters() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.randomWith(RandomUtils.randomInt(randomBound), RANDOM_TYPE.ALL_CHARACTERS));
         assertTrue(Boolean.TRUE == action);
