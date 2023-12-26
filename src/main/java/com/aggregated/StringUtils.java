@@ -325,7 +325,7 @@ public class StringUtils {
                 threads[threadIdx++] = new Thread(runnable);
             }
         }
-        ThreadUtils.execute(threads);
+        ThreadUtils.executeAndJoinAll(threads);
 
         return running.get().toString();
     }

@@ -3,7 +3,7 @@ package com.aggregated;
 import java.util.Objects;
 
 public class ThreadUtils {
-    public static void execute(Thread[] threads) {
+    public static void executeAndJoinAll(Thread[] threads) {
         for (Thread thread : threads) {
             if (Objects.isNull(thread)) {
                 break;

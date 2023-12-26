@@ -65,7 +65,7 @@ public class IndentationUtils {
         increaser.set(atomicLen.get() + 1);
         decreaser.getAndDecrement();
       }
-      ThreadUtils.execute(threads);
+      ThreadUtils.executeAndJoinAll(threads);
       return stringBufferAtomicReference.get().toString();
     }
   }

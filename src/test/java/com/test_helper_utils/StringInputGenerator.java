@@ -8,12 +8,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.aggregated.CharacterRepository.*;
+
 public class StringInputGenerator extends BaseInputGenerator {
     private static final StringInputGenerator INSTANCE = new StringInputGenerator();
     private static final String NULL_AS_STRING = "null";
     private static final String NULL_KEYWORD = null;
     private static final String EMPTY = "";
-    private static final char SPACE = ' ';
     private static final int DEFAULT_CHARACTER_SIZE = 10;
     private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final String DIGITS = "0123456789";
@@ -41,7 +42,7 @@ public class StringInputGenerator extends BaseInputGenerator {
             increaser.set(atomicLen.get() + 1);
             decreaser.getAndDecrement();
         }
-        ThreadUtils.execute(threads);
+        ThreadUtils.executeAndJoinAll(threads);
         return new String(container.get());
     }
     private String chooseString(RANDOM_TYPE ...type) {

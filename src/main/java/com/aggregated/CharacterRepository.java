@@ -5,6 +5,9 @@ public class CharacterRepository {
     public static final char CLOSE_BRACKET = '}';
     public static final char OPEN_PAREN = '(';
     public static final char CLOSE_PAREN = ')';
+
+    public static final char SPACE = ' ';
+    public static final String SPACE_STR =  " ";
     public static final char SEMICOLON = ';';
     public static final String IMPORT_KEYWORD = "import";
     public static final String COM_KEYWORD = "com";
