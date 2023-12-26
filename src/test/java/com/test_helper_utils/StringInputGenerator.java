@@ -22,20 +22,27 @@ public class StringInputGenerator extends BaseInputGenerator {
     private static final String ALL_CHARACTERS = LETTERS + DIGITS + SPECIAL_CHARACTERS + " ";
     public String randomWith(int length, RANDOM_TYPE... type) {
         final int availThreads = Runtime.getRuntime().availableProcessors();
-        Thread[] threads = new Thread[availThreads];
+        int possibleThreads = length / availThreads;
+        StringBuffer chosen = new StringBuffer(chooseString(type));
+        int bound = chosen.length();
+        if (possibleThreads < 2 || possibleThreads > availThreads) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                sb.append(chosen.charAt(RandomUtils.randomInt((bound))));
+            }
+            return sb.toString();
+        }
+        Thread[] threads = new Thread[possibleThreads];
         int threadIdx = 0;
         AtomicReference<char[]> container = new AtomicReference<>(new char[length]);
-        AtomicInteger decreaser = new AtomicInteger(availThreads);
+        AtomicInteger decreaser = new AtomicInteger(possibleThreads);
         AtomicInteger increaser = new AtomicInteger(0);
-        AtomicReference<StringBuffer> atomicReferenceChosen = new AtomicReference<>(new StringBuffer(chooseString(type)));
-        AtomicReference<StringBuffer> atomicChosen = new AtomicReference<>(new StringBuffer(atomicReferenceChosen.get()));
-        int bound = atomicReferenceChosen.get().length();
         for (int i = 0; i < threads.length; i++) {
             AtomicInteger idx = new AtomicInteger(increaser.get());
             AtomicInteger atomicLen = new AtomicInteger(length / decreaser.get());
             Runnable runnable = (() -> {
                 for (; idx.get() < atomicLen.get() - 1;) {
-                    container.get()[idx.getAndIncrement()] = atomicChosen.get().charAt(RandomUtils.randomInt(bound));
+                    container.get()[idx.getAndIncrement()] = chosen.charAt(RandomUtils.randomInt(bound));
                 }
             });
             threads[threadIdx++] = new Thread(runnable);

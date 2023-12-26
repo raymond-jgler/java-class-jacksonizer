@@ -17,7 +17,7 @@ public class StringUtilsTest_IsNoneBlank {
     private static final StringInputGenerator MOUNTED_STRING_MODE = (StringInputGenerator) TestInputGeneratorContainer.current().generate(GENERATOR_TYPE.STRING);
     /** 10 million */
     private static final int randomBound = 10000000;
-    private static final int repeatTimes = 10;
+    private static final int repeatTimes = 17;
     @RepeatedTest(value = repeatTimes)
     public void shouldHandleBlankString() {
         final boolean action = LOGIC.apply(MOUNTED_STRING_MODE.blankString(RandomUtils.randomInt(randomBound)));
