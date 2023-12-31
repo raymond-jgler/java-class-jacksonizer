@@ -1,14 +1,14 @@
 package com.aggregated;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.aggregated.CharacterRepository.*;
 
@@ -17,21 +17,24 @@ public abstract class BaseConstructorPhaseAlgorithm {
     protected final RawClientRuleInput rawInput;
     protected static Class<?> CLAZZ;
     protected static final String SHOULD_ADD_DEFAULT_CTOR = "_should_add_default_ctor";
+
     /**
-     * Top-level class acts as a cache
-     * for when inner classes are modified.
+     * Top-level class acts as a cache for when inner classes are modified.
      */
     protected static Class<?> TOP_LEVEL_CLAZZ;
+
     protected static String slashedFullName;
     protected static String CLASS_CONTENT;
     protected static String[] FIELD_REGION;
     protected static String RAW_FIELD_REGION;
     protected static int CLASS_KEYWORD_N_NAME_IDX;
     protected static int WRITABLE_CTOR_IDX;
+
     /**
      * If continuously fail to find.
      */
     protected static final int MAX_FAILED_ATTEMPTS = 3;
+
     protected static boolean IS_DEFAULT_CONSTRUCTOR;
     protected static final String ENDING_JAVA_EXT = ".java";
     protected static final String CLASS_KEYWORD = "class";
@@ -75,8 +78,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * If the expected ordinal is > stack
-     * then, return the top ( if any )
+     * If the expected ordinal is > stack then, return the top ( if any )
      *
      * @param ordinal the index of the pushed order.
      * @return
@@ -117,11 +119,13 @@ public abstract class BaseConstructorPhaseAlgorithm {
         return parentToChild;
     }
 
-    public static void addFieldListToMap(String className, List<DecorationLocalField> annotatedParams, boolean forcePut) {
+    public static void addFieldListToMap(
+            String className, List<DecorationLocalField> annotatedParams, boolean forcePut) {
         if (Objects.isNull(classToMergeableParams)) {
             classToMergeableParams = new HashMap<>();
         }
-        if ((!forcePut && classToMergeableParams.containsKey(className)) || CollectionUtils.isEmpty(annotatedParams)) {
+        if ((!forcePut && classToMergeableParams.containsKey(className))
+                || CollectionUtils.isEmpty(annotatedParams)) {
             return;
         }
         classToMergeableParams.put(className, annotatedParams);
@@ -164,20 +168,25 @@ public abstract class BaseConstructorPhaseAlgorithm {
         if (MapUtils.isEmpty(classToPath) || !classToPath.containsKey(className)) {
             return "";
         }
-        return StringUtils.stripDoubleEndedNonAlphaNumeric(classToPath.get(className));
+        return classToPath.get(className);
     }
 
     public static void beginWith(Class fromClazz) {
-        stackedPhaseResults = new DoubleEndedStack<>();
-        LOG.info("Processing class = " + fromClazz.getName());
-        CLAZZ = fromClazz;
-        TOP_LEVEL_CLAZZ = fromClazz;
-        CLASS_CONTENT = extractClassContent(null, Boolean.TRUE);
-        if (Objects.isNull(CLASS_CONTENT)) {
-            return;
+        try {
+            stackedPhaseResults = new DoubleEndedStack<>();
+            LOG.info("Processing class = " + fromClazz.getName());
+            CLAZZ = fromClazz;
+            TOP_LEVEL_CLAZZ = fromClazz;
+            CLASS_CONTENT = extractClassContent(null, Boolean.TRUE);
+            if (Objects.isNull(CLASS_CONTENT)) {
+                return;
+            }
+            hasStringLevelDefaultCtor = Optional.empty();
+            internCtorIdxes = new ArrayList<>();
+            reprocessVitals();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        hasStringLevelDefaultCtor = Optional.empty();
-        reprocessVitals();
     }
 
     public static void makeFieldRegion() {
@@ -188,7 +197,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
                 return;
             }
             RAW_FIELD_REGION = CLASS_CONTENT.substring(newFrom, newTo);
-            FIELD_REGION = RAW_FIELD_REGION.split(" ");
+            FIELD_REGION = RAW_FIELD_REGION.split(";");
         } catch (Throwable t) {
             throw new RuntimeException("rip");
         }
@@ -212,24 +221,23 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * All inner declared classes
-     * already belong to the top-level class.
-     * So just process what needs updating.
+     * All inner declared classes already belong to the top-level class. So just process what needs
+     * updating.
      */
     public static void updateWith(Class clazz, boolean isUpdateTopLvlClass) {
         /**
-         * Always start with a top-level class.
-         * Because we gradually write
-         * new constructor code from top to bottom.
+         * Always start with a top-level class. Because we gradually write new constructor code from top
+         * to bottom.
          */
         LOG.info("Processing class = " + clazz.getName());
         stackedPhaseResults = new DoubleEndedStack<>();
+        internCtorIdxes = new ArrayList<>();
         CLAZZ = clazz;
         if (isUpdateTopLvlClass) {
             try {
                 TOP_LEVEL_CLAZZ = Class.forName(StringUtils.stripUntilDollarSign(clazz.getName()));
             } catch (ClassNotFoundException e) {
-                return; //chill and return
+                return; // chill and return
             }
         }
         CLASS_CONTENT = extractClassContent(null, true);
@@ -241,17 +249,14 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * call when class content changes,
-     * new annotation is added for e.g
-     * or at the initial phase
-     * Update writable ctor idx
-     * class keyword and idx,
-     * class content.
+     * call when class content changes, new annotation is added for e.g or at the initial phase Update
+     * writable ctor idx class keyword and idx, class content.
      */
     protected static void reprocessVitals() {
         try {
             CLASS_KEYWORD_N_NAME_IDX =
-                    forceFindExactPrefixedString(0, CLASS_CONTENT, CLAZZ.getSimpleName(), CLASS_KEYWORD, 1, OPEN_BRACKET);
+                    forceFindExactPrefixedString(
+                            0, CLASS_CONTENT, CLAZZ.getSimpleName(), CLASS_KEYWORD, 1, OPEN_BRACKET);
             WRITABLE_CTOR_IDX = findStartForNewCtor(CLASS_KEYWORD_N_NAME_IDX, CLASS_CONTENT);
             makeFieldRegion();
             internCtorIdxes = buildExistingCtorList();
@@ -277,19 +282,22 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     protected static int getEndingImportRegionIndex() {
-        int commentIdx = StringUtils.lastIndexOf(
-                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                '/',
-                CLASS_KEYWORD_N_NAME_IDX - 1,
-                1,
-                Boolean.FALSE);
+        reprocessVitals();
+        int commentIdx =
+                StringUtils.lastIndexOf(
+                        CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+                        '/',
+                        CLASS_KEYWORD_N_NAME_IDX - 1,
+                        1,
+                        Boolean.FALSE);
 
-        int seeminglyLastImport = StringUtils.lastIndexOf(
-                CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
-                SEMICOLON,
-                CLASS_KEYWORD_N_NAME_IDX - 1,
-                1,
-                Boolean.FALSE);
+        int seeminglyLastImport =
+                StringUtils.lastIndexOf(
+                        CLASS_CONTENT.substring(0, CLASS_KEYWORD_N_NAME_IDX - 1),
+                        SEMICOLON,
+                        CLASS_KEYWORD_N_NAME_IDX - 1,
+                        1,
+                        Boolean.FALSE);
 
         if (Math.min(commentIdx, seeminglyLastImport) == -1) {
             return Math.max(commentIdx, seeminglyLastImport);
@@ -308,7 +316,8 @@ public abstract class BaseConstructorPhaseAlgorithm {
         if (Math.min(firstIdxofImportKeyWord, lastIdxOfImportLine) == -1) {
             return "";
         }
-        return CLASS_CONTENT.substring(firstIdxofImportKeyWord, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
+        return CLASS_CONTENT.substring(
+                firstIdxofImportKeyWord, CLASS_CONTENT.indexOf(SEMICOLON, lastIdxOfImportLine) + 1);
     }
 
     public static String extractClassContent(Class given, boolean isOverride) {
@@ -318,12 +327,15 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
         StringBuilder slashedFullNameBuilder = new StringBuilder();
 
-        slashedFullNameBuilder.append(InputReceiver.BASE_SOURCE)
+        slashedFullNameBuilder
+                .append(InputReceiver.BASE_SOURCE)
                 .append(TOP_LEVEL_CLAZZ.getPackage().getName())
                 .append(".")
                 .append(TOP_LEVEL_CLAZZ.getSimpleName());
 
-        slashedFullNameBuilder = new StringBuilder(StringUtils.resolveReplaces(slashedFullNameBuilder.toString(), ".", "\\\\"));
+        slashedFullNameBuilder =
+                new StringBuilder(
+                        StringUtils.resolveReplaces(slashedFullNameBuilder.toString(), ".", "\\\\"));
 
         if (!slashedFullNameBuilder.toString().endsWith(ENDING_JAVA_EXT)) {
             slashedFullNameBuilder.append(ENDING_JAVA_EXT);
@@ -343,9 +355,13 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     protected static boolean isValidCtor(int idx) {
-        String checkScope = CLASS_CONTENT.substring(CLASS_CONTENT.indexOf(CLAZZ.getSimpleName(), idx),
-                CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
-        checkScope = StringUtils.stripDoubleEndedNonAlphaNumeric(checkScope).substring(CLAZZ.getSimpleName().length());
+        String checkScope =
+                CLASS_CONTENT.substring(
+                        CLASS_CONTENT.indexOf(CLAZZ.getSimpleName(), idx),
+                        CLASS_CONTENT.indexOf(CLOSE_PAREN, idx));
+        checkScope =
+                StringUtils.stripDoubleEndedNonAlphaNumeric(checkScope)
+                        .substring(CLAZZ.getSimpleName().length());
         for (int i = 0, n = checkScope.length(); i < n; i++) {
             char c = checkScope.charAt(i);
             if (c == OPEN_PAREN) {
@@ -359,11 +375,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * m : declared constructor's size.
-     * n : access_modifier list's size
-     * <p>
-     * time complexity : O(c1 x c2 x n)
-     * space : O(n)
+     * m : declared constructor's size. n : access_modifier list's size
+     *
+     * <p>time complexity : O(c1 x c2 x n) space : O(n)
      *
      * @return
      */
@@ -376,37 +390,30 @@ public abstract class BaseConstructorPhaseAlgorithm {
                 int start = CLASS_KEYWORD_N_NAME_IDX;
                 for (int j = 0, m = declaredCtors; j < m; j++) {
                     int internIdx = -1;
-                    internIdx = forceFindExactPrefixedString(start,
-                            CLASS_CONTENT,
-                            CLAZZ.getSimpleName(),
-                            PREFIXES[i],
-                            1,
-                            OPEN_PAREN);
+                    internIdx =
+                            forceFindExactPrefixedString(
+                                    start, CLASS_CONTENT, CLAZZ.getSimpleName(), PREFIXES[i], 1, OPEN_PAREN);
 
                     if (internIdx == -1) {
                         continue;
                     }
-                    String seeminglyAccessMod = StringUtils.findPrependablePieceFrom(
-                            CLASS_CONTENT,
-                            internIdx,
-                            '\r',
-                            false);
+                    String seeminglyAccessMod =
+                            StringUtils.findPrependablePieceFrom(CLASS_CONTENT, internIdx, '\r', false);
 
-                    if (existingCtors.contains(internIdx) || !isValidCtor(internIdx)
-                            || seeminglyAccessMod.contains(NEW_KEYWORD) || (PREFIXES[i].isEmpty() && isAnyAnagramFoundIn(PREFIXES, seeminglyAccessMod))) {
+                    if (existingCtors.contains(internIdx)
+                            || !isValidCtor(internIdx)
+                            || seeminglyAccessMod.contains(NEW_KEYWORD)
+                            || (PREFIXES[i].isEmpty() && isAnyAnagramFoundIn(PREFIXES, seeminglyAccessMod))) {
                         start = internIdx + 1;
                         continue;
                     }
-                    /**
-                     * Eval if any string-level ctor found
-                     */
+                    /** Eval if any string-level ctor found */
                     if (!hasStringLevelDefaultCtor.isPresent() && internIdx != -1) {
                         int openParenIdx = CLASS_CONTENT.indexOf(OPEN_PAREN, internIdx);
                         if (openParenIdx != -1) {
                             int closeParenIdx = CLASS_CONTENT.indexOf(CLOSE_PAREN, openParenIdx);
                             if (closeParenIdx != -1) {
-                                String declaredParm = CLASS_CONTENT
-                                        .substring(openParenIdx + 1, closeParenIdx);
+                                String declaredParm = CLASS_CONTENT.substring(openParenIdx + 1, closeParenIdx);
                                 if (StringUtils.isEmpty(declaredParm)) {
                                     hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
                                 }
@@ -422,12 +429,6 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
         if (CollectionUtils.isEmpty(existingCtors)) {
             existingCtors.add(-1);
-//      /**
-//       * Haiz
-//       */
-//      if (ReflectionUtils.hasMutator(CLAZZ) && !hasStringLevelDefaultCtor.isPresent()) {
-//        hasStringLevelDefaultCtor = Optional.of(Boolean.TRUE);
-//      }
         }
         if (!hasStringLevelDefaultCtor.isPresent()) {
             hasStringLevelDefaultCtor = Optional.of(Boolean.FALSE);
@@ -439,7 +440,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
         if (StringUtils.isEmpty(field) || StringUtils.isAllLowerCase(field)) {
             return true;
         }
-        return StringUtils.containsAny(field, "java.lang",
+        return StringUtils.containsAny(
+                field,
+                "java.lang",
                 "boolean",
                 "int",
                 "char",
@@ -455,14 +458,11 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * Supposed this access-mod-ed ctor:
-     * public Person(...
-     * <p>
-     * The next ctor's index will be on the same line.
-     * -> use only one.
-     * <p>
-     * could use a matrix, adjacency list to query based on row , col stuffs but
-     * this saves memory.
+     * Supposed this access-mod-ed ctor: public Person(...
+     *
+     * <p>The next ctor's index will be on the same line. -> use only one.
+     *
+     * <p>could use a matrix, adjacency list to query based on row , col stuffs but this saves memory.
      *
      * @param list
      * @param inp
@@ -484,24 +484,23 @@ public abstract class BaseConstructorPhaseAlgorithm {
     }
 
     /**
-     * Forcefully find prefixed (exact match) with the given prefix,
-     * regardless of middle spaces.
+     * Forcefully find prefixed (exact match) with the given prefix, regardless of middle spaces.
      *
      * @param startAt
      * @param content
      * @param prefixed         is the word after prefix (prefixed by the "prefix")
      * @param prefix           the prefix
-     * @param ordinal          the nth-matched result
-     *                         -1 means find the last possible match
+     * @param ordinal          the nth-matched result -1 means find the last possible match
      * @param endingRegionChar : the ending boundary for the extracted range to validate against.
      * @return
      */
-    protected static int forceFindExactPrefixedString(int startAt,
-                                                      String content,
-                                                      String prefixed,
-                                                      String prefix,
-                                                      int ordinal,
-                                                      char endingRegionChar) {
+    protected static int forceFindExactPrefixedString(
+            int startAt,
+            String content,
+            String prefixed,
+            String prefix,
+            int ordinal,
+            char endingRegionChar) {
         int res = -1;
         int failedAttempts = -1;
         StringBuilder exactMatch = new StringBuilder();
@@ -511,21 +510,19 @@ public abstract class BaseConstructorPhaseAlgorithm {
                 if (failedAttempts == MAX_FAILED_ATTEMPTS) {
                     break;
                 }
-                res = forceFindPrefixedString(Optional.of(startAt), prefix, prefixed, content, Optional.of(ordinal));
+                res =
+                        forceFindPrefixedString(
+                                Optional.of(startAt), prefix, prefixed, content, Optional.of(ordinal));
                 continue;
             }
-            /**
-             * Double check
-             */
+            /** Double check */
             int endingRegionCharIdx = content.indexOf(endingRegionChar, res);
             if (endingRegionCharIdx == -1) {
                 break;
             }
             String extractedRange = content.substring(res, endingRegionCharIdx);
             /**
-             * Validate the extracted range
-             * to skip noises.
-             * FOR METHODS ( constructors included ) only.
+             * Validate the extracted range to skip noises. FOR METHODS ( constructors included ) only.
              */
             if (!CLASS_KEYWORD.equalsIgnoreCase(prefix)) {
                 String[] mayContainNoises = extractedRange.split(" ");
@@ -539,26 +536,22 @@ public abstract class BaseConstructorPhaseAlgorithm {
                         goodValCounter++;
                     }
                 }
-                /**
-                 * we're only interested 2 ( prefix and prefixed),
-                 * otherwise, reset
-                 */
+                /** we're only interested 2 ( prefix and prefixed), otherwise, reset */
                 if (goodValCounter > 2) {
                     startAt = res + 1;
                     res = -1;
                     continue;
                 }
             }
-            /**
-             * Safe to go.
-             */
+            /** Safe to go. */
             int prefixIdx = extractedRange.indexOf(prefix);
             if (prefixIdx == -1) {
                 break;
             }
             extractedRange =
                     StringUtils.stripDoubleEndedNonAlphaNumeric(
-                            extractedRange.substring(extractedRange.indexOf(prefix) + prefix.length() + 1, extractedRange.length()));
+                            extractedRange.substring(
+                                    extractedRange.indexOf(prefix) + prefix.length() + 1, extractedRange.length()));
 
             if (extractedRange.contains(SPACE) || extractedRange.contains("<")) {
                 extractedRange = extractedRange.split(SPACE)[0];
@@ -568,10 +561,7 @@ public abstract class BaseConstructorPhaseAlgorithm {
                 }
             }
             exactMatch.setLength(0);
-            /**
-             * Handle exact matches,
-             * "Persons" won't be returned in place of "Person".
-             */
+            /** Handle exact matches, "Persons" won't be returned in place of "Person". */
             for (int i = extractedRange.indexOf(prefixed), n = extractedRange.length(); i < n; i++) {
                 if (Character.isWhitespace(extractedRange.charAt(i))) {
                     if (exactMatch.toString().equalsIgnoreCase(prefixed)) {
@@ -594,8 +584,8 @@ public abstract class BaseConstructorPhaseAlgorithm {
         final String className = CLAZZ.getSimpleName();
         final List<String> skippedClasses = rawInput.getSkipClasses();
         for (String eachSkipped : skippedClasses) {
-            if (StringUtils.containsAny(className, eachSkipped) || StringUtils.endsWithAny(className,
-                    eachSkipped)) {
+            if (StringUtils.containsAny(className, eachSkipped)
+                    || StringUtils.endsWithAny(className, eachSkipped)) {
                 return true;
             }
         }
@@ -612,11 +602,12 @@ public abstract class BaseConstructorPhaseAlgorithm {
      * @param ordinal      -1 means find the last possible match.
      * @return last possible match (if any), if failed the n-th.
      */
-    protected static final int forceFindPrefixedString(Optional<Integer> startAt,
-                                                       String prefix,
-                                                       String prefixed,
-                                                       String classContent,
-                                                       Optional<Integer> ordinal) {
+    protected static final int forceFindPrefixedString(
+            Optional<Integer> startAt,
+            String prefix,
+            String prefixed,
+            String classContent,
+            Optional<Integer> ordinal) {
         int res = -1;
         int successTimes = 0;
         int attempts = -1;
@@ -630,18 +621,14 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
         do {
             attempts++;
-            /**
-             * bail if even a 3-spaced value is absent
-             */
+            /** bail if even a 3-spaced value is absent */
             if (attempts == MAX_FAILED_ATTEMPTS) {
-                /**
-                 * Squeeze if more values,
-                 */
+                /** Squeeze if more values, */
                 if (classContent.indexOf(prefix + spaceQty + prefixed, res + 1) != -1) {
                     attempts = 0;
                     continue;
                 }
-                return internRes != -1 ? internRes : res; //maybe ugly code
+                return internRes != -1 ? internRes : res; // maybe ugly code
             }
             if (res == -1) {
                 successTimes = 0;
@@ -651,33 +638,24 @@ public abstract class BaseConstructorPhaseAlgorithm {
                     return internRes != -1 ? internRes : res;
                 }
                 internRes = res;
-                /**
-                 * Otherwise, update to find the n-th match
-                 */
+                /** Otherwise, update to find the n-th match */
                 spaceQty = new StringBuilder();
                 startAt = Optional.of(res + 1);
             }
-            spaceQty.append(" "); //expand the space every time
+            spaceQty.append(" "); // expand the space every time
             res = classContent.indexOf(prefix + spaceQty + prefixed, startAt.get());
         } while (true);
     }
 
     /**
-     * Return the index which is just below the parameters
-     * or after class's declaration if no param.
+     * Return the index which is just below the parameters or after class's declaration if no param.
      *
      * @param CLASS_CONTENT
-     * @return Constraint(s):
-     * class should have >= 1 declared method.
-     * Idea :
-     * if >= 2 brackets, subrange = 1st brk to 2nd brk
-     * if no ; found within this range : insert line break + default ctor
-     * if ; , find the last ; , then insert defautl ctor
-     * <p>
-     * if < 2 brckts,
-     * sub-range = bracket to length
-     * if ; , find the last, then insert
-     * else , append
+     * @return Constraint(s): class should have >= 1 declared method. Idea : if >= 2 brackets,
+     * subrange = 1st brk to 2nd brk if no ; found within this range : insert line break + default
+     * ctor if ; , find the last ; , then insert defautl ctor
+     * <p>if < 2 brckts, sub-range = bracket to length if ; , find the last, then insert else ,
+     * append
      */
     private static int findStartForNewCtor(int toFindFromIdx, String CLASS_CONTENT) {
         if (toFindFromIdx == -1) {
@@ -686,9 +664,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
         int semicolonIdx = -1;
         int closeBrktIdx = -1;
         int seeminglyClassOpBrkt = CLASS_CONTENT.indexOf(OPEN_BRACKET, toFindFromIdx + 1);
-        //loop from the first bracket onward.
+        // loop from the first bracket onward.
         for (int i = seeminglyClassOpBrkt + 1, n = CLASS_CONTENT.length(); i < n; i++) {
-            if (CLASS_CONTENT.charAt(i) == SEMICOLON) { //just update the running semi-colon index
+            if (CLASS_CONTENT.charAt(i) == SEMICOLON) { // just update the running semi-colon index
                 semicolonIdx = i;
             } else if (CLASS_CONTENT.charAt(i) == CLOSE_BRACKET) {
                 if (semicolonIdx != -1) {
@@ -696,13 +674,9 @@ public abstract class BaseConstructorPhaseAlgorithm {
                 }
                 closeBrktIdx = i;
             } else if (CLASS_CONTENT.charAt(i) == OPEN_BRACKET) {
-                /**
-                 * If at least CLOSE BRACKET is found,
-                 * it means we met ANNOTATIONS,
-                 * so must continue.
-                 */
+                /** If at least CLOSE BRACKET is found, it means we met ANNOTATIONS, so must continue. */
                 if (closeBrktIdx != -1) {
-                    closeBrktIdx = -1; //reset to escape this code the 2nd time.
+                    closeBrktIdx = -1; // reset to escape this code the 2nd time.
                     i++;
                     continue;
                 }
@@ -711,19 +685,4 @@ public abstract class BaseConstructorPhaseAlgorithm {
         }
         return semicolonIdx == -1 ? seeminglyClassOpBrkt : semicolonIdx;
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

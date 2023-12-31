@@ -1,11 +1,12 @@
 package com.aggregated;
 
-import org.slf4j.Logger;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.Objects;
+import org.slf4j.Logger;
+
+import static com.aggregated.CharacterRepository.*;
 
 public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm {
   private CustomSerializationCollectedField collectedField;
@@ -13,18 +14,19 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
   protected ValidateAnnotatableFieldPhase(RawClientRuleInput rawInput) {
     super(rawInput);
   }
+
   @Override
   public PhaseChainedResult execute(PhaseChainedResult previousInput) {
     ValidateClassPhaseOutput previousOutput = (ValidateClassPhaseOutput) previousInput;
     Objects.requireNonNull(previousOutput.getRawValues());
     previousOutput.reset();
-
     String type = "";
     if (rawInput.isCustomSerialization()) {
       type = rawInput.getCustomSerRequiredFieldType();
     }
     buildList(type);
-    AnnotatableConstructorFieldPhaseOutput result = new AnnotatableConstructorFieldPhaseOutput(collectedField);
+    AnnotatableConstructorFieldPhaseOutput result =
+            new AnnotatableConstructorFieldPhaseOutput(collectedField);
     try {
       pushStack((PhaseChainedResult) result.clone());
     } catch (CloneNotSupportedException e) {
@@ -32,6 +34,7 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
     }
     return result;
   }
+
   private void buildList(String withType) {
     if (Objects.isNull(this.collectedField)) {
       this.collectedField = new CustomSerializationCollectedField();
@@ -56,84 +59,39 @@ public class ValidateAnnotatableFieldPhase extends BaseConstructorPhaseAlgorithm
     }
   }
 
-  private boolean isFieldUnassigned(String fieldName) {
+  private boolean isFieldAssigned(String fieldName) {
     for (int i = 0, n = FIELD_REGION.length; i < n; i++) {
       String running = FIELD_REGION[i];
-      if (running.contains("/**") || running.contains("//") || running.contains("/***")) {
-        //skip cmt block
-//        for (i += 1; i < n && (!searchRange[i].contains("//") && !searchRange[i].contains("*/")); i++) {}
-        for (i += 1; i < n && !StringUtils.containsAny(FIELD_REGION[i], "*/", "**/", "***/", "//", "\n", "\r"); i++) {}
-        i++;
-        continue;
-      }
+      // TODO
+      //      if (running.contains("/**") || running.contains("/***")) {
+      //        continue;
+      //      }
       if (running.contains(fieldName)) {
-        if (!StringUtils.stripDoubleEndedNonAlphaNumeric(running).equalsIgnoreCase(fieldName)) {
-          continue;
-        }
-        if (running.contains(";")) {
+        if (running.contains(RAW_EQUAL)) {
           return true;
         }
-        if (running.contains("=")) { //fishy check
-          for (; i < n; i++) {
-            running = FIELD_REGION[i];
-//            if (running.contains("null") || running.contains("false") || running.contains("true")) {
-//              return true;
-//            }
-            if (!StringUtils.isEmpty(running) && running.contains(";")) {
-              return true;
-            }
-            if (StringUtils.containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
-              break;
-            }
-          }
-          return false;
-        }
-        for (; i < n; i++) { //ok we'll take it from here then bail.
-          running = FIELD_REGION[i];
-          if (running.contains("=")) {
-            for (; i < n; i++) {
-              running = FIELD_REGION[i];
-              if (!StringUtils.isEmpty(running) && running.contains(";")) {
-                return true;
-              }
-              if (StringUtils.containsAny(FIELD_REGION[i], "\r", "\n", ";")) {
-                break;
-              }
-            }
-            return false;
-          }
-          if (running.contains(";")) {
-            break;
-          }
-        }
+        return false;
       }
     }
-    return true;
+    return false;
   }
+
   private boolean isSerializableField(Field field) {
     int modVal = field.getModifiers();
-    if ((Modifier.isFinal(modVal) && Modifier.isStatic(modVal)) || (Modifier.isTransient(modVal) || field.isAnnotationPresent(Deprecated.class)) || field.getType() == Comparator.class || field.getType() == Logger.class || (Modifier.isFinal(modVal) && !isFieldUnassigned(field.getName()))) {
+    if (Modifier.isFinal(modVal) && Modifier.isStatic(modVal)) {
       return false;
     }
-    if ((isFieldUnassigned(field.getName())) || (!Modifier.isStatic(modVal) && !isFieldUnassigned(field.getName()))) {
-      return true;
-    } else if (!Modifier.isStatic(modVal)) {
+    final boolean isFieldAssignedFlag = isFieldAssigned(field.getName());
+    if (Modifier.isFinal(modVal)
+            && (isFieldAssignedFlag
+            || (Modifier.isTransient(modVal) || field.isAnnotationPresent(Deprecated.class))
+            || field.getType() == Comparator.class
+            || field.getType() == Logger.class)) {
       return false;
+    }
+    if (isFieldAssignedFlag || (!Modifier.isStatic(modVal) && !isFieldAssignedFlag)) {
+      return true;
     }
     return false;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

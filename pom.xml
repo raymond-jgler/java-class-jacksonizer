@@ -32,6 +32,13 @@
             <artifactId>jackson-core</artifactId>
             <version>2.7.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.googlejavaformat/google-java-format -->
+        <dependency>
+            <groupId>com.google.googlejavaformat</groupId>
+            <artifactId>google-java-format</artifactId>
+            <version>1.13.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>

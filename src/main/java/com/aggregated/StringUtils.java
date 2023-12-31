@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.aggregated.CharacterRepository.WEIRD_FIELD;
+
 public class StringUtils {
     private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
 
@@ -24,7 +26,7 @@ public class StringUtils {
     private static final String SPACE = " ";
     private static final char SEMICOLON = ';';
     private static final String SINGLE_BREAK = "\n";
-    private final static Map<String, String> rawImportToResovled = new HashMap<>();
+    private static final Map<String, String> rawImportToResovled = new HashMap<>();
 
     public static boolean isNotEmpty(String input) {
         return !isEmpty(input);
@@ -40,7 +42,7 @@ public class StringUtils {
         }
         int l = 0;
         int r = input.length() - 1;
-        char [] inpArr = input.toCharArray();
+        char[] inpArr = input.toCharArray();
         while (l <= r) {
             char left = inpArr[l];
             char right = inpArr[r];
@@ -59,14 +61,17 @@ public class StringUtils {
 
     public static boolean containsAny(String toCheck, String... args) {
         AtomicBoolean res = new AtomicBoolean();
-        Arrays.stream(args).parallel().forEach(each -> {
-            if (res.get()) {
-                return;
-            }
-            if (toCheck.contains(each)) {
-                res.set(true);
-            }
-        });
+        Arrays.stream(args)
+                .parallel()
+                .forEach(
+                        each -> {
+                            if (res.get()) {
+                                return;
+                            }
+                            if (toCheck.contains(each)) {
+                                res.set(true);
+                            }
+                        });
         return res.get();
     }
 
@@ -78,7 +83,7 @@ public class StringUtils {
         for (int i = 0, n = fromToPairs.length; i < n; i += PAIR_JUMP) {
             orig = orig.replace(fromToPairs[i], fromToPairs[i + 1]);
         }
-        //fishy, ensure single-dotted only.
+        // fishy, ensure single-dotted only.
         return orig.replaceAll("\\.+", ".");
     }
 
@@ -105,7 +110,8 @@ public class StringUtils {
             return inp;
         }
         StringBuilder resultBuilder = new StringBuilder(inp);
-        if (!bracket.equalsIgnoreCase(String.valueOf(resultBuilder.charAt(resultBuilder.length() - 1)))) {
+        if (!bracket.equalsIgnoreCase(
+                String.valueOf(resultBuilder.charAt(resultBuilder.length() - 1)))) {
             resultBuilder.append(indentVal).append(bracket);
         }
         return resultBuilder.toString();
@@ -131,6 +137,23 @@ public class StringUtils {
         return resolveReplaces(sb.toString(), "/", "");
     }
 
+    public static DecorationLocalField makeFieldFromFieldTypeAndName(String inp) {
+        int marker = 0;
+        char[] charArr = inp.toCharArray();
+        int n = charArr.length;
+        for (int i = n - 1; i >= 0; i--) {
+            if (Character.isSpaceChar(inp.charAt(i))) {
+                marker = i;
+                break;
+            }
+        }
+        final String processedFieldName = new String(charArr, marker, n - marker);
+        final String fieldType = new String(charArr, 0, marker);
+        DecorationLocalField decorationLocalField = DecorationLocalField.createFrom(processedFieldName, fieldType, fieldType, fieldType, false);
+        return decorationLocalField;
+    }
+
+
     public static boolean isAllLowerCase(String inp) {
         for (Character c : inp.toCharArray()) {
             if (Character.isUpperCase(c)) {
@@ -141,15 +164,15 @@ public class StringUtils {
     }
 
     /**
-     * Pincer-strip double-ended non alphanumeric chars from string,
-     * until meets character / digit from both ends.
+     * Pincer-strip double-ended non alphanumeric chars from string, until meets character / digit
+     * from both ends.
      *
      * @param inp
      * @return
      */
     public static String stripDoubleEndedNonAlphaNumeric(String inp) {
         if (StringUtils.isEmpty(inp)) {
-            return ""; //avoid NPE
+            return ""; // avoid NPE
         }
         final int THRESHOLD = 200;
         final long start = System.currentTimeMillis();
@@ -160,7 +183,7 @@ public class StringUtils {
         while (left < right && right > 0 && !Character.isLetterOrDigit(inp.charAt(right))) {
             right--;
         }
-        //if unchanged.
+        // if unchanged.
         if (left >= right || (left == 0 && right == n)) {
             return inp;
         }
@@ -178,7 +201,8 @@ public class StringUtils {
         return inp;
     }
 
-    public static int lastIndexOf(String inp, char x, Integer backwardFrom, Integer ordinalIndex, Boolean skipBreaker) {
+    public static int lastIndexOf(
+            String inp, char x, Integer backwardFrom, Integer ordinalIndex, Boolean skipBreaker) {
         if (!inp.contains(String.valueOf(x))) {
             return -1;
         }
@@ -231,7 +255,7 @@ public class StringUtils {
             return new ArrayList<>();
         }
         List<String> res = new ArrayList<>();
-        char [] inpCharArr = inp.toCharArray();
+        char[] inpCharArr = inp.toCharArray();
         int l = 0;
         int n = inpCharArr.length;
         while (l < n) {
@@ -243,33 +267,12 @@ public class StringUtils {
                 r++;
             }
             final String toAdd = new String(inpCharArr, l, r - l);
-            if (isUnique && !res.contains(toAdd)) {
-                res.add(new String(inpCharArr, l, r - l));
+            if (isUnique && !res.contains(toAdd) && StringUtils.isNotEmpty(toAdd)) {
+                res.add(toAdd);
             }
             l = r + 1;
         }
 
-        return res;
-    }
-    public static List<String> makeNonAlphaStringsFrom2(String inp) {
-        if (StringUtils.isEmpty(inp)) {
-            return new ArrayList<>();
-        }
-        StringBuilder sb = new StringBuilder();
-        List<String> res = new ArrayList<>();
-        for (Character c : inp.toCharArray()) {
-            if (Character.isLetterOrDigit(c)) {
-                sb.append(c);
-                continue;
-            }
-            if (sb.length() > 0) {
-                res.add(sb.toString());
-                sb.setLength(0);
-            }
-        }
-        if (sb.length() > 0) {
-            res.add(sb.toString());
-        }
         return res;
     }
 
@@ -277,7 +280,7 @@ public class StringUtils {
      * @param inp
      * @return A spaced-string from list
      */
-    public static String toStringFromList(List<String> inp) {
+    public static String toStringFromList(List<String> inp, char connective) {
         if (CollectionUtils.isEmpty(inp)) {
             return "";
         }
@@ -293,30 +296,32 @@ public class StringUtils {
         AtomicReference<StringBuffer> running = new AtomicReference<>(new StringBuffer());
         if (possibleThreads == 0) {
             end.set(n);
-            Runnable runnable = (() -> {
-                AtomicBoolean isFirst = new AtomicBoolean(true);
-                for (; start.get() < end.get(); start.getAndIncrement()) {
-                    if (!isFirst.get()) {
-                        running.get().append(SPACE);
-                    }
-                    running.get().append(atomicInp.get().get(start.get()));
-                    isFirst.set(false);
-                }
-            });
+            Runnable runnable =
+                    (() -> {
+                        AtomicBoolean isFirst = new AtomicBoolean(true);
+                        for (; start.get() < end.get(); start.getAndIncrement()) {
+                            if (!isFirst.get()) {
+                                running.get().append(connective);
+                            }
+                            running.get().append(atomicInp.get().get(start.get()));
+                            isFirst.set(false);
+                        }
+                    });
             threads[threadIdx] = new Thread(runnable);
         } else {
             for (int i = 0; i < availableProcessors; i++) {
-                Runnable runnable = (() -> {
-                    AtomicBoolean isFirst = new AtomicBoolean(true);
-                    for (; start.get() < end.get(); start.getAndIncrement()) {
-                        if (!isFirst.get()) {
-                            running.get().append(SPACE);
-                        }
-                        running.get().append(atomicInp.get().get(start.get()));
-                        isFirst.set(false);
-                    }
-                });
-                //update start, end
+                Runnable runnable =
+                        (() -> {
+                            AtomicBoolean isFirst = new AtomicBoolean(true);
+                            for (; start.get() < end.get(); start.getAndIncrement()) {
+                                if (!isFirst.get()) {
+                                    running.get().append(connective);
+                                }
+                                running.get().append(atomicInp.get().get(start.get()));
+                                isFirst.set(false);
+                            }
+                        });
+                // update start, end
                 start.set(end.get());
                 end.set(n / decreaser.getAndDecrement());
                 if (start.get() >= end.get()) {
@@ -330,7 +335,8 @@ public class StringUtils {
         return running.get().toString();
     }
 
-    public static String bulkCascadeRemoveSuffixedString(String inp, char suffix, Character... patternSplitterTeller) {
+    public static String bulkCascadeRemoveSuffixedString(
+            String inp, char suffix, Character... patternSplitterTeller) {
         final List<Character> teller = Arrays.asList(patternSplitterTeller);
         StringBuilder partitionCollector = new StringBuilder();
         StringBuilder removed = new StringBuilder();
@@ -354,7 +360,8 @@ public class StringUtils {
             }
             partitionCollector.setLength(0);
         }
-        String finalSwticher = removed.length() == 0 ? partitionCollector.toString() : removed.toString();
+        String finalSwticher =
+                removed.length() == 0 ? partitionCollector.toString() : removed.toString();
         if (finalSwticher.contains(String.valueOf(suffix))) {
             finalSwticher = cascadeRemoveSuffixedString(finalSwticher, suffix);
         }
@@ -362,22 +369,16 @@ public class StringUtils {
     }
 
     /**
-     * Should be used when ony " ONE pattern range " is present.
-     * This method will work for only 1 self-contained pattern.
-     * not work for multiple pattern ranges.
-     * <p>
-     * A suffixed string is a pattern containing:
-     * a word followed by a character.
-     * for example, these are suffixed strings:
-     * string =  java.util.List
-     * suffixed strings : java., util.
+     * Should be used when ony " ONE pattern range " is present. This method will work for only 1
+     * self-contained pattern. not work for multiple pattern ranges.
+     *
+     * <p>A suffixed string is a pattern containing: a word followed by a character. for example,
+     * these are suffixed strings: string = java.util.List suffixed strings : java., util.
      * non-suffixed : List
      *
      * @param inp
      * @return a string having its suffixed ones removed.
-     * <p>
-     * input : java.util.List
-     * output : List
+     * <p>input : java.util.List output : List
      */
     public static String cascadeRemoveSuffixedString(String inp, char suffix) {
         if (!inp.contains(String.valueOf(suffix))) {
@@ -388,9 +389,8 @@ public class StringUtils {
         int rightBound = StringUtils.lastIndexOf(inp, suffix, i, 1, null);
         int leftBound = StringUtils.lastIndexOf(inp, suffix, i, -1, null);
         /**
-         * 2 cases for words preceding leftBound
-         * _ a whole removable string
-         * _ a partial removable string ( blocked by other words ).
+         * 2 cases for words preceding leftBound _ a whole removable string _ a partial removable string
+         * ( blocked by other words ).
          */
         i = leftBound - 1;
         for (; i >= 0 && Character.isLetterOrDigit(inp.charAt(i)); i--) {
@@ -403,10 +403,7 @@ public class StringUtils {
     public static String ripRangeFromString(String inp, int exceptFrom, int exceptTo) {
         StringBuilder ripped = new StringBuilder();
         for (int i = 0, n = inp.length(); i < n; i++) {
-            /**
-             * Exclusive left bound
-             * Inclusive right bound.
-             */
+            /** Exclusive left bound Inclusive right bound. */
             if (i > exceptFrom && i <= exceptTo) {
                 continue;
             }
@@ -465,8 +462,7 @@ public class StringUtils {
     }
 
     /**
-     * Separated by each dot,
-     * ensure no more than 1 word contains >= 1 upper-case characters.
+     * Separated by each dot, ensure no more than 1 word contains >= 1 upper-case characters.
      *
      * @param inp
      * @return
@@ -499,12 +495,9 @@ public class StringUtils {
             each.setLength(0);
         }
         if (each.length() > 0 && !res.toString().contains(each)) {
-            res.append(sep)
-                    .append(each);
+            res.append(sep).append(each);
         }
-        /**
-         * Ok time to hack
-         */
+        /** Ok time to hack */
         String toPut = "";
         if (inp.charAt(0) == '.' || inp.charAt(inp.length() - 1) == '.') {
             final String rawText = stripDoubleEndedNonAlphaNumeric(inp);
@@ -548,14 +541,16 @@ public class StringUtils {
         return key + operator + value;
     }
 
-    public static String findPrependablePieceFrom(String content, int backwardFrom, Character breakingChar, boolean isSkipSpace) {
+    public static String findPrependablePieceFrom(
+            String content, int backwardFrom, Character breakingChar, boolean isSkipSpace) {
         if (Objects.isNull(breakingChar)) {
             breakingChar = '\r';
         }
         StringBuilder rev = new StringBuilder();
         for (int i = backwardFrom; i >= 0; i--) {
             Character c = content.charAt(i);
-            if (String.valueOf(content.charAt(i)).equalsIgnoreCase(SINGLE_BREAK) || content.charAt(i) == breakingChar) {
+            if (String.valueOf(content.charAt(i)).equalsIgnoreCase(SINGLE_BREAK)
+                    || content.charAt(i) == breakingChar) {
                 break;
             }
             if (isSkipSpace && !Character.isLetterOrDigit(c)) {
@@ -585,6 +580,82 @@ public class StringUtils {
     }
 
     /**
+     * If existing ctor body covers all serializable fieldStrings.
+     *
+     * @param body
+     * @return
+     */
+    public static boolean containsAllFields(String body, List<DecorationLocalField> scope) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+        Collections.synchronizedList(scope).parallelStream()
+                .forEach(
+                        field -> {
+                            if (!atomicBoolean.get()) {
+                                return;
+                            }
+                            if (!field.getFieldName().contains(WEIRD_FIELD)
+                                    && !body.contains(field.getFieldName())) {
+                                atomicBoolean.set(false);
+                                return;
+                            }
+                        });
+        return atomicBoolean.get();
+    }
+
+    public static String extractLastSubStrAfter(char x, String inp, boolean isReversed) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            int n = inp.length();
+            for (int i = n - 1; i >= 0; i--) {
+                char curr = inp.charAt(i);
+                if (x == curr) {
+                    break;
+                }
+                sb.append(curr);
+            }
+            if (isReversed) {
+                return sb.reverse().toString();
+            }
+            return sb.toString();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static List<String> reduceToOnlyLastSubStrAfter(
+            char x, List<String> input, boolean isModifiable) {
+        List<String> res = new ArrayList<>();
+        for (int idx = 0, n = input.size(); idx < n; idx++) {
+            final String substringed = extractLastSubStrAfter(x, input.get(idx), true);
+            if (!isModifiable) {
+                res.add(substringed);
+            } else {
+                input.set(idx, substringed);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(res)) {
+            return res;
+        }
+        return input;
+    }
+
+    public static boolean containsAllStrings(String body, List<String> scope) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+        Collections.synchronizedList(scope).parallelStream()
+                .forEach(
+                        field -> {
+                            if (!atomicBoolean.get()) {
+                                return;
+                            }
+                            if (!field.contains(WEIRD_FIELD) && !body.contains(field)) {
+                                atomicBoolean.set(false);
+                                return;
+                            }
+                        });
+        return atomicBoolean.get();
+    }
+
+    /**
      * Supports upper/lower-cased alphanumeric letters.
      *
      * @param x
@@ -592,9 +663,7 @@ public class StringUtils {
      * @return
      */
     public static boolean isAnagram(String x, String y) {
-        /**
-         * Set A = {Aa-Zz + 0 -> 9} -> nO of chars =  62
-         */
+        /** Set A = {Aa-Zz + 0 -> 9} -> nO of chars = 62 */
         int[] map1 = new int[62];
         int[] map2 = new int[62];
         Arrays.fill(map1, 0);
@@ -627,9 +696,7 @@ public class StringUtils {
             }
         }
 
-        /**
-         * Verify
-         */
+        /** Verify */
         for (int r = 0; r < 62; r++) {
             if (map1[r] == map2[r]) {
                 continue;
@@ -640,9 +707,9 @@ public class StringUtils {
     }
 
     /**
-     * We only consume letter / digit character, except given characters.
-     * This will apply #stripDoubleEndedNonAlphaNumeric's logic,
-     * and also ensure each pair of consecutive characters are only one-spaced separated.
+     * We only consume letter / digit character, except given characters. This will apply
+     * #stripDoubleEndedNonAlphaNumeric's logic, and also ensure each pair of consecutive characters
+     * are only one-spaced separated.
      *
      * @param inp
      * @return
@@ -651,6 +718,10 @@ public class StringUtils {
         if (StringUtils.isEmpty(inp) || StringUtils.isBlank(inp)) {
             return "";
         }
+        if (Objects.isNull(consumable)) {
+            consumable = new HashSet<>();
+        }
+        inp = stripDoubleEndedNonAlphaNumeric(inp);
         StringBuilder runner = new StringBuilder();
         boolean isMetSpace = false;
         for (int i = 0, n = inp.length(); i < n; i++) {
@@ -670,16 +741,3 @@ public class StringUtils {
         return runner.toString();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
