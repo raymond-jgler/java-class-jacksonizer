@@ -1,4 +1,4 @@
-# Welcome to Java Class Annotatable Constructor Templater !
+# Welcome to Java Class Jacksonizer !
 
 >If tons of existing Java classes need to be provided with configurable annotations - required from most modern (de)serialization libraries, [Jackson]( 
 https://github.com/FasterXML/jackson) for e.g, 
